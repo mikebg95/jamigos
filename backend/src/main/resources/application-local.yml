@@ -11,12 +11,6 @@ spring:
     username: admin
     password: admin
 
-  jpa:
-    hibernate:
-      ddl-auto: none     # change to 'update' later when you add entities
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
-    open-in-view: false
-
   security:
     oauth2:
       resourceserver:

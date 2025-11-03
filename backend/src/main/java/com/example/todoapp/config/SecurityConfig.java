@@ -1,5 +1,7 @@
 package com.example.todoapp.config;
 
+import com.example.todoapp.security.JwtAuthConverter;
+import com.example.todoapp.security.UserSyncFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -12,6 +14,7 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
@@ -19,8 +22,8 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
-
     private final JwtAuthConverter jwtAuthConverter;
+    private final UserSyncFilter userSyncFilter;
 
     // Swagger & OpenAPI docs - public access
     @Bean
@@ -60,7 +63,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(reg -> reg.anyRequest().authenticated())
                 .oauth2ResourceServer(oauth ->
                         oauth.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthConverter))
-                );
+                )
+                .addFilterAfter(userSyncFilter, BearerTokenAuthenticationFilter.class);
         return http.build();
     }
 
