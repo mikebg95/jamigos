@@ -6,14 +6,17 @@ import com.example.todoapp.dto.ItemCreateRequest;
 import com.example.todoapp.model.Item;
 import com.example.todoapp.repository.ItemRepository;
 import com.example.todoapp.security.CurrentUserService;
+import com.example.todoapp.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.aop.AopAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -33,6 +36,12 @@ class ItemControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @MockitoBean
+    UserService userService;
+
+    @MockitoBean
+    JwtDecoder jwtDecoder;
 
     @Autowired
     private ObjectMapper objectMapper;

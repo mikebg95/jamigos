@@ -10,7 +10,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("${spring.profiles.active:local}")
-class ActuatorSecurityIT {
+class ActuatorSecurityTest {
 
     @Autowired
     TestRestTemplate rest;
