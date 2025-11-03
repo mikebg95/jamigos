@@ -1,12 +1,22 @@
 spring:
+  application:
+    name: todo-app
+
   data:
     mongodb:
       uri: mongodb://admin:admin@localhost:27017/todosdb?authSource=admin
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/todoapp
+    username: admin
+    password: admin
+
   security:
     oauth2:
       resourceserver:
         jwt:
           issuer-uri: http://localhost:8180/realms/todo-project-realm
+
 actuator:
   username: admin
   password: admin
@@ -17,3 +27,21 @@ springdoc:
       client-id: "todo-project-client"
       use-pkce-with-authorization-code-grant: true
     oauth2-redirect-url: "http://localhost:8082/swagger-ui/oauth2-redirect.html"
+
+server:
+  port: 8082
+
+logging:
+  level:
+    org.springframework.security: DEBUG
+    org.springframework.security.oauth2: DEBUG
+    com.example.todoapp.aop: INFO
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: info,health
+  endpoint:
+    health:
+      show-details: always

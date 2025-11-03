@@ -1,6 +1,7 @@
-package com.example.todoapp.config;
+package com.example.todoapp.security;
 
 import org.springframework.core.convert.converter.Converter;
+import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -18,11 +19,11 @@ public class JwtAuthConverter implements Converter<Jwt, AbstractAuthenticationTo
     private static final String REALM_ACCESS = "realm_access";
     private static final String ROLES = "roles";
 
-    // set your Keycloak backend client ID here
+    // keycloak backend client ID
     private final String clientId = "todo-project-client";
 
     @Override
-    public AbstractAuthenticationToken convert(Jwt jwt) {
+    public AbstractAuthenticationToken convert(@NonNull Jwt jwt) {
         Collection<GrantedAuthority> authorities = extractRoles(jwt);
 
         return new JwtAuthenticationToken(jwt, authorities, jwt.getSubject());

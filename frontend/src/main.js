@@ -7,6 +7,7 @@ import { useUserStore } from "@/store/user.js";
 import { useUiStore } from "@/store/ui.js";
 import "@/scss/main.scss";
 import * as lucide from "lucide-vue-next";
+import usersService from "@/service/UsersService.js";
 
 const pinia = createPinia();
 const app = createApp(App);
@@ -29,7 +30,7 @@ keycloak
         checkLoginIframe: false,
         silentCheckSsoRedirectUri: `${window.location.origin}/silent-check-sso.html`, // redirect to silent-check-sso.html
     })
-    .then(() => {
+    .then(async () => {
         const userStore = useUserStore();
         userStore.setUser(
             keycloak.authenticated,
@@ -37,8 +38,16 @@ keycloak
             keycloak.tokenParsed
         );
 
+        if (userStore.isAuthenticated) {
+            try {
+                await usersService.syncCurrentUser();
+            } catch (e) {
+                console.warn('users/sync failed (will fallback to JIT):', e);
+            }
+        }
+
         if (router.currentRoute.value.path === "/" && userStore.isAuthenticated) {
-            router.replace("/dashboard");
+            await router.replace("/dashboard");
         }
 
         app.mount("#app");

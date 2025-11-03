@@ -1,6 +1,13 @@
 spring:
   application:
     name: todo-app
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    open-in-view: false
+
 server:
   port: 8082
 logging:
