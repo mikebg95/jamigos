@@ -77,3 +77,4 @@ public class UserServiceTest {
         assertThat(saved.getDisplayName()).isEqualTo("John Updated Doe");
     }
 }
+
