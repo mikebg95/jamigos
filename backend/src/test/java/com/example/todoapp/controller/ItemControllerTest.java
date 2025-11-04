@@ -1,7 +1,6 @@
-package com.example.todoapp;
+package com.example.todoapp.controller;
 
 import com.example.todoapp.aop.RequireOwnerAspect;
-import com.example.todoapp.controller.ItemController;
 import com.example.todoapp.dto.ItemCreateRequest;
 import com.example.todoapp.model.Item;
 import com.example.todoapp.repository.ItemRepository;
