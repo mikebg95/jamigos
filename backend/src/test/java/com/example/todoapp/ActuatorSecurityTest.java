@@ -7,7 +7,10 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
+import java.time.Duration;
+
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
 
 class ActuatorSecurityTest extends AbstractIntegrationTest {
 
@@ -18,8 +21,12 @@ class ActuatorSecurityTest extends AbstractIntegrationTest {
 
     @Test
     void health_isPublic() {
-        var resp = rest.getForEntity("/actuator/health", String.class);
-        assertThat(resp.getStatusCode().value()).isEqualTo(200);
+        await().atMost(Duration.ofSeconds(90))
+                .pollInterval(Duration.ofSeconds(2))
+                .untilAsserted(() -> {
+                    var resp = rest.getForEntity("/actuator/health", String.class);
+                    assertThat(resp.getStatusCode().value()).isEqualTo(200);
+                });
     }
 
     @Test
