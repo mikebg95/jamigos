@@ -4,6 +4,7 @@ import com.example.todoapp.security.JwtAuthConverter;
 import com.example.todoapp.security.UserSyncFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -22,6 +23,7 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
+
     private final JwtAuthConverter jwtAuthConverter;
     private final UserSyncFilter userSyncFilter;
 
@@ -68,8 +70,9 @@ public class SecurityConfig {
         return http.build();
     }
 
-    // Basic user for actuator
+    // Basic user for actuator – only created when properties exist
     @Bean
+    @ConditionalOnProperty(prefix = "actuator", name = {"username", "password"})
     public UserDetailsService actuatorUser(
             @Value("${actuator.username}") String username,
             @Value("${actuator.password}") String password

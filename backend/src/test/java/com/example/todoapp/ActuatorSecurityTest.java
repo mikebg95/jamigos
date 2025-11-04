@@ -1,19 +1,20 @@
 package com.example.todoapp;
 
+import com.example.todoapp.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.test.context.ActiveProfiles;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles("${spring.profiles.active:local}")
-class ActuatorSecurityTest {
+class ActuatorSecurityTest extends AbstractIntegrationTest {
 
-    @Autowired
-    TestRestTemplate rest;
+    @MockitoBean UserService userService;
+    @MockitoBean JwtDecoder jwtDecoder;
+
+    @Autowired TestRestTemplate rest;
 
     @Test
     void health_isPublic() {

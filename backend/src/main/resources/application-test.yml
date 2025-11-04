@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: todo-app-test
+
+logging:
+  level:
+    root: WARN
+    org.springframework.security: WARN
+    org.springframework.security.oauth2: WARN
+    com.example.todoapp: INFO
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: never
+
+actuator:
+  username: admin
+  password: admin
