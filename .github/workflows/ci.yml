@@ -24,13 +24,7 @@ jobs:
           java-version: '25'
           cache: maven
       - name: Build & Test Backend
-        env:
-          ACTUATOR_USERNAME: ${{ secrets.ACTUATOR_USERNAME }}
-          ACTUATOR_PASSWORD: ${{ secrets.ACTUATOR_PASSWORD }}
-          SPRING_DATASOURCE_URL: 'jdbc:postgresql://<host>/<db>?sslmode=require'
-          SPRING_DATASOURCE_USERNAME: 'neondb_owner'
-          SPRING_DATASOURCE_PASSWORD: '${{ secrets.SPRING_DATASOURCE_PASSWORD }}'
-        run: mvn -B -ntp clean verify -Dspring.profiles.active=dev
+        run: mvn -B -ntp clean verify -Dspring.profiles.active=test
 
   build-test-frontend:
     runs-on: ubuntu-latest
