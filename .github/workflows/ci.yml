@@ -9,6 +9,10 @@ on:
   pull_request:
   workflow_dispatch:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   changes:
     name: Detect changes
@@ -131,6 +135,9 @@ jobs:
     needs: [changes, build-push-docker-images]
     if: ${{ github.ref == 'refs/heads/main' && needs.changes.outputs.anything_changed == 'true' }}
     runs-on: ubuntu-latest
+    concurrency:
+      group: deploy-production
+      cancel-in-progress: true
     steps:
       - name: Deploy backend to Render
         if: ${{ needs.changes.outputs.backend_changed == 'true' }}
