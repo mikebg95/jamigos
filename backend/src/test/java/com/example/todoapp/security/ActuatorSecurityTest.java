@@ -1,5 +1,6 @@
-package com.example.todoapp;
+package com.example.todoapp.security;
 
+import com.example.todoapp.AbstractIntegrationTest;
 import com.example.todoapp.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
