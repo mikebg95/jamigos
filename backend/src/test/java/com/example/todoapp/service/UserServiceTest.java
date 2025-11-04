@@ -63,6 +63,7 @@ public class UserServiceTest {
     void shouldUpdateUsernameIfDiffersFromExisting() {
         Jwt updatedJwt = JwtTestUtils.jwt("kc-123", "john-doe", "John Updated Doe", "john@doe.com");
         User user = UserTestUtil.user("kc-123", "john-doe", "John Doe", "john@doe.com");
+
         when(userRepository.findByKeycloakId("kc-123")).thenReturn(user);
         userService.ensureCurrentUser(updatedJwt);
 
