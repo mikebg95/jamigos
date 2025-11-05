@@ -9,5 +9,5 @@ import java.util.List;
 @Repository
 public interface ItemRepository extends MongoRepository<Item, String> {
     List<Item> findByOwnerId(String ownerId);
-    Boolean existsByIdAndOwnerId(String id, String ownerId);
+    boolean existsByIdAndOwnerId(String id, String ownerId);
 }

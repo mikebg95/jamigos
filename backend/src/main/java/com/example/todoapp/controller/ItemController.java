@@ -1,14 +1,12 @@
 package com.example.todoapp.controller;
 
 import com.example.todoapp.aop.LogExecutionTime;
-import com.example.todoapp.aop.RequireOwner;
 import com.example.todoapp.dto.ItemCreateRequest;
 import com.example.todoapp.model.Item;
-import com.example.todoapp.repository.ItemRepository;
-import com.example.todoapp.security.CurrentUserService;
+import com.example.todoapp.service.ItemService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.prepost.PostFilter;
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,33 +16,29 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/items")
 public class ItemController {
-    private final CurrentUserService currentUserService;
-    private final ItemRepository itemRepository;
+    private final ItemService itemService;
 
-    // get all items for user
     @GetMapping
-    @PostFilter("filterObject.ownerId == principal.claims['sub']")
     public List<Item> getAllItemsForUser() {
-        return itemRepository.findAll();
+        return itemService.getAllItemsForUser();
     }
 
     // add item
     @PostMapping
-    public void addItem(@RequestBody ItemCreateRequest itemCreateRequest) {
-        String userId = currentUserService.getUserId();
-        itemRepository.save(Item.of(itemCreateRequest.getText(), userId));
+    @ResponseStatus(HttpStatus.CREATED)
+    public void addItem(@Valid @RequestBody ItemCreateRequest itemCreateRequest) {
+        itemService.addItem(itemCreateRequest.getText());
     }
 
     // delete item
-    @RequireOwner
     @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteItem(@PathVariable String id) {
-        itemRepository.deleteById(id);
+        itemService.deleteItem(id);
     }
 
     @GetMapping("/all")
-    @PreAuthorize("hasRole('ADMIN_ROLE')")
     public List<Item> getAllItemsForAdmin() {
-        return itemRepository.findAll();
+        return itemService.getAllItemsForAdmin();
     }
 }

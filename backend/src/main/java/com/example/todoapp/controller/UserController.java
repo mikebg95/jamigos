@@ -18,5 +18,4 @@ public class UserController {
     public void syncCurrentUser(@AuthenticationPrincipal Jwt jwt) {
         userService.ensureCurrentUser(jwt);
     }
-
 }

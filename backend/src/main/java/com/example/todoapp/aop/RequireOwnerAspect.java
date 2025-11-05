@@ -72,8 +72,8 @@ public class RequireOwnerAspect {
         }
 
         // make sure idParam is not null or blank
-        if (itemId == null ||itemId.isBlank()) {
-            throw new IllegalStateException("Missing parameter: " + idParamName);
+        if (itemId == null || itemId.isBlank()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Missing parameter: " + idParamName);
         }
         return itemId;
     }
