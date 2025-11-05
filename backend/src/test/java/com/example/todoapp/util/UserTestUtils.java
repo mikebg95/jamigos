@@ -12,4 +12,8 @@ public class UserTestUtils {
     public static User user(String keycloakId) {
         return user(keycloakId, null, null, null);
     }
+
+    public static User basicUser() {
+        return new User("kc-123", "john-doe", "John Doe", "john@doe.com");
+    }
 }

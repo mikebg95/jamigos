@@ -52,7 +52,7 @@ public class UserServiceTest {
 
     @Test
     void shouldDoNothingIfUserAlreadyExists() {
-        User user = UserTestUtils.user("kc-123", "john-doe", "John Doe", "john@doe.com");
+        User user = UserTestUtils.basicUser();
         when(userRepository.findByKeycloakId("kc-123")).thenReturn(user);
         userService.ensureCurrentUser(jwt);
 
@@ -62,7 +62,7 @@ public class UserServiceTest {
     @Test
     void shouldUpdateUsernameIfDiffersFromExisting() {
         Jwt updatedJwt = JwtTestUtils.jwt("kc-123", "john-doe", "John Updated Doe", "john@doe.com");
-        User user = UserTestUtils.user("kc-123", "john-doe", "John Doe", "john@doe.com");
+        User user = UserTestUtils.basicUser();
 
         when(userRepository.findByKeycloakId("kc-123")).thenReturn(user);
         userService.ensureCurrentUser(updatedJwt);
