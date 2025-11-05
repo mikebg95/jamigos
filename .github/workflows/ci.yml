@@ -36,6 +36,7 @@ jobs:
               - 'frontend/**'
 
   build-test-backend:
+    name: Build & test backend
     needs: changes
     if: ${{ needs.changes.outputs.backend_changed == 'true' }}
     runs-on: ubuntu-latest
@@ -54,6 +55,7 @@ jobs:
         run: mvn -B -ntp clean verify -Dspring.profiles.active=test
 
   build-test-frontend:
+    name: Build & test frontend
     needs: changes
     if: ${{ needs.changes.outputs.frontend_changed == 'true' }}
     runs-on: ubuntu-latest
@@ -81,6 +83,7 @@ jobs:
       run: npm run build
 
   build-push-backend-docker-image:
+    name: Build backend & push backend Docker image
     needs: [changes, build-test-backend]
     runs-on: ubuntu-latest
     if: |
@@ -106,6 +109,7 @@ jobs:
               ghcr.io/${{ github.repository }}/todo-backend:${{ github.sha }}
 
   build-push-frontend-docker-image:
+    name: Build frontend & push frontend Docker image
     needs: [changes, build-test-frontend]
     runs-on: ubuntu-latest
     if: |
@@ -135,6 +139,7 @@ jobs:
             VITE_KEYCLOAK_CLIENT_ID=${{ secrets.VITE_KEYCLOAK_CLIENT_ID }}
 
   deploy-backend-to-render:
+    name: Deploy backend to Render
     needs: [changes, build-push-backend-docker-image]
     if: |
       github.event_name == 'push' &&
@@ -154,6 +159,7 @@ jobs:
           wait-for-success: true
 
   deploy-frontend-to-render:
+    name: Deploy frontend to Render
     needs: [changes, build-push-frontend-docker-image]
     if: |
       github.event_name == 'push' &&
