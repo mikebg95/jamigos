@@ -3,7 +3,7 @@ package com.example.todoapp.service;
 import com.example.todoapp.model.User;
 import com.example.todoapp.repository.UserRepository;
 import com.example.todoapp.util.JwtTestUtils;
-import com.example.todoapp.util.UserTestUtil;
+import com.example.todoapp.util.UserTestUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -52,7 +52,7 @@ public class UserServiceTest {
 
     @Test
     void shouldDoNothingIfUserAlreadyExists() {
-        User user = UserTestUtil.user("kc-123", "john-doe", "John Doe", "john@doe.com");
+        User user = UserTestUtils.user("kc-123", "john-doe", "John Doe", "john@doe.com");
         when(userRepository.findByKeycloakId("kc-123")).thenReturn(user);
         userService.ensureCurrentUser(jwt);
 
@@ -62,7 +62,7 @@ public class UserServiceTest {
     @Test
     void shouldUpdateUsernameIfDiffersFromExisting() {
         Jwt updatedJwt = JwtTestUtils.jwt("kc-123", "john-doe", "John Updated Doe", "john@doe.com");
-        User user = UserTestUtil.user("kc-123", "john-doe", "John Doe", "john@doe.com");
+        User user = UserTestUtils.user("kc-123", "john-doe", "John Doe", "john@doe.com");
 
         when(userRepository.findByKeycloakId("kc-123")).thenReturn(user);
         userService.ensureCurrentUser(updatedJwt);
