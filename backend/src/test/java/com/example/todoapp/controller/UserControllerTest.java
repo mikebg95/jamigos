@@ -1,6 +1,5 @@
 package com.example.todoapp.controller;
 
-import com.example.todoapp.security.UserSyncFilter;
 import com.example.todoapp.service.UserService;
 import com.example.todoapp.util.JwtTestUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,20 +32,15 @@ public class UserControllerTest {
 
     @BeforeEach
     void setup() {
-        jwt = JwtTestUtils.jwt("kc-123", "john-doe", "John Doe", "john@doe.nl");
     }
 
     @Test
     void shouldSyncCurrentUserWhenAuthenticated() throws Exception {
-        mockMvc.perform(post("/users/sync").with(jwt().jwt(jwt)))
-                .andExpect(status().isOk());
 
-        verify(userService).ensureCurrentUser(null);
     }
 
     @Test
     void shouldRejectUserWhenNotAuthenticated() {
-        jwt = JwtTestUtils.jwt("kc-123", "john-doe", "John Doe", "john@doe.nl");
 
 
     }

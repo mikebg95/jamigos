@@ -83,7 +83,7 @@ jobs:
       run: npm run build
 
   build-push-backend-docker-image:
-    name: Build backend & push backend Docker image
+    name: Build & push backend Docker image
     needs: [changes, build-test-backend]
     runs-on: ubuntu-latest
     if: |
@@ -109,7 +109,7 @@ jobs:
               ghcr.io/${{ github.repository }}/todo-backend:${{ github.sha }}
 
   build-push-frontend-docker-image:
-    name: Build frontend & push frontend Docker image
+    name: Build & push frontend Docker image
     needs: [changes, build-test-frontend]
     runs-on: ubuntu-latest
     if: |
