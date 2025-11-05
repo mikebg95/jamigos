@@ -3,7 +3,6 @@ package com.example.todoapp.security;
 import com.example.todoapp.service.UserService;
 import com.example.todoapp.util.JwtTestUtils;
 import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,8 +15,6 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
-
-import java.io.IOException;
 
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -47,7 +44,7 @@ public class UserSyncFilterTest {
     }
 
     @Test
-    void shouldCallUserServiceWhenAuthenticated() throws ServletException, IOException {
+    void shouldCallUserServiceWhenAuthenticated() throws Exception {
         JwtAuthenticationToken jwtAuthenticationToken = new JwtAuthenticationToken(jwt);
         SecurityContextHolder.getContext().setAuthentication(jwtAuthenticationToken);
 
@@ -60,7 +57,7 @@ public class UserSyncFilterTest {
     }
 
     @Test
-    void shouldDoNothingWhenNotAuthenticated() throws ServletException, IOException {
+    void shouldDoNothingWhenNotAuthenticated() throws Exception {
         var req = new MockHttpServletRequest();
         var res = new MockHttpServletResponse();
         userSyncFilter.doFilter(req, res, filterChain);
