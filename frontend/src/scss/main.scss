@@ -9,8 +9,8 @@
 @use "base/layout";
 @use "base/animations";
 
-// 3. Components (navbar, buttons, cards, etc.)
-@use "components/navbar";
+// 3. Components (buttons, cards, etc.)
+// Note: navbar styles moved to scoped component (NavbarComponent.vue)
 @use "components/buttons";
 @use "components/cards";
 

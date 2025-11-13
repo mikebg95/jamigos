@@ -52,18 +52,19 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
-    const store = useUserStore();
+    const userStore = useUserStore();
 
-    // if user is logged in, homepage redirects to dashboard
-    if (to.path === "/" && store.isAuthenticated) {
+    // If user is logged in, homepage redirects to dashboard
+    if (to.path === "/" && userStore.isAuthenticated) {
         return next("/dashboard");
     }
 
     if (!to.meta?.requiresAuth) return next();
 
-    if (!store.isAuthenticated) return next("/");
+    if (!userStore.isAuthenticated) return next("/");
 
-    // if (to.meta.role && !store.roles.includes(to.meta.role)) return next("/forbidden");
+    // Role-based routing can be enabled here if needed:
+    // if (to.meta.role && !userStore.hasRole(to.meta.role)) return next("/forbidden");
 
     return next();
 });

@@ -42,6 +42,9 @@
   &.btn-block {
     width: 100%;
   }
+
+  // Keyboard accessibility
+  @include focus-visible;
 }
 
 // ===== Button Variants =====

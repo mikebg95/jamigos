@@ -6,6 +6,3 @@
 <h1>Dashboard Admin</h1>
 </template>
 
-<style scoped>
-
-</style>

@@ -1,47 +1,50 @@
 <script setup>
-import {onMounted, ref} from "vue";
-import ItemService from "@/service/ItemService.js";
+import { onMounted } from 'vue';
+import { useItemOperations } from '@/composables/useItemOperations.js';
+import ErrorAlert from '@/components/ErrorAlertComponent.vue';
+import SkeletonLoader from '@/components/SkeletonLoaderComponent.vue';
 
-const items = ref([]); // reactive list of items
-const error = ref('')
+// Use composable for item operations (admin view - loads all items)
+const { items, error, loading, loadItems, deleteItem } = useItemOperations(true);
 
-
-async function getAllItems() {
-  try {
-    items.value = await ItemService.getAllItems();
-    console.log(items.value)
-  } catch (e) {
-    console.log(e);
-  }
-}
-
-async function deleteItem(id) {
-  try {
-    await ItemService.deleteItem(id)
-    await getAllItems()
-    // items.value = items.value.filter(i => i.id !== id)
-  } catch (e) {
-    error.value = e.message || 'Failed to delete'
-  }
-}
-
-onMounted(getAllItems);
+onMounted(loadItems);
 </script>
 
 <template>
   <div class="page">
     <div class="container">
-      <h1>Information</h1>
+      <h1>All Items (Admin View)</h1>
 
-      <!-- render list -->
-      <ul>
-        <li v-for="item in items" :key="item.id">
-          <span>{{ item.text }}</span>
-          <span><button @click="deleteItem(item.id)">DELETE</button></span>
+      <!-- Loading state -->
+      <div v-if="loading" class="loading-state">
+        <SkeletonLoader type="list" :count="5" />
+      </div>
+
+      <!-- Empty state -->
+      <div v-else-if="!items.length && !error" class="empty-state">
+        <p>No items found in the system.</p>
+      </div>
+
+      <!-- Items list -->
+      <ul v-else-if="items.length" role="list" aria-label="All items in the system">
+        <li v-for="item in items" :key="item.id" class="item">
+          <span class="item-text">{{ item.text }}</span>
+          <button
+            @click="deleteItem(item.id)"
+            class="delete-btn"
+            :aria-label="`Delete item: ${item.text}`"
+          >
+            DELETE
+          </button>
         </li>
       </ul>
 
-      <p v-if="error" class="error">{{ error }}</p>
+      <!-- Error message -->
+      <ErrorAlert
+        v-if="error"
+        :message="error"
+        @dismiss="error = ''"
+      />
     </div>
   </div>
 </template>

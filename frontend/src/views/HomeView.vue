@@ -3,6 +3,8 @@ import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import keycloak from '@/auth/keycloak.js'
 import { useUiStore } from '@/store/ui.js'
+import { UI } from '@/config/constants'
+import { FEATURES } from '@/config/features.js'
 
 const router = useRouter()
 const ui = useUiStore()
@@ -23,38 +25,8 @@ const goToDashboard = () => {
   router.push('/dashboard')
 }
 
-const features = [
-  {
-    icon: '✨',
-    title: 'Smart Organization',
-    description: 'Organize your tasks with intelligent categorization and prioritization.'
-  },
-  {
-    icon: '🔒',
-    title: 'Secure & Private',
-    description: 'Enterprise-grade security with Keycloak authentication to keep your data safe.'
-  },
-  {
-    icon: '⚡',
-    title: 'Lightning Fast',
-    description: 'Built with Vue 3 and modern technologies for blazing fast performance.'
-  },
-  {
-    icon: '🌐',
-    title: 'Access Anywhere',
-    description: 'Seamlessly sync across all your devices with cloud-based storage.'
-  },
-  {
-    icon: '🎨',
-    title: 'Beautiful Design',
-    description: 'Intuitive and elegant interface that makes task management a pleasure.'
-  },
-  {
-    icon: '📊',
-    title: 'Track Progress',
-    description: 'Monitor your productivity with detailed insights and analytics.'
-  }
-]
+// Use imported features constant
+const features = FEATURES
 </script>
 
 <template>
@@ -134,7 +106,9 @@ const features = [
 
         <div class="floating-card card-2">
           <div class="mini-stat">
-            <span class="mini-stat-icon">📈</span>
+            <div class="mini-stat-icon">
+              <TrendingUp :size="UI.ICON_SIZE_LG" :stroke-width="UI.ICON_STROKE_WIDTH" />
+            </div>
             <div>
               <div class="mini-stat-value">+24%</div>
               <div class="mini-stat-label">Productivity</div>
@@ -144,7 +118,9 @@ const features = [
 
         <div class="floating-card card-3">
           <div class="mini-stat">
-            <span class="mini-stat-icon">🎯</span>
+            <div class="mini-stat-icon">
+              <Target :size="UI.ICON_SIZE_LG" :stroke-width="UI.ICON_STROKE_WIDTH" />
+            </div>
             <div>
               <div class="mini-stat-value">18/25</div>
               <div class="mini-stat-label">Tasks Done</div>
@@ -170,7 +146,9 @@ const features = [
           class="feature-card"
           :style="{ animationDelay: `${index * 0.1}s` }"
         >
-          <div class="feature-icon">{{ feature.icon }}</div>
+          <div class="feature-icon">
+            <component :is="feature.icon" :size="UI.ICON_SIZE_XL" :stroke-width="UI.ICON_STROKE_WIDTH_THIN" />
+          </div>
           <h3 class="feature-title">{{ feature.title }}</h3>
           <p class="feature-description">{{ feature.description }}</p>
         </div>
@@ -407,7 +385,10 @@ const features = [
 }
 
 .mini-stat-icon {
-  font-size: $font-3xl;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: $color-primary-start;
 }
 
 .mini-stat-value {
@@ -443,8 +424,11 @@ const features = [
 // feature-card, feature-title, feature-description are now global classes
 
 .feature-icon {
-  font-size: $font-4xl;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   margin-bottom: $spacing-md;
+  color: $color-primary-start;
 }
 
 /* CTA Section */

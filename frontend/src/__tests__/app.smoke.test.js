@@ -23,7 +23,16 @@ test('renders app without crashing', async () => {
     const wrapper = mount(App, {
         global: {
             plugins: [pinia, router],
-            stubs: { RouterLink: RouterLinkStub },
+            stubs: {
+                RouterLink: RouterLinkStub,
+                // Stub Lucide icons to prevent warnings
+                LayoutGrid: { template: '<div />' },
+                CheckSquare: { template: '<div />' },
+                Info: { template: '<div />' },
+                UserCircle: { template: '<div />' },
+                AlertCircle: { template: '<div />' },
+                X: { template: '<div />' },
+            },
         },
     });
 

@@ -135,6 +135,17 @@
   outline-offset: 2px;
 }
 
+// Focus-visible: Only show focus ring for keyboard navigation
+@mixin focus-visible($color: $color-primary-start) {
+  &:focus {
+    outline: none;
+  }
+
+  &:focus-visible {
+    @include focus-ring($color);
+  }
+}
+
 // ===== Truncate Text =====
 @mixin truncate {
   overflow: hidden;

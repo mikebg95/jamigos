@@ -1,6 +1,7 @@
 <script setup>
 import keycloak from "../auth/keycloak";
 import { useUiStore } from "@/store/ui.js";
+import { UI } from '@/config/constants';
 
 const ui = useUiStore();
 
@@ -20,17 +21,39 @@ const signup = () => {
 
 <template>
   <div class="auth-buttons">
-    <router-link to="/profile" v-if="keycloak.authenticated" class="profile-link">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="12" r="10"></circle>
-        <circle cx="12" cy="10" r="3"></circle>
-        <path d="M7 20.662V19a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v1.662"></path>
-      </svg>
+    <router-link
+      to="/profile"
+      v-if="keycloak.authenticated"
+      class="profile-link"
+      :aria-label="`View profile for ${keycloak.tokenParsed?.preferred_username}`"
+    >
+      <UserCircle :size="UI.ICON_SIZE_SM" :stroke-width="UI.ICON_STROKE_WIDTH" aria-hidden="true" />
       <span class="username">{{ keycloak.tokenParsed?.preferred_username }}</span>
     </router-link>
-    <button v-if="!keycloak.authenticated" @click="login" class="btn-secondary">Log in</button>
-    <button v-if="!keycloak.authenticated" @click="signup" class="btn-primary">Sign Up</button>
-    <button v-else @click="logout" class="btn-primary">Log out</button>
+    <button
+      v-if="!keycloak.authenticated"
+      @click="login"
+      class="btn-secondary"
+      aria-label="Log in to your account"
+    >
+      Log in
+    </button>
+    <button
+      v-if="!keycloak.authenticated"
+      @click="signup"
+      class="btn-primary"
+      aria-label="Sign up for a new account"
+    >
+      Sign Up
+    </button>
+    <button
+      v-else
+      @click="logout"
+      class="btn-primary"
+      aria-label="Log out of your account"
+    >
+      Log out
+    </button>
   </div>
 </template>
 

@@ -1,78 +1,107 @@
 <script setup>
-import { ref, onMounted } from 'vue'
-import ItemService from "@/service/ItemService.js";
+import { ref, onMounted } from 'vue';
+import ItemService from '@/service/ItemService.js';
+import { VALIDATION } from '@/config/constants';
+import { useItemOperations } from '@/composables/useItemOperations.js';
+import ErrorAlert from '@/components/ErrorAlertComponent.vue';
+import SkeletonLoader from '@/components/SkeletonLoaderComponent.vue';
 
-const items = ref([])
-const newItem = ref('')
-const error = ref('')
+// Use composable for item operations
+const { items, error, loading, loadItems, deleteItem } = useItemOperations();
 
-async function loadItems() {
-  error.value = ''
-  try {
-    items.value = await ItemService.getItems()
-  } catch (e) {
-    error.value = e.message || 'Failed to load'
-  }
-}
+const newItem = ref('');
+const MAX_ITEM_LENGTH = VALIDATION.MAX_TASK_LENGTH;
 
 async function addItem() {
-  const text = newItem.value.toString().trim()
-  if (!text) return
+  const text = newItem.value.toString().trim();
+
+  // Input validation
+  if (!text) {
+    error.value = 'Please enter a task description.';
+    return;
+  }
+
+  if (text.length > MAX_ITEM_LENGTH) {
+    error.value = `Task description is too long (maximum ${MAX_ITEM_LENGTH} characters).`;
+    return;
+  }
+
   try {
-    await ItemService.addItem(text)   // create on server
-    await loadItems()                 // then refresh the list
-    newItem.value = ''
+    await ItemService.addItem(text);
+    await loadItems();
+    newItem.value = '';
+    error.value = ''; // Clear error on success
   } catch (e) {
-    error.value = e.message || 'Failed to add'
+    if (e.message.includes('timeout')) {
+      error.value = 'Request timed out. Please try adding the item again.';
+    } else if (e.message.includes('403')) {
+      error.value = "You don't have permission to add items.";
+    } else {
+      error.value = 'Failed to add item. Please try again.';
+    }
+    if (import.meta.env.DEV) {
+      console.error('Add item error:', e);
+    }
   }
 }
 
-async function deleteItem(id) {
-  try {
-    await ItemService.deleteItem(id)
-    await loadItems()
-    // items.value = items.value.filter(i => i.id !== id)
-  } catch (e) {
-    error.value = e.message || 'Failed to delete'
-  }
-}
-
-onMounted(loadItems)
+onMounted(loadItems);
 </script>
 
 <template>
   <div class="page">
     <div class="container">
-      <h1>Items</h1>
+      <h1>Tasks</h1>
 
-      <div v-if="!items.length">No items yet</div>
+      <!-- Loading state -->
+      <div v-if="loading" class="loading-state">
+        <SkeletonLoader type="list" :count="3" />
+      </div>
 
-      <ul v-else>
-        <li v-for="item in items" :key="item.id">
-          <div>
-            <span>{{ item.text }}</span>
-            <span><button @click="deleteItem(item.id)">DELETE</button></span>
-          </div>
+      <!-- Empty state -->
+      <div v-else-if="!items.length && !error" class="empty-state">
+        <p>No tasks yet. Add one below to get started!</p>
+      </div>
+
+      <!-- Items list -->
+      <ul v-else-if="items.length" role="list" aria-label="Your tasks">
+        <li v-for="item in items" :key="item.id" class="task-item">
+          <span class="task-text">{{ item.text }}</span>
+          <button
+            @click="deleteItem(item.id)"
+            class="delete-btn"
+            :aria-label="`Delete task: ${item.text}`"
+          >
+            DELETE
+          </button>
         </li>
       </ul>
 
-      <div class="add-row">
+      <!-- Add new item form -->
+      <form @submit.prevent="addItem" class="add-form" aria-label="Add new task">
+        <label for="new-task" class="sr-only">New task description</label>
         <input
-            v-model="newItem"
-            type="text"
-            placeholder="Add a new item"
-            autocomplete="off"
-            @keyup.enter="addItem"
+          id="new-task"
+          v-model="newItem"
+          type="text"
+          :placeholder="`Add a new task (max ${MAX_ITEM_LENGTH} characters)`"
+          autocomplete="off"
+          :maxlength="MAX_ITEM_LENGTH"
+          :aria-invalid="error && !loading ? 'true' : 'false'"
+          :aria-describedby="error ? 'error-message' : undefined"
         />
-        <button type="button" @click="addItem">Add</button>
-      </div>
+        <button type="submit" aria-label="Add task">Add</button>
+      </form>
 
-      <p v-if="error" class="error">{{ error }}</p>
+      <!-- Error message -->
+      <ErrorAlert
+        v-if="error"
+        id="error-message"
+        :message="error"
+        @dismiss="error = ''"
+      />
     </div>
   </div>
 </template>
 
 
-<style scoped>
-
-</style>

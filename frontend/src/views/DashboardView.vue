@@ -18,6 +18,3 @@ const isAdmin = computed(() => user.hasRole("ADMIN_ROLE"));
 </div>
 </template>
 
-<style scoped>
-
-</style>

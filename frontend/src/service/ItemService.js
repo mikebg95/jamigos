@@ -1,6 +1,6 @@
 import { apiFetch } from './http';
 
-const apiPath = 'api/items';
+const apiPath = '/api/items';
 
 export default {
     getItems() {
