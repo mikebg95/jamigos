@@ -1,0 +1,102 @@
+@use '../variables' as *;
+@use '../mixins' as *;
+
+// ===== Container =====
+.container {
+  @include container;
+}
+
+// Page wrapper - provides consistent padding for all pages
+.page {
+  min-height: calc(100vh - 80px); // Account for navbar
+  padding: $spacing-4xl $spacing-xl;
+
+  @include respond-to(md) {
+    padding: $spacing-3xl $spacing-md;
+    min-height: calc(100vh - 60px - 80px); // Account for navbar and bottom nav on mobile
+  }
+
+  @include respond-to(sm) {
+    padding: $spacing-2xl $spacing-md;
+  }
+}
+
+// Section with max-width and auto margin
+.section {
+  @include container;
+  padding-top: $spacing-4xl;
+  padding-bottom: $spacing-4xl;
+
+  @include respond-to(md) {
+    padding-top: $spacing-3xl;
+    padding-bottom: $spacing-3xl;
+  }
+}
+
+// ===== Grid Utilities =====
+.grid {
+  display: grid;
+  gap: $spacing-xl;
+
+  &.grid-2 {
+    grid-template-columns: repeat(2, 1fr);
+
+    @include respond-to(md) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  &.grid-3 {
+    grid-template-columns: repeat(3, 1fr);
+
+    @include respond-to(lg) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    @include respond-to(md) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  &.grid-4 {
+    grid-template-columns: repeat(4, 1fr);
+
+    @include respond-to(xl) {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    @include respond-to(lg) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    @include respond-to(md) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  &.grid-auto-fit {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  }
+}
+
+// ===== Flex Utilities =====
+.flex {
+  display: flex;
+  gap: $spacing-md;
+
+  &.flex-center {
+    @include flex-center;
+  }
+
+  &.flex-between {
+    @include flex-between;
+  }
+
+  &.flex-column {
+    @include flex-column;
+  }
+
+  &.flex-wrap {
+    flex-wrap: wrap;
+  }
+}

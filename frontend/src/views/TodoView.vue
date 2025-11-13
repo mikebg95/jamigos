@@ -41,33 +41,35 @@ onMounted(loadItems)
 </script>
 
 <template>
-  <main class="container">
-    <h1>Items</h1>
+  <div class="page">
+    <div class="container">
+      <h1>Items</h1>
 
-    <div v-if="!items.length">No items yet</div>
+      <div v-if="!items.length">No items yet</div>
 
-    <ul v-else>
-      <li v-for="item in items" :key="item.id">
-        <div>
-          <span>{{ item.text }}</span>
-          <span><button @click="deleteItem(item.id)">DELETE</button></span>
-        </div>
-      </li>
-    </ul>
+      <ul v-else>
+        <li v-for="item in items" :key="item.id">
+          <div>
+            <span>{{ item.text }}</span>
+            <span><button @click="deleteItem(item.id)">DELETE</button></span>
+          </div>
+        </li>
+      </ul>
 
-    <div class="add-row">
-      <input
-          v-model="newItem"
-          type="text"
-          placeholder="Add a new item"
-          autocomplete="off"
-          @keyup.enter="addItem"
-      />
-      <button type="button" @click="addItem">Add</button>
+      <div class="add-row">
+        <input
+            v-model="newItem"
+            type="text"
+            placeholder="Add a new item"
+            autocomplete="off"
+            @keyup.enter="addItem"
+        />
+        <button type="button" @click="addItem">Add</button>
+      </div>
+
+      <p v-if="error" class="error">{{ error }}</p>
     </div>
-
-    <p v-if="error" class="error">{{ error }}</p>
-  </main>
+  </div>
 </template>
 
 

@@ -1,7 +1,26 @@
+// Import order is important!
+// 1. Variables and mixins first (no output)
 @use "variables";
 @use "mixins";
-@use "base/reset";
-@use "components/navbar";
 
+// 2. Base styles (reset, typography, layout, animations)
+@use "base/reset";
+@use "base/typography";
+@use "base/layout";
+@use "base/animations";
+
+// 3. Components (navbar, buttons, cards, etc.)
+@use "components/navbar";
+@use "components/buttons";
+@use "components/cards";
+
+// 4. App-specific styles
 #app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+
+  @media (max-width: 768px) {
+    padding-bottom: 80px; // Add space for bottom navigation on mobile
+  }
 }

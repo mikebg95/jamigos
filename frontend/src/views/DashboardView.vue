@@ -10,9 +10,11 @@ const isAdmin = computed(() => user.hasRole("ADMIN_ROLE"));
 </script>
 
 <template>
-<div class="container">
-  <DashboardAdminView v-if="isAdmin" />
-  <DashboardUserView v-else />
+<div class="page">
+  <div class="container">
+    <DashboardAdminView v-if="isAdmin" />
+    <DashboardUserView v-else />
+  </div>
 </div>
 </template>
 

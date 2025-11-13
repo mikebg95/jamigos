@@ -1,0 +1,79 @@
+@use '../variables' as *;
+@use '../mixins' as *;
+
+// ===== Base Card =====
+.card {
+  @include glass;
+  border-radius: $radius-xl;
+  padding: $spacing-xl;
+  transition: all $transition-base;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: $border-accent;
+  }
+}
+
+// ===== Card Variants =====
+.card-hover-lift {
+  @include hover-lift(-8px, 0 20px 40px rgba(0, 0, 0, 0.3));
+}
+
+.card-glass-strong {
+  @include glass(0.08, 30px);
+}
+
+// ===== Floating Card (for hero animations) =====
+.floating-card {
+  @include glass;
+  border-radius: $radius-xl;
+  padding: $spacing-lg;
+  box-shadow: $shadow-2xl;
+  animation: float 6s ease-in-out infinite;
+}
+
+// ===== Feature Card =====
+.feature-card {
+  @include glass(0.03);
+  border-radius: $radius-xl;
+  padding: $spacing-xl;
+  transition: all $transition-base;
+  animation: fadeInUp 0.6s ease-out both;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: $border-accent;
+    transform: translateY(-8px);
+    box-shadow: $shadow-2xl;
+  }
+}
+
+// ===== CTA Card =====
+.cta-card {
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+  border: 1px solid $border-accent;
+  border-radius: $radius-2xl;
+  padding: $spacing-4xl $spacing-xl;
+  text-align: center;
+}
+
+// ===== Card Elements =====
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $spacing-md;
+}
+
+.card-body {
+  padding: $spacing-md 0;
+}
+
+.card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: $spacing-md;
+  padding-top: $spacing-md;
+  border-top: 1px solid $border-light;
+}

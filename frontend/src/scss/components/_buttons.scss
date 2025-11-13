@@ -1,0 +1,135 @@
+@use '../variables' as *;
+@use '../mixins' as *;
+
+// ===== Base Button =====
+.btn {
+  padding: $spacing-md $spacing-xl;
+  border: none;
+  border-radius: $radius-lg;
+  font-size: $font-base;
+  font-weight: $font-semibold;
+  cursor: pointer;
+  transition: all $transition-base;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-sm;
+  position: relative;
+  overflow: hidden;
+  white-space: nowrap;
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  // Shimmer effect on hover
+  @include shimmer-effect;
+
+  // Sizes
+  &.btn-small {
+    padding: $spacing-sm $spacing-md;
+    font-size: $font-sm;
+  }
+
+  &.btn-large {
+    padding: $spacing-lg $spacing-2xl;
+    font-size: $font-lg;
+  }
+
+  // Full width
+  &.btn-block {
+    width: 100%;
+  }
+}
+
+// ===== Button Variants =====
+.btn-primary {
+  @include gradient-primary;
+  color: white;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: $shadow-glow;
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+.btn-secondary {
+  background: $surface-overlay-medium;
+  color: white;
+  border: 1px solid $border-medium;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.15);
+    transform: translateY(-2px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+.btn-outline {
+  background: transparent;
+  color: white;
+  border: 1px solid $border-medium;
+
+  &:hover {
+    background: $surface-overlay-light;
+    border-color: $color-primary-start;
+  }
+}
+
+.btn-ghost {
+  background: transparent;
+  color: $text-secondary;
+
+  &:hover {
+    background: $surface-overlay-light;
+    color: $text-primary;
+  }
+}
+
+.btn-success {
+  background: $color-success;
+  color: white;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 40px rgba($color-success, 0.4);
+  }
+}
+
+.btn-error {
+  background: $color-error;
+  color: white;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 40px rgba($color-error, 0.4);
+  }
+}
+
+// ===== Button Arrow Animation =====
+.btn-arrow {
+  transition: transform $transition-base;
+}
+
+.btn:hover .btn-arrow {
+  transform: translateX(4px);
+}
+
+// ===== Button Group =====
+.btn-group {
+  display: flex;
+  gap: $spacing-md;
+
+  @include respond-to(sm) {
+    flex-direction: column;
+  }
+}

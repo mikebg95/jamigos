@@ -1,4 +1,4 @@
-# CLAUDE.md - Frontend
+ok # CLAUDE.md - Frontend
 
 This file provides guidance to Claude Code (claude.ai/code) when working with the Vue 3 frontend codebase.
 

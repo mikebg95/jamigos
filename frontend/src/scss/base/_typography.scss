@@ -1,0 +1,183 @@
+@use '../variables' as *;
+@use '../mixins' as *;
+
+// ===== Headings =====
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+  font-weight: $font-bold;
+  line-height: 1.2;
+  color: $text-primary;
+}
+
+h1 {
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  font-weight: $font-extrabold;
+}
+
+h2 {
+  font-size: clamp(2rem, 4vw, 3rem);
+}
+
+h3 {
+  font-size: clamp(1.5rem, 3vw, 2rem);
+}
+
+h4 {
+  font-size: $font-2xl;
+}
+
+h5 {
+  font-size: $font-xl;
+}
+
+h6 {
+  font-size: $font-lg;
+}
+
+// ===== Paragraphs =====
+p {
+  margin: 0;
+  line-height: 1.7;
+  color: $text-secondary;
+}
+
+// ===== Utility Classes =====
+
+// Gradient text
+.gradient-text {
+  @include gradient-text-extended;
+  display: inline-block;
+}
+
+// Section title (used in features, etc.)
+.section-title {
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: $font-bold;
+  margin-bottom: $spacing-md;
+  color: $text-primary;
+}
+
+.section-description {
+  font-size: $font-xl;
+  color: $text-secondary;
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.7;
+}
+
+// Hero title
+.hero-title {
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  font-weight: $font-extrabold;
+  line-height: 1.1;
+  margin-bottom: $spacing-lg;
+  animation: fadeInUp 0.6s ease-out 0.1s both;
+}
+
+.hero-description {
+  font-size: $font-xl;
+  line-height: 1.8;
+  color: $text-secondary;
+  margin-bottom: $spacing-2xl;
+  max-width: 600px;
+  animation: fadeInUp 0.6s ease-out 0.2s both;
+}
+
+// Feature title
+.feature-title {
+  font-size: $font-2xl;
+  font-weight: $font-semibold;
+  margin-bottom: $spacing-sm;
+  color: $text-primary;
+}
+
+.feature-description {
+  color: $text-secondary;
+  line-height: 1.7;
+}
+
+// CTA title
+.cta-title {
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: $font-bold;
+  margin-bottom: $spacing-md;
+  color: $text-primary;
+}
+
+.cta-description {
+  font-size: $font-xl;
+  color: $text-secondary;
+  margin-bottom: $spacing-2xl;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+// Text colors
+.text-primary {
+  color: $text-primary;
+}
+
+.text-secondary {
+  color: $text-secondary;
+}
+
+.text-muted {
+  color: $text-muted;
+}
+
+.text-faint {
+  color: $text-faint;
+}
+
+// Text alignment
+.text-center {
+  text-align: center;
+}
+
+.text-left {
+  text-align: left;
+}
+
+.text-right {
+  text-align: right;
+}
+
+// Font weights
+.font-normal {
+  font-weight: $font-normal;
+}
+
+.font-medium {
+  font-weight: $font-medium;
+}
+
+.font-semibold {
+  font-weight: $font-semibold;
+}
+
+.font-bold {
+  font-weight: $font-bold;
+}
+
+.font-extrabold {
+  font-weight: $font-extrabold;
+}
+
+// Line clamping
+.line-clamp-1 {
+  @include line-clamp(1);
+}
+
+.line-clamp-2 {
+  @include line-clamp(2);
+}
+
+.line-clamp-3 {
+  @include line-clamp(3);
+}
+
+// Truncate
+.truncate {
+  @include truncate;
+}

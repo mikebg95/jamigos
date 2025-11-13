@@ -29,19 +29,21 @@ onMounted(getAllItems);
 </script>
 
 <template>
-  <div class="information">
-    <h1>Information</h1>
+  <div class="page">
+    <div class="container">
+      <h1>Information</h1>
 
-    <!-- render list -->
-    <ul>
-      <li v-for="item in items" :key="item.id">
-        <span>{{ item.text }}</span>
-        <span><button @click="deleteItem(item.id)">DELETE</button></span>
-      </li>
-    </ul>
+      <!-- render list -->
+      <ul>
+        <li v-for="item in items" :key="item.id">
+          <span>{{ item.text }}</span>
+          <span><button @click="deleteItem(item.id)">DELETE</button></span>
+        </li>
+      </ul>
+
+      <p v-if="error" class="error">{{ error }}</p>
+    </div>
   </div>
-
-  <p v-if="error" class="error">{{ error }}</p>
 </template>
 
 <style scoped>

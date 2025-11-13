@@ -1,37 +1,209 @@
-nav {
+.navbar {
   position: sticky;
   top: 0;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: white;
-  padding: 8px 16px;
-  border-bottom: 1px solid black;
+  background: rgba(10, 10, 15, 0.8);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   z-index: 1000;
+  padding: 0.75rem 0;
 
-  a {
-    color: inherit;
-    text-decoration: none;
+  @media (max-width: 768px) {
+    padding: 0.5rem 0;
+  }
+}
 
-    &:hover {
-      text-decoration: underline;
+.navbar-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  display: flex;
+  align-items: center;
+  gap: 0; // Remove gap, we'll handle spacing individually
+
+  @media (max-width: 768px) {
+    padding: 0 1rem;
+  }
+}
+
+/* Logo */
+.navbar-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  text-decoration: none;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:hover {
+    transform: translateY(-2px);
+
+    .logo-icon {
+      transform: rotate(5deg);
+    }
+  }
+}
+
+.logo-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  @media (max-width: 480px) {
+    svg {
+      width: 28px;
+      height: 28px;
+    }
+  }
+}
+
+.logo-text {
+  font-size: 1.5rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -0.5px;
+
+  @media (max-width: 768px) {
+    font-size: 1.25rem;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 1.125rem;
+  }
+}
+
+/* Navigation Links */
+.navbar-links {
+  display: flex;
+  gap: 0.5rem;
+  margin-left: 1.5rem; // Small space between logo and nav links
+
+  @media (max-width: 768px) {
+    display: none; // Hide on mobile, use bottom nav instead
+  }
+}
+
+.nav-link {
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: none;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 0.95rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+
+  &:hover {
+    color: white;
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  &.router-link-active,
+  &.router-link-exact-active {
+    color: white;
+    background: rgba(102, 126, 234, 0.15);
+
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60%;
+      height: 2px;
+      background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+      border-radius: 2px;
     }
   }
 
-  .router-link-active,
-  .router-link-exact-active {
-    font-weight: 600;
-    pointer-events: none;
-    cursor: default;
+  @media (max-width: 640px) {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
   }
+}
 
-  .auth {
+/* Auth Buttons */
+.navbar-auth {
+  margin-left: auto; // Push auth buttons to the right
+
+  @media (max-width: 768px) {
     margin-left: auto;
   }
+}
 
-  button {
-    cursor: pointer;
-    padding: 8px;
-    border: 1px solid black;
+/* Mobile Bottom Navigation */
+.bottom-nav {
+  display: none; // Hidden by default on desktop
+
+  @media (max-width: 768px) {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(10, 10, 15, 0.95);
+    backdrop-filter: blur(20px);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 0.5rem 0 calc(0.5rem + env(safe-area-inset-bottom));
+    z-index: 1000;
+    justify-content: space-around;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
   }
+}
+
+.bottom-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  padding: 0.5rem 1rem;
+  color: rgba(255, 255, 255, 0.6);
+  text-decoration: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  min-width: 60px;
+  border-radius: 12px;
+
+  svg {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+
+  &.router-link-active,
+  &.router-link-exact-active {
+    color: white;
+
+    svg {
+      filter: drop-shadow(0 0 8px rgba(102, 126, 234, 0.6));
+      stroke: url(#gradient);
+    }
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 40px;
+      height: 3px;
+      background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+      border-radius: 0 0 3px 3px;
+    }
+
+    .bottom-nav-label {
+      font-weight: 600;
+    }
+  }
+}
+
+.bottom-nav-label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
