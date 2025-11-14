@@ -1,5 +1,4 @@
-/* global it, jest */
-
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import {
     deduplicateRequest,
     clearRequestCache,
@@ -12,7 +11,7 @@ describe('requestCache', () => {
     });
 
     it('deduplicates in-flight requests with the same URL, method and body', async () => {
-        const fetchFn = jest.fn(() => Promise.resolve('ok'));
+        const fetchFn = vi.fn(() => Promise.resolve('ok'));
 
         const p1 = deduplicateRequest('/api/test', { method: 'GET' }, fetchFn);
         const p2 = deduplicateRequest('/api/test', { method: 'GET' }, fetchFn);
@@ -28,8 +27,8 @@ describe('requestCache', () => {
     });
 
     it('treats different request keys as separate requests', async () => {
-        const fetchFn1 = jest.fn(() => Promise.resolve('one'));
-        const fetchFn2 = jest.fn(() => Promise.resolve('two'));
+        const fetchFn1 = vi.fn(() => Promise.resolve('one'));
+        const fetchFn2 = vi.fn(() => Promise.resolve('two'));
 
         const p1 = deduplicateRequest('/api/one', { method: 'GET' }, fetchFn1);
         const p2 = deduplicateRequest('/api/two', { method: 'GET' }, fetchFn2);
@@ -44,8 +43,8 @@ describe('requestCache', () => {
     });
 
     it('removes failed requests from the cache so they can be retried', async () => {
-        const failingFetch = jest.fn(() => Promise.reject('fail'));
-        const successfulFetch = jest.fn(() => Promise.resolve('success'));
+        const failingFetch = vi.fn(() => Promise.reject('fail'));
+        const successfulFetch = vi.fn(() => Promise.resolve('success'));
 
         const p1 = deduplicateRequest('/api/fail', { method: 'GET' }, failingFetch);
 
@@ -64,7 +63,7 @@ describe('requestCache', () => {
 
     it('tracks the number of pending requests', async () => {
         let resolveFn;
-        const fetchFn = jest.fn(
+        const fetchFn = vi.fn(
             () =>
                 new Promise((resolve) => {
                     resolveFn = resolve;
