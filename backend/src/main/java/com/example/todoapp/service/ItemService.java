@@ -38,5 +38,4 @@ public class ItemService {
     public List<Item> getAllItemsForAdmin() {
         return itemRepository.findAll();
     }
-
 }
