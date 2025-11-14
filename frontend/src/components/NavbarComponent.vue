@@ -1,5 +1,6 @@
 <script setup>
 import AuthButtons from "@/components/AuthButtonsComponent.vue";
+import ThemeToggle from "@/components/ThemeToggle.vue";
 import { useUserStore } from "@/store/user.js";
 import { UI } from '@/config/constants';
 
@@ -45,8 +46,11 @@ const store = useUserStore();
         </router-link>
       </nav>
 
-      <!-- Auth Buttons -->
-      <AuthButtons class="navbar-auth" />
+      <!-- Theme Toggle & Auth Buttons -->
+      <div class="navbar-actions">
+        <ThemeToggle />
+        <AuthButtons />
+      </div>
     </div>
   </nav>
 
@@ -80,14 +84,15 @@ const store = useUserStore();
 .navbar {
   position: sticky;
   top: 0;
-  background: rgba(10, 10, 15, 0.8);
+  background: var(--ds-color-surface);
   backdrop-filter: blur(20px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid var(--ds-color-divider);
+  box-shadow: var(--ds-shadow-soft);
   z-index: $z-sticky;
-  padding: 0.75rem 0;
+  padding: var(--ds-spacing-md) 0;
 
   @media (max-width: $breakpoint-md) {
-    padding: 0.5rem 0;
+    padding: var(--ds-spacing-sm) 0;
   }
 }
 
@@ -136,28 +141,28 @@ const store = useUserStore();
 }
 
 .logo-text {
-  font-size: $font-2xl;
-  font-weight: $font-bold;
-  background: linear-gradient(135deg, $color-primary-start 0%, $color-primary-mid 100%);
+  font-size: var(--ds-font-size-2xl);
+  font-weight: var(--ds-font-weight-bold);
+  background: linear-gradient(135deg, var(--ds-color-primary) 0%, var(--ds-color-secondary) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   letter-spacing: -0.5px;
 
   @media (max-width: $breakpoint-md) {
-    font-size: $font-xl;
+    font-size: var(--ds-font-size-xl);
   }
 
   @media (max-width: $breakpoint-sm) {
-    font-size: $font-lg;
+    font-size: var(--ds-font-size-lg);
   }
 }
 
 /* Navigation Links */
 .navbar-links {
   display: flex;
-  gap: $spacing-sm;
-  margin-left: $spacing-lg;
+  gap: var(--ds-spacing-sm);
+  margin-left: var(--ds-spacing-lg);
 
   @media (max-width: $breakpoint-md) {
     display: none;
@@ -165,24 +170,24 @@ const store = useUserStore();
 }
 
 .nav-link {
-  color: $text-secondary;
+  color: var(--ds-color-text-secondary);
   text-decoration: none;
-  padding: $spacing-sm $spacing-md;
-  border-radius: $radius-md;
-  font-weight: $font-medium;
-  font-size: $font-base;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: var(--ds-spacing-sm) var(--ds-spacing-base);
+  border-radius: var(--ds-radius-lg);
+  font-weight: var(--ds-font-weight-medium);
+  font-size: var(--ds-font-size-base);
+  transition: all var(--ds-duration-normal) var(--ds-ease-emphasized);
   position: relative;
 
   &:hover {
-    color: $text-primary;
-    background: $surface-overlay-light;
+    color: var(--ds-color-text-primary);
+    background: var(--ds-color-surface-subtle);
   }
 
   &.router-link-active,
   &.router-link-exact-active {
-    color: $text-primary;
-    background: rgba($color-primary-start, 0.15);
+    color: var(--ds-color-text-primary);
+    background: rgba(249, 165, 72, 0.15);
 
     &::after {
       content: '';
@@ -192,15 +197,18 @@ const store = useUserStore();
       transform: translateX(-50%);
       width: 60%;
       height: 2px;
-      background: linear-gradient(90deg, $color-primary-start 0%, $color-primary-mid 100%);
-      border-radius: $radius-xs;
+      background: linear-gradient(90deg, var(--ds-color-primary) 0%, var(--ds-color-secondary) 100%);
+      border-radius: var(--ds-radius-sm);
     }
   }
 }
 
-/* Auth Buttons */
-.navbar-auth {
+/* Actions (Theme Toggle + Auth Buttons) */
+.navbar-actions {
   margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: var(--ds-spacing-md);
 }
 
 /* Mobile Bottom Navigation */
@@ -213,13 +221,13 @@ const store = useUserStore();
     bottom: 0;
     left: 0;
     right: 0;
-    background: rgba(10, 10, 15, 0.95);
+    background: var(--ds-color-surface);
     backdrop-filter: blur(20px);
-    border-top: 1px solid $border-light;
-    padding: $spacing-sm 0 calc(#{$spacing-sm} + env(safe-area-inset-bottom));
+    border-top: 1px solid var(--ds-color-divider);
+    padding: var(--ds-spacing-sm) 0 calc(#{var(--ds-spacing-sm)} + env(safe-area-inset-bottom));
     z-index: $z-sticky;
     justify-content: space-around;
-    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
+    box-shadow: var(--ds-shadow-medium);
   }
 }
 
@@ -228,17 +236,17 @@ const store = useUserStore();
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: $spacing-xs;
-  padding: $spacing-sm $spacing-md;
-  color: $text-faint;
+  gap: var(--ds-spacing-xs);
+  padding: var(--ds-spacing-sm) var(--ds-spacing-md);
+  color: var(--ds-color-text-tertiary);
   text-decoration: none;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all var(--ds-duration-normal) var(--ds-ease-emphasized);
   position: relative;
   min-width: 60px;
-  border-radius: $radius-lg;
+  border-radius: var(--ds-radius-lg);
 
   :deep(svg) {
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all var(--ds-duration-normal) var(--ds-ease-emphasized);
   }
 
   &:active {
@@ -247,10 +255,10 @@ const store = useUserStore();
 
   &.router-link-active,
   &.router-link-exact-active {
-    color: $text-primary;
+    color: var(--ds-color-text-primary);
 
     :deep(svg) {
-      filter: drop-shadow(0 0 8px rgba($color-primary-start, 0.6));
+      filter: drop-shadow(0 0 8px var(--ds-color-primary));
     }
 
     &::before {
@@ -261,19 +269,19 @@ const store = useUserStore();
       transform: translateX(-50%);
       width: 40px;
       height: 3px;
-      background: linear-gradient(90deg, $color-primary-start 0%, $color-primary-mid 100%);
-      border-radius: 0 0 $radius-xs $radius-xs;
+      background: linear-gradient(90deg, var(--ds-color-primary) 0%, var(--ds-color-secondary) 100%);
+      border-radius: 0 0 var(--ds-radius-sm) var(--ds-radius-sm);
     }
 
     .bottom-nav-label {
-      font-weight: $font-semibold;
+      font-weight: var(--ds-font-weight-semibold);
     }
   }
 }
 
 .bottom-nav-label {
-  font-size: $font-xs;
-  font-weight: $font-medium;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: var(--ds-font-size-xs);
+  font-weight: var(--ds-font-weight-medium);
+  transition: all var(--ds-duration-normal) var(--ds-ease-emphasized);
 }
 </style>

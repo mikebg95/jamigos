@@ -1,0 +1,20 @@
+// ============================================
+// DESIGN SYSTEM - MAIN INDEX
+// ============================================
+// Import this file to get the complete design system
+
+// 1. Theme (CSS variables) - must come first
+@forward 'theme';
+
+// 2. Mixins
+@forward 'mixins';
+
+// 3. Component styles
+@forward 'components/button';
+@forward 'components/input';
+@forward 'components/card';
+@forward 'components/badge';
+@forward 'components/chip';
+@forward 'components/tabs';
+@forward 'components/spinner';
+@forward 'components/modal';

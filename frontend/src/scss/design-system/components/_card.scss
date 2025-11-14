@@ -1,0 +1,179 @@
+// ============================================
+// DESIGN SYSTEM - CARD COMPONENT
+// ============================================
+
+@use '../theme' as *;
+@use '../mixins' as *;
+
+// ============================================
+// BASE CARD
+// ============================================
+
+.ds-card {
+  // Layout
+  display: flex;
+  flex-direction: column;
+
+  // Sizing
+  padding: ds-spacing('xl');
+
+  // Visual
+  background: ds-color('surface');
+  border: 1px solid ds-color('border-subtle');
+  border-radius: ds-radius('xl');
+  @include ds-shadow-soft;
+
+  // Transitions
+  @include ds-transition((border-color, box-shadow, transform));
+}
+
+// ============================================
+// CARD VARIANTS
+// ============================================
+
+// Elevated card (more prominent shadow)
+.ds-card-elevated {
+  @include ds-shadow-elevated;
+
+  &:hover {
+    @include ds-shadow-high;
+  }
+}
+
+// Interactive card (hover effects)
+.ds-card-interactive {
+  cursor: pointer;
+
+  &:hover {
+    border-color: ds-color('primary');
+    transform: translateY(-4px);
+    @include ds-shadow-elevated;
+  }
+
+  &:active {
+    transform: translateY(-2px);
+  }
+}
+
+// Subtle card (minimal styling)
+.ds-card-subtle {
+  background: ds-color('surface-subtle');
+  border: none;
+  box-shadow: none;
+}
+
+// Bordered card (emphasis on border)
+.ds-card-bordered {
+  border-width: 2px;
+  border-color: ds-color('divider');
+  box-shadow: none;
+}
+
+// Gradient border card (accent)
+.ds-card-gradient-border {
+  position: relative;
+  background: ds-color('surface');
+  border: none;
+
+  &::before {
+    content: '';
+    @include ds-full-coverage;
+    border-radius: ds-radius('xl');
+    padding: 2px;
+    background: linear-gradient(135deg, ds-color('primary'), ds-color('secondary'));
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+}
+
+// ============================================
+// CARD SIZES
+// ============================================
+
+.ds-card-sm {
+  padding: ds-spacing('base');
+}
+
+.ds-card-lg {
+  padding: ds-spacing('2xl');
+}
+
+// ============================================
+// CARD ELEMENTS
+// ============================================
+
+.ds-card-header {
+  @include ds-flex-between;
+  margin-bottom: ds-spacing('lg');
+
+  &.ds-card-header-column {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: ds-spacing('sm');
+  }
+}
+
+.ds-card-title {
+  font-size: ds-font-size('xl');
+  font-weight: ds-font-weight('bold');
+  color: ds-color('text-primary');
+  margin: 0;
+}
+
+.ds-card-subtitle {
+  font-size: ds-font-size('sm');
+  color: ds-color('text-secondary');
+  margin: ds-spacing('xs') 0 0;
+}
+
+.ds-card-body {
+  flex: 1;
+  color: ds-color('text-secondary');
+  line-height: var(--ds-line-height-relaxed);
+}
+
+.ds-card-footer {
+  @include ds-flex-between;
+  margin-top: ds-spacing('lg');
+  padding-top: ds-spacing('lg');
+  border-top: 1px solid ds-color('divider');
+
+  &.ds-card-footer-column {
+    flex-direction: column;
+    gap: ds-spacing('sm');
+  }
+}
+
+// ============================================
+// CARD IMAGE
+// ============================================
+
+.ds-card-image {
+  width: 100%;
+  height: auto;
+  border-radius: ds-radius('lg');
+  margin-bottom: ds-spacing('lg');
+
+  &.ds-card-image-cover {
+    object-fit: cover;
+    height: 200px;
+  }
+}
+
+// ============================================
+// CARD GRID/GROUP
+// ============================================
+
+.ds-card-grid {
+  display: grid;
+  gap: ds-spacing('xl');
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+}
+
+.ds-card-group {
+  display: flex;
+  flex-direction: column;
+  gap: ds-spacing('lg');
+}

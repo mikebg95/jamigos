@@ -1,126 +1,123 @@
 @use '../variables' as *;
 @use '../mixins' as *;
+@use '../design-system/theme' as ds;
+@use '../design-system/mixins' as ds-mix;
 
-// ===== Base Button =====
+// ===== Base Button (Updated with Design System) =====
 .btn {
-  padding: $spacing-md $spacing-xl;
+  padding: ds.ds-spacing('md') ds.ds-spacing('xl');
   border: none;
-  border-radius: $radius-lg;
-  font-size: $font-base;
-  font-weight: $font-semibold;
+  border-radius: ds.ds-radius('lg');
+  font-size: ds.ds-font-size('base');
+  font-weight: ds.ds-font-weight('semibold');
   cursor: pointer;
-  transition: all $transition-base;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: $spacing-sm;
+  gap: ds.ds-spacing('sm');
   position: relative;
   overflow: hidden;
   white-space: nowrap;
 
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    pointer-events: none;
-  }
-
-  // Shimmer effect on hover
-  @include shimmer-effect;
+  @include ds-mix.ds-transition;
+  @include ds-mix.ds-focus-visible;
+  @include ds-mix.ds-disabled;
 
   // Sizes
   &.btn-small {
-    padding: $spacing-sm $spacing-md;
-    font-size: $font-sm;
+    padding: ds.ds-spacing('sm') ds.ds-spacing('base');
+    font-size: ds.ds-font-size('sm');
   }
 
   &.btn-large {
-    padding: $spacing-lg $spacing-2xl;
-    font-size: $font-lg;
+    padding: ds.ds-spacing('lg') ds.ds-spacing('2xl');
+    font-size: ds.ds-font-size('lg');
   }
 
   // Full width
   &.btn-block {
     width: 100%;
   }
-
-  // Keyboard accessibility
-  @include focus-visible;
 }
 
-// ===== Button Variants =====
+// ===== Button Variants (Updated with Design System Colors) =====
 .btn-primary {
-  @include gradient-primary;
-  color: white;
+  background: ds.ds-color('primary');
+  color: ds.ds-color('inverse-text');
+  @include ds-mix.ds-shadow-soft;
 
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: $shadow-glow;
+  &:hover:not(:disabled) {
+    background: ds.ds-color('primary-dark');
+    @include ds-mix.ds-hover-glow('primary');
   }
 
-  &:active {
+  &:active:not(:disabled) {
     transform: translateY(0);
   }
 }
 
 .btn-secondary {
-  background: $surface-overlay-medium;
-  color: white;
-  border: 1px solid $border-medium;
+  background: ds.ds-color('secondary');
+  color: ds.ds-color('inverse-text');
+  @include ds-mix.ds-shadow-soft;
 
-  &:hover {
-    background: rgba(255, 255, 255, 0.15);
-    transform: translateY(-2px);
+  &:hover:not(:disabled) {
+    background: ds.ds-color('secondary-dark');
+    @include ds-mix.ds-hover-glow('secondary');
   }
 
-  &:active {
+  &:active:not(:disabled) {
     transform: translateY(0);
   }
 }
 
 .btn-outline {
   background: transparent;
-  color: white;
-  border: 1px solid $border-medium;
+  color: ds.ds-color('text-primary');
+  border: 2px solid ds.ds-color('border-subtle');
 
-  &:hover {
-    background: $surface-overlay-light;
-    border-color: $color-primary-start;
+  &:hover:not(:disabled) {
+    background: ds.ds-color('surface-subtle');
+    border-color: ds.ds-color('primary');
+    color: ds.ds-color('primary');
   }
 }
 
 .btn-ghost {
   background: transparent;
-  color: $text-secondary;
+  color: ds.ds-color('text-secondary');
 
-  &:hover {
-    background: $surface-overlay-light;
-    color: $text-primary;
+  &:hover:not(:disabled) {
+    background: ds.ds-color('surface-subtle');
+    color: ds.ds-color('text-primary');
   }
 }
 
 .btn-success {
-  background: $color-success;
-  color: white;
+  background: ds.ds-color('success');
+  color: ds.ds-color('inverse-text');
 
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 40px rgba($color-success, 0.4);
+  &:hover:not(:disabled) {
+    filter: brightness(1.1);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(76, 175, 80, 0.4);
   }
 }
 
 .btn-error {
-  background: $color-error;
-  color: white;
+  background: ds.ds-color('error');
+  color: ds.ds-color('inverse-text');
 
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 40px rgba($color-error, 0.4);
+  &:hover:not(:disabled) {
+    filter: brightness(1.1);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(217, 83, 79, 0.4);
   }
 }
 
 // ===== Button Arrow Animation =====
 .btn-arrow {
-  transition: transform $transition-base;
+  @include ds-mix.ds-transition(transform);
 }
 
 .btn:hover .btn-arrow {
@@ -130,7 +127,7 @@
 // ===== Button Group =====
 .btn-group {
   display: flex;
-  gap: $spacing-md;
+  gap: ds.ds-spacing('base');
 
   @include respond-to(sm) {
     flex-direction: column;

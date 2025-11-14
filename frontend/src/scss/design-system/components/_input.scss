@@ -1,0 +1,260 @@
+// ============================================
+// DESIGN SYSTEM - INPUT COMPONENT
+// ============================================
+
+@use '../theme' as *;
+@use '../mixins' as *;
+
+// ============================================
+// BASE INPUT
+// ============================================
+
+.ds-input {
+  // Reset
+  appearance: none;
+
+  // Layout
+  display: block;
+  width: 100%;
+
+  // Sizing
+  padding: ds-spacing('md') ds-spacing('base');
+
+  // Typography
+  font-family: var(--ds-font-family-base);
+  font-size: ds-font-size('base');
+  font-weight: ds-font-weight('normal');
+  line-height: var(--ds-line-height-normal);
+  color: ds-color('text-primary');
+
+  // Visual
+  background: ds-color('surface');
+  border: 2px solid ds-color('border-subtle');
+  border-radius: ds-radius('lg');
+
+  // Transitions
+  @include ds-transition((border-color, box-shadow, background-color));
+
+  // Placeholder
+  &::placeholder {
+    color: ds-color('text-tertiary');
+  }
+
+  // States
+  &:hover:not(:disabled):not(:focus) {
+    border-color: ds-color('text-tertiary');
+  }
+
+  &:focus {
+    outline: none;
+    border-color: ds-color('primary');
+    box-shadow: 0 0 0 3px rgba(249, 165, 72, 0.15);
+  }
+
+  // Disabled
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background: ds-color('surface-subtle');
+  }
+
+  // Error state
+  &.ds-input-error,
+  &[aria-invalid='true'] {
+    border-color: ds-color('error');
+
+    &:focus {
+      box-shadow: 0 0 0 3px rgba(217, 83, 79, 0.15);
+    }
+  }
+
+  // Success state
+  &.ds-input-success {
+    border-color: ds-color('success');
+
+    &:focus {
+      box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.15);
+    }
+  }
+}
+
+// ============================================
+// TEXTAREA
+// ============================================
+
+.ds-textarea {
+  @extend .ds-input;
+  min-height: 120px;
+  resize: vertical;
+  line-height: var(--ds-line-height-relaxed);
+}
+
+// ============================================
+// INPUT SIZES
+// ============================================
+
+.ds-input-sm {
+  padding: ds-spacing('sm') ds-spacing('md');
+  font-size: ds-font-size('sm');
+}
+
+.ds-input-lg {
+  padding: ds-spacing('lg') ds-spacing('xl');
+  font-size: ds-font-size('lg');
+}
+
+// ============================================
+// INPUT GROUP (with icons/buttons)
+// ============================================
+
+.ds-input-group {
+  position: relative;
+  display: flex;
+  width: 100%;
+
+  .ds-input {
+    flex: 1;
+  }
+
+  // Icon positioning
+  &.ds-input-group-icon-left {
+    .ds-input {
+      padding-left: ds-spacing('4xl');
+    }
+
+    .ds-input-icon {
+      left: ds-spacing('base');
+    }
+  }
+
+  &.ds-input-group-icon-right {
+    .ds-input {
+      padding-right: ds-spacing('4xl');
+    }
+
+    .ds-input-icon {
+      right: ds-spacing('base');
+    }
+  }
+}
+
+.ds-input-icon {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  color: ds-color('text-tertiary');
+  pointer-events: none;
+  @include ds-flex-center;
+}
+
+// ============================================
+// FORM FIELD WRAPPER
+// ============================================
+
+.ds-field {
+  display: flex;
+  flex-direction: column;
+  gap: ds-spacing('sm');
+  margin-bottom: ds-spacing('lg');
+}
+
+.ds-label {
+  font-size: ds-font-size('sm');
+  font-weight: ds-font-weight('medium');
+  color: ds-color('text-primary');
+
+  &.ds-label-required::after {
+    content: ' *';
+    color: ds-color('error');
+  }
+}
+
+.ds-hint {
+  font-size: ds-font-size('sm');
+  color: ds-color('text-tertiary');
+}
+
+.ds-error-message {
+  font-size: ds-font-size('sm');
+  color: ds-color('error');
+  font-weight: ds-font-weight('medium');
+}
+
+.ds-success-message {
+  font-size: ds-font-size('sm');
+  color: ds-color('success');
+  font-weight: ds-font-weight('medium');
+}
+
+// ============================================
+// CHECKBOX & RADIO
+// ============================================
+
+.ds-checkbox,
+.ds-radio {
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border: 2px solid ds-color('border-subtle');
+  background: ds-color('surface');
+  cursor: pointer;
+  @include ds-transition((border-color, background-color));
+
+  &:hover:not(:disabled) {
+    border-color: ds-color('primary');
+  }
+
+  &:checked {
+    background: ds-color('primary');
+    border-color: ds-color('primary');
+  }
+
+  &:focus-visible {
+    @include ds-focus-ring;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.ds-checkbox {
+  border-radius: ds-radius('sm');
+
+  &:checked {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='white'%3E%3Cpath d='M13.5 3.5L6 11l-3.5-3.5'/%3E%3C/svg%3E");
+    background-size: 12px;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+}
+
+.ds-radio {
+  border-radius: ds-radius('round');
+
+  &:checked {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='white'%3E%3Ccircle cx='8' cy='8' r='4'/%3E%3C/svg%3E");
+    background-size: 10px;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+}
+
+// Checkbox/Radio with label
+.ds-checkbox-wrapper,
+.ds-radio-wrapper {
+  display: flex;
+  align-items: center;
+  gap: ds-spacing('sm');
+  cursor: pointer;
+
+  input {
+    flex-shrink: 0;
+  }
+
+  label {
+    cursor: pointer;
+    user-select: none;
+  }
+}

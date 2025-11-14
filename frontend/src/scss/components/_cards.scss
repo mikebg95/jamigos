@@ -1,79 +1,93 @@
 @use '../variables' as *;
 @use '../mixins' as *;
+@use '../design-system/theme' as ds;
+@use '../design-system/mixins' as ds-mix;
 
-// ===== Base Card =====
+// ===== Base Card (Updated with Design System) =====
 .card {
-  @include glass;
-  border-radius: $radius-xl;
-  padding: $spacing-xl;
-  transition: all $transition-base;
+  background: ds.ds-color('surface');
+  border: 1px solid ds.ds-color('border-subtle');
+  border-radius: ds.ds-radius('xl');
+  padding: ds.ds-spacing('xl');
+  @include ds-mix.ds-shadow-soft;
+  @include ds-mix.ds-transition((background-color, border-color, box-shadow));
 
   &:hover {
-    background: rgba(255, 255, 255, 0.08);
-    border-color: $border-accent;
+    background: ds.ds-color('surface-subtle');
+    border-color: ds.ds-color('primary');
   }
 }
 
 // ===== Card Variants =====
 .card-hover-lift {
-  @include hover-lift(-8px, 0 20px 40px rgba(0, 0, 0, 0.3));
+  @include ds-mix.ds-hover-lift(-8px);
+  @include ds-mix.ds-shadow-elevated;
+
+  &:hover {
+    @include ds-mix.ds-shadow-high;
+  }
 }
 
 .card-glass-strong {
-  @include glass(0.08, 30px);
+  @include ds-mix.ds-glass(30px);
 }
 
 // ===== Floating Card (for hero animations) =====
 .floating-card {
-  @include glass;
-  border-radius: $radius-xl;
-  padding: $spacing-lg;
-  box-shadow: $shadow-2xl;
+  background: ds.ds-color('surface');
+  border: 1px solid ds.ds-color('border-subtle');
+  border-radius: ds.ds-radius('xl');
+  padding: ds.ds-spacing('lg');
+  @include ds-mix.ds-shadow-elevated;
   animation: float 6s ease-in-out infinite;
 }
 
 // ===== Feature Card =====
 .feature-card {
-  @include glass(0.03);
-  border-radius: $radius-xl;
-  padding: $spacing-xl;
-  transition: all $transition-base;
+  background: ds.ds-color('surface');
+  border: 1px solid ds.ds-color('border-subtle');
+  border-radius: ds.ds-radius('xl');
+  padding: ds.ds-spacing('xl');
+  @include ds-mix.ds-shadow-soft;
+  @include ds-mix.ds-transition((background-color, border-color, transform, box-shadow));
   animation: fadeInUp 0.6s ease-out both;
 
   &:hover {
-    background: rgba(255, 255, 255, 0.05);
-    border-color: $border-accent;
+    background: ds.ds-color('surface-subtle');
+    border-color: ds.ds-color('primary');
     transform: translateY(-8px);
-    box-shadow: $shadow-2xl;
+    @include ds-mix.ds-shadow-elevated;
   }
 }
 
 // ===== CTA Card =====
 .cta-card {
-  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
-  border: 1px solid $border-accent;
-  border-radius: $radius-2xl;
-  padding: $spacing-4xl $spacing-xl;
+  background: linear-gradient(
+    135deg,
+    rgba(249, 165, 72, 0.1) 0%,
+    rgba(14, 179, 167, 0.1) 100%
+  );
+  border: 2px solid ds.ds-color('primary');
+  border-radius: ds.ds-radius('2xl');
+  padding: ds.ds-spacing('4xl') ds.ds-spacing('xl');
   text-align: center;
 }
 
 // ===== Card Elements =====
 .card-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: $spacing-md;
+  @include ds-mix.ds-flex-between;
+  margin-bottom: ds.ds-spacing('base');
 }
 
 .card-body {
-  padding: $spacing-md 0;
+  padding: ds.ds-spacing('base') 0;
+  color: ds.ds-color('text-secondary');
+  line-height: var(--ds-line-height-relaxed);
 }
 
 .card-footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: $spacing-md;
-  padding-top: $spacing-md;
-  border-top: 1px solid $border-light;
+  @include ds-mix.ds-flex-between;
+  margin-top: ds.ds-spacing('base');
+  padding-top: ds.ds-spacing('base');
+  border-top: 1px solid ds.ds-color('divider');
 }

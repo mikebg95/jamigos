@@ -1,0 +1,203 @@
+// ============================================
+// DESIGN SYSTEM - BUTTON COMPONENT
+// ============================================
+
+@use '../theme' as *;
+@use '../mixins' as *;
+
+// ============================================
+// BASE BUTTON
+// ============================================
+
+.ds-btn {
+  // Reset
+  appearance: none;
+  border: none;
+  background: none;
+
+  // Layout
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: ds-spacing('sm');
+
+  // Sizing
+  padding: ds-spacing('md') ds-spacing('xl');
+
+  // Typography
+  font-family: var(--ds-font-family-base);
+  font-size: ds-font-size('base');
+  font-weight: ds-font-weight('semibold');
+  text-decoration: none;
+  white-space: nowrap;
+
+  // Visual
+  border-radius: ds-radius('lg');
+  cursor: pointer;
+  user-select: none;
+
+  // Transitions
+  @include ds-transition((background-color, border-color, color, transform, box-shadow));
+
+  // Accessibility
+  @include ds-focus-visible;
+  @include ds-disabled;
+
+  // States
+  &:active:not(:disabled) {
+    transform: translateY(1px);
+  }
+}
+
+// ============================================
+// BUTTON VARIANTS
+// ============================================
+
+// Primary Button
+.ds-btn-primary {
+  background: ds-color('primary');
+  color: ds-color('inverse-text');
+  @include ds-shadow-soft;
+
+  &:hover:not(:disabled) {
+    background: ds-color('primary-dark');
+    @include ds-hover-glow('primary');
+  }
+}
+
+// Secondary Button
+.ds-btn-secondary {
+  background: ds-color('secondary');
+  color: ds-color('inverse-text');
+  @include ds-shadow-soft;
+
+  &:hover:not(:disabled) {
+    background: ds-color('secondary-dark');
+    @include ds-hover-glow('secondary');
+  }
+}
+
+// Outline Button
+.ds-btn-outline {
+  background: transparent;
+  color: ds-color('text-primary');
+  border: 2px solid ds-color('border-subtle');
+
+  &:hover:not(:disabled) {
+    background: ds-color('surface-subtle');
+    border-color: ds-color('primary');
+    color: ds-color('primary');
+  }
+}
+
+// Ghost Button
+.ds-btn-ghost {
+  background: transparent;
+  color: ds-color('text-secondary');
+
+  &:hover:not(:disabled) {
+    background: ds-color('surface-subtle');
+    color: ds-color('text-primary');
+  }
+}
+
+// Error/Danger Button
+.ds-btn-error {
+  background: ds-color('error');
+  color: ds-color('inverse-text');
+  @include ds-shadow-soft;
+
+  &:hover:not(:disabled) {
+    filter: brightness(1.1);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(217, 83, 79, 0.4);
+  }
+}
+
+// Success Button
+.ds-btn-success {
+  background: ds-color('success');
+  color: ds-color('inverse-text');
+  @include ds-shadow-soft;
+
+  &:hover:not(:disabled) {
+    filter: brightness(1.1);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(76, 175, 80, 0.4);
+  }
+}
+
+// ============================================
+// BUTTON SIZES
+// ============================================
+
+.ds-btn-sm {
+  padding: ds-spacing('sm') ds-spacing('base');
+  font-size: ds-font-size('sm');
+  gap: ds-spacing('xs');
+}
+
+.ds-btn-lg {
+  padding: ds-spacing('lg') ds-spacing('2xl');
+  font-size: ds-font-size('lg');
+  gap: ds-spacing('md');
+}
+
+// ============================================
+// BUTTON MODIFIERS
+// ============================================
+
+// Full width button
+.ds-btn-block {
+  width: 100%;
+}
+
+// Icon-only button
+.ds-btn-icon {
+  padding: ds-spacing('md');
+
+  &.ds-btn-sm {
+    padding: ds-spacing('sm');
+  }
+
+  &.ds-btn-lg {
+    padding: ds-spacing('lg');
+  }
+}
+
+// Rounded button (pill shape)
+.ds-btn-pill {
+  border-radius: ds-radius('pill');
+}
+
+// ============================================
+// BUTTON GROUP
+// ============================================
+
+.ds-btn-group {
+  display: flex;
+  gap: ds-spacing('md');
+  flex-wrap: wrap;
+
+  &.ds-btn-group-vertical {
+    flex-direction: column;
+  }
+
+  &.ds-btn-group-attached {
+    gap: 0;
+
+    .ds-btn {
+      border-radius: 0;
+
+      &:first-child {
+        border-top-left-radius: ds-radius('lg');
+        border-bottom-left-radius: ds-radius('lg');
+      }
+
+      &:last-child {
+        border-top-right-radius: ds-radius('lg');
+        border-bottom-right-radius: ds-radius('lg');
+      }
+    }
+  }
+}

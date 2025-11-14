@@ -60,27 +60,32 @@ const signup = () => {
 <style scoped lang="scss">
 .auth-buttons {
   display: flex;
-  gap: 0.5rem;
+  gap: var(--ds-spacing-sm);
   align-items: center;
 }
 
 .profile-link {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  color: rgba(255, 255, 255, 0.9);
+  gap: var(--ds-spacing-sm);
+  color: var(--ds-color-text-primary);
   text-decoration: none;
-  padding: 0.625rem 1rem;
-  border-radius: 8px;
-  font-weight: 500;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: var(--ds-spacing-md) var(--ds-spacing-base);
+  border-radius: var(--ds-radius-lg);
+  font-weight: var(--ds-font-weight-medium);
+  transition: all var(--ds-duration-normal) var(--ds-ease-emphasized);
+  background: var(--ds-color-surface-subtle);
+  border: 1px solid var(--ds-color-border-subtle);
 
   &:hover {
-    background: rgba(255, 255, 255, 0.1);
-    border-color: rgba(102, 126, 234, 0.3);
+    background: var(--ds-color-surface-hover);
+    border-color: var(--ds-color-primary);
     transform: translateY(-2px);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--ds-color-primary);
+    outline-offset: 2px;
   }
 
   svg {
@@ -96,13 +101,13 @@ const signup = () => {
 
 .btn-primary,
 .btn-secondary {
-  padding: 0.625rem 1.25rem;
+  padding: var(--ds-spacing-md) var(--ds-spacing-xl);
   border: none;
-  border-radius: 8px;
-  font-size: 0.95rem;
-  font-weight: 600;
+  border-radius: var(--ds-radius-lg);
+  font-size: var(--ds-font-size-base);
+  font-weight: var(--ds-font-weight-semibold);
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all var(--ds-duration-normal) var(--ds-ease-emphasized);
   position: relative;
   overflow: hidden;
   white-space: nowrap;
@@ -115,7 +120,7 @@ const signup = () => {
     width: 100%;
     height: 100%;
     background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-    transition: left 0.5s;
+    transition: left var(--ds-duration-slower);
   }
 
   &:hover::before {
@@ -126,31 +131,38 @@ const signup = () => {
     transform: translateY(0);
   }
 
+  &:focus-visible {
+    outline: 2px solid var(--ds-color-primary);
+    outline-offset: 2px;
+  }
+
   @media (max-width: 640px) {
-    padding: 0.5rem 1rem;
-    font-size: 0.875rem;
+    padding: var(--ds-spacing-sm) var(--ds-spacing-base);
+    font-size: var(--ds-font-size-sm);
   }
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  background: var(--ds-color-primary);
+  color: var(--ds-color-inverse-text);
+  box-shadow: var(--ds-shadow-soft);
 
   &:hover {
+    background: var(--ds-color-primary-dark);
     transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
+    box-shadow: var(--ds-shadow-glow-primary);
   }
 }
 
 .btn-secondary {
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: white;
+  background: var(--ds-color-secondary);
+  color: var(--ds-color-inverse-text);
+  box-shadow: var(--ds-shadow-soft);
 
   &:hover {
-    background: rgba(255, 255, 255, 0.15);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    background: var(--ds-color-secondary-dark);
     transform: translateY(-2px);
+    box-shadow: var(--ds-shadow-glow-secondary);
   }
 }
 </style>

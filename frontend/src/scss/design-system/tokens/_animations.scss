@@ -1,0 +1,136 @@
+// ============================================
+// DESIGN SYSTEM - ANIMATION TOKENS
+// ============================================
+
+// Duration Tokens
+$ds-duration: (
+  'instant': 0ms,
+  'fast': 150ms,
+  'normal': 250ms,
+  'slow': 350ms,
+  'slower': 500ms,
+);
+
+// Easing Functions
+$ds-easing: (
+  'standard': cubic-bezier(0.4, 0, 0.2, 1),
+  'emphasized': cubic-bezier(0.2, 0, 0, 1),
+  'decelerated': cubic-bezier(0, 0, 0.2, 1),
+  'accelerated': cubic-bezier(0.4, 0, 1, 1),
+  'linear': linear,
+  'ease-in': ease-in,
+  'ease-out': ease-out,
+  'ease-in-out': ease-in-out,
+);
+
+// ============================================
+// KEYFRAME ANIMATIONS
+// ============================================
+
+// Fade In
+@keyframes ds-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+// Fade Out
+@keyframes ds-fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+// Scale In
+@keyframes ds-scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+// Scale Out
+@keyframes ds-scale-out {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+}
+
+// Slide Up
+@keyframes ds-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Slide Down
+@keyframes ds-slide-down {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Spin (for spinner)
+@keyframes ds-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// Shimmer Effect
+@keyframes ds-shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+// Pulse
+@keyframes ds-pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+// Bounce
+@keyframes ds-bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}

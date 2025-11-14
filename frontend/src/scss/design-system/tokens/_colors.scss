@@ -1,0 +1,97 @@
+// ============================================
+// DESIGN SYSTEM - COLOR TOKENS
+// ============================================
+
+// Light Mode Color Palette
+$ds-colors-light: (
+  // Primary colors
+  'primary': #F9A548,
+  'primary-dark': #B2531D,
+  'primary-light': #FBD4A2,
+
+  // Secondary colors
+  'secondary': #0EB3A7,
+  'secondary-dark': #0A857C,
+  'secondary-light': #A7E9E3,
+
+  // Accent colors
+  'purple': #9A72CA,
+  'purple-light': #DCC5F1,
+
+  // Background colors
+  'background': #F8E8CD,
+  'surface': #FFFFFF,
+  'surface-subtle': #F3F0E8,
+
+  // Text colors
+  'text-primary': #010100,
+  'text-secondary': #505866,
+  'text-tertiary': #B3C2B8,
+  'inverse-text': #FFFFFF,
+
+  // Border colors
+  'divider': #E2D9C8,
+  'border-subtle': #EFE8DC,
+
+  // Status colors
+  'like-red': #D4635B,
+  'error': #D9534F,
+  'success': #4CAF50,
+  'warning': #FFBF4D,
+  'info': #0EB3A7,
+
+  // Shadow colors
+  'shadow-light': rgba(0, 0, 0, 0.06),
+  'shadow-medium': rgba(0, 0, 0, 0.12),
+  'shadow-elevated': rgba(0, 0, 0, 0.18),
+);
+
+// Dark Mode Color Palette
+$ds-colors-dark: (
+  // Primary colors
+  'primary': #F9A548,
+  'primary-dark': #C06A1F,
+  'primary-light': #FFBB6A,
+
+  // Secondary colors
+  'secondary': #0EB3A7,
+  'secondary-dark': #0A857C,
+  'secondary-light': #4FD9CF,
+
+  // Accent colors
+  'purple': #9A72CA,
+  'purple-light': #C9ADEF,
+
+  // Background colors
+  'background': #121110,
+  'background-elevated': #1A1917,
+  'surface': #1F1E1C,
+  'surface-hover': #2A2826,
+  'surface-subtle': #2F2D2B,
+
+  // Text colors
+  'text-primary': #FFFFFF,
+  'text-secondary': #D4D0C9,
+  'text-tertiary': #8D8A84,
+  'inverse-text': #010100,
+
+  // Border colors
+  'border': #393733,
+  'border-subtle': #2A2826,
+  'divider': #2C2A27,
+
+  // Status colors
+  'like-red': #E17870,
+  'error': #F1695F,
+  'success': #57D06E,
+  'warning': #FFBF66,
+  'info': #19C9BD,
+
+  // Shadow colors
+  'shadow-light': rgba(0, 0, 0, 0.25),
+  'shadow-medium': rgba(0, 0, 0, 0.35),
+
+  // Glow effects
+  'glow-primary': rgba(249, 165, 72, 0.25),
+  'glow-secondary': rgba(14, 179, 167, 0.25),
+);

@@ -1,0 +1,183 @@
+// ============================================
+// DESIGN SYSTEM - CHIP COMPONENT
+// ============================================
+// Chips are similar to badges but typically interactive/dismissible
+
+@use '../theme' as *;
+@use '../mixins' as *;
+
+// ============================================
+// BASE CHIP
+// ============================================
+
+.ds-chip {
+  // Layout
+  display: inline-flex;
+  align-items: center;
+  gap: ds-spacing('sm');
+
+  // Sizing
+  padding: ds-spacing('sm') ds-spacing('base');
+
+  // Typography
+  font-size: ds-font-size('sm');
+  font-weight: ds-font-weight('medium');
+  line-height: 1;
+  white-space: nowrap;
+
+  // Visual
+  background: ds-color('surface-subtle');
+  color: ds-color('text-primary');
+  border: 1px solid ds-color('border-subtle');
+  border-radius: ds-radius('pill');
+
+  // Transitions
+  @include ds-transition((background-color, border-color));
+}
+
+// ============================================
+// CHIP VARIANTS
+// ============================================
+
+.ds-chip-primary {
+  background: rgba(249, 165, 72, 0.15);
+  color: ds-color('primary');
+  border-color: ds-color('primary-light');
+}
+
+.ds-chip-secondary {
+  background: rgba(14, 179, 167, 0.15);
+  color: ds-color('secondary');
+  border-color: ds-color('secondary-light');
+}
+
+.ds-chip-success {
+  background: rgba(76, 175, 80, 0.15);
+  color: ds-color('success');
+  border-color: ds-color('success');
+}
+
+.ds-chip-error {
+  background: rgba(217, 83, 79, 0.15);
+  color: ds-color('error');
+  border-color: ds-color('error');
+}
+
+.ds-chip-purple {
+  background: rgba(154, 114, 202, 0.15);
+  color: ds-color('purple');
+  border-color: ds-color('purple-light');
+}
+
+// ============================================
+// INTERACTIVE CHIP (Clickable)
+// ============================================
+
+.ds-chip-interactive {
+  cursor: pointer;
+
+  &:hover {
+    background: ds-color('surface-hover');
+    border-color: ds-color('primary');
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+
+  &:focus-visible {
+    @include ds-focus-ring;
+  }
+}
+
+// ============================================
+// CHIP WITH CLOSE BUTTON
+// ============================================
+
+.ds-chip-dismissible {
+  padding-right: ds-spacing('xs');
+}
+
+.ds-chip-close {
+  // Reset
+  appearance: none;
+  background: none;
+  border: none;
+  padding: ds-spacing('xs');
+  margin: calc(-1 * #{ds-spacing('xs')});
+
+  // Layout
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  // Visual
+  cursor: pointer;
+  color: currentColor;
+  opacity: 0.6;
+  border-radius: ds-radius('round');
+
+  // Transitions
+  @include ds-transition((opacity, background-color));
+
+  &:hover {
+    opacity: 1;
+    background: rgba(0, 0, 0, 0.1);
+  }
+
+  &:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+  }
+
+  svg {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+// ============================================
+// CHIP WITH AVATAR/ICON
+// ============================================
+
+.ds-chip-avatar {
+  width: 20px;
+  height: 20px;
+  border-radius: ds-radius('round');
+  object-fit: cover;
+  margin-left: calc(-1 * #{ds-spacing('xs')});
+}
+
+.ds-chip-icon {
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+// ============================================
+// CHIP SIZES
+// ============================================
+
+.ds-chip-sm {
+  padding: ds-spacing('xs') ds-spacing('sm');
+  font-size: ds-font-size('xs');
+  gap: ds-spacing('xs');
+}
+
+.ds-chip-lg {
+  padding: ds-spacing('md') ds-spacing('lg');
+  font-size: ds-font-size('base');
+  gap: ds-spacing('md');
+}
+
+// ============================================
+// CHIP GROUP
+// ============================================
+
+.ds-chip-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: ds-spacing('sm');
+  align-items: center;
+}

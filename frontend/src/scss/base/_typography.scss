@@ -1,17 +1,18 @@
 @use '../variables' as *;
 @use '../mixins' as *;
+@use '../design-system/theme' as ds;
 
 // ===== Headings =====
 h1, h2, h3, h4, h5, h6 {
   margin: 0;
-  font-weight: $font-bold;
-  line-height: 1.2;
-  color: $text-primary;
+  font-weight: ds.ds-font-weight('bold');
+  line-height: var(--ds-line-height-tight);
+  color: ds.ds-color('text-primary');
 }
 
 h1 {
   font-size: clamp(2.5rem, 6vw, 4.5rem);
-  font-weight: $font-extrabold;
+  font-weight: ds.ds-font-weight('extrabold');
 }
 
 h2 {
@@ -23,91 +24,94 @@ h3 {
 }
 
 h4 {
-  font-size: $font-2xl;
+  font-size: ds.ds-font-size('2xl');
 }
 
 h5 {
-  font-size: $font-xl;
+  font-size: ds.ds-font-size('xl');
 }
 
 h6 {
-  font-size: $font-lg;
+  font-size: ds.ds-font-size('lg');
 }
 
 // ===== Paragraphs =====
 p {
   margin: 0;
-  line-height: 1.7;
-  color: $text-secondary;
+  line-height: var(--ds-line-height-relaxed);
+  color: ds.ds-color('text-secondary');
 }
 
 // ===== Utility Classes =====
 
 // Gradient text
 .gradient-text {
-  @include gradient-text-extended;
+  background: linear-gradient(135deg, ds.ds-color('primary'), ds.ds-color('secondary'));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   display: inline-block;
 }
 
 // Section title (used in features, etc.)
 .section-title {
   font-size: clamp(2rem, 4vw, 3rem);
-  font-weight: $font-bold;
-  margin-bottom: $spacing-md;
-  color: $text-primary;
+  font-weight: ds.ds-font-weight('bold');
+  margin-bottom: ds.ds-spacing('base');
+  color: ds.ds-color('text-primary');
 }
 
 .section-description {
-  font-size: $font-xl;
-  color: $text-secondary;
+  font-size: ds.ds-font-size('xl');
+  color: ds.ds-color('text-secondary');
   max-width: 600px;
   margin: 0 auto;
-  line-height: 1.7;
+  line-height: var(--ds-line-height-relaxed);
 }
 
 // Hero title
 .hero-title {
   font-size: clamp(2.5rem, 6vw, 4.5rem);
-  font-weight: $font-extrabold;
-  line-height: 1.1;
-  margin-bottom: $spacing-lg;
+  font-weight: ds.ds-font-weight('extrabold');
+  line-height: var(--ds-line-height-tight);
+  margin-bottom: ds.ds-spacing('lg');
   animation: fadeInUp 0.6s ease-out 0.1s both;
 }
 
 .hero-description {
-  font-size: $font-xl;
-  line-height: 1.8;
-  color: $text-secondary;
-  margin-bottom: $spacing-2xl;
+  font-size: ds.ds-font-size('xl');
+  line-height: var(--ds-line-height-loose);
+  color: ds.ds-color('text-secondary');
+  margin-bottom: ds.ds-spacing('2xl');
   max-width: 600px;
   animation: fadeInUp 0.6s ease-out 0.2s both;
 }
 
 // Feature title
 .feature-title {
-  font-size: $font-2xl;
-  font-weight: $font-semibold;
-  margin-bottom: $spacing-sm;
-  color: $text-primary;
+  font-size: ds.ds-font-size('2xl');
+  font-weight: ds.ds-font-weight('semibold');
+  margin-bottom: ds.ds-spacing('sm');
+  color: ds.ds-color('text-primary');
 }
 
 .feature-description {
-  color: $text-secondary;
-  line-height: 1.7;
+  color: ds.ds-color('text-secondary');
+  line-height: var(--ds-line-height-relaxed);
 }
 
 // CTA title
 .cta-title {
   font-size: clamp(2rem, 4vw, 3rem);
-  font-weight: $font-bold;
-  margin-bottom: $spacing-md;
-  color: $text-primary;
+  font-weight: ds.ds-font-weight('bold');
+  margin-bottom: ds.ds-spacing('base');
+  color: ds.ds-color('text-primary');
 }
 
 .cta-description {
-  font-size: $font-xl;
-  color: $text-secondary;
-  margin-bottom: $spacing-2xl;
+  font-size: ds.ds-font-size('xl');
+  color: ds.ds-color('text-secondary');
+  margin-bottom: ds.ds-spacing('2xl');
   max-width: 600px;
   margin-left: auto;
   margin-right: auto;
@@ -115,19 +119,20 @@ p {
 
 // Text colors
 .text-primary {
-  color: $text-primary;
+  color: ds.ds-color('text-primary');
 }
 
 .text-secondary {
-  color: $text-secondary;
+  color: ds.ds-color('text-secondary');
 }
 
 .text-muted {
-  color: $text-muted;
+  color: ds.ds-color('text-tertiary');
 }
 
 .text-faint {
-  color: $text-faint;
+  color: ds.ds-color('text-tertiary');
+  opacity: 0.7;
 }
 
 // Text alignment
@@ -145,23 +150,23 @@ p {
 
 // Font weights
 .font-normal {
-  font-weight: $font-normal;
+  font-weight: ds.ds-font-weight('normal');
 }
 
 .font-medium {
-  font-weight: $font-medium;
+  font-weight: ds.ds-font-weight('medium');
 }
 
 .font-semibold {
-  font-weight: $font-semibold;
+  font-weight: ds.ds-font-weight('semibold');
 }
 
 .font-bold {
-  font-weight: $font-bold;
+  font-weight: ds.ds-font-weight('bold');
 }
 
 .font-extrabold {
-  font-weight: $font-extrabold;
+  font-weight: ds.ds-font-weight('extrabold');
 }
 
 // Line clamping

@@ -1,0 +1,268 @@
+// ============================================
+// DESIGN SYSTEM - MODAL COMPONENT
+// ============================================
+
+@use '../theme' as *;
+@use '../mixins' as *;
+
+// ============================================
+// MODAL OVERLAY
+// ============================================
+
+.ds-modal-overlay {
+  @include ds-full-coverage;
+  @include ds-flex-center;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  padding: ds-spacing('xl');
+  overflow-y: auto;
+
+  // Enter/exit animations
+  &.ds-modal-enter-active,
+  &.ds-modal-leave-active {
+    @include ds-transition(opacity, 'normal', 'standard');
+
+    .ds-modal-content {
+      @include ds-transition(transform, 'normal', 'emphasized');
+    }
+  }
+
+  &.ds-modal-enter-from,
+  &.ds-modal-leave-to {
+    opacity: 0;
+
+    .ds-modal-content {
+      transform: scale(0.95) translateY(20px);
+    }
+  }
+}
+
+// ============================================
+// MODAL CONTENT
+// ============================================
+
+.ds-modal-content {
+  position: relative;
+  width: 100%;
+  max-width: 500px;
+  background: ds-color('surface');
+  border-radius: ds-radius('2xl');
+  @include ds-shadow-elevated;
+
+  // Glow effect in dark mode
+  box-shadow: ds-shadow('elevated'), 0 0 60px rgba(249, 165, 72, 0.15);
+
+  // Animation
+  animation: ds-scale-in var(--ds-duration-normal) var(--ds-ease-emphasized);
+}
+
+// ============================================
+// MODAL SIZES
+// ============================================
+
+.ds-modal-sm {
+  .ds-modal-content {
+    max-width: 400px;
+  }
+}
+
+.ds-modal-md {
+  .ds-modal-content {
+    max-width: 600px;
+  }
+}
+
+.ds-modal-lg {
+  .ds-modal-content {
+    max-width: 800px;
+  }
+}
+
+.ds-modal-xl {
+  .ds-modal-content {
+    max-width: 1000px;
+  }
+}
+
+.ds-modal-full {
+  .ds-modal-content {
+    max-width: 90vw;
+    max-height: 90vh;
+  }
+}
+
+// ============================================
+// MODAL HEADER
+// ============================================
+
+.ds-modal-header {
+  @include ds-flex-between;
+  padding: ds-spacing('xl');
+  border-bottom: 1px solid ds-color('divider');
+}
+
+.ds-modal-title {
+  font-size: ds-font-size('xl');
+  font-weight: ds-font-weight('bold');
+  color: ds-color('text-primary');
+  margin: 0;
+}
+
+.ds-modal-close {
+  // Reset
+  appearance: none;
+  background: none;
+  border: none;
+  padding: ds-spacing('sm');
+  margin: calc(-1 * #{ds-spacing('sm')});
+
+  // Layout
+  @include ds-flex-center;
+
+  // Visual
+  cursor: pointer;
+  color: ds-color('text-tertiary');
+  border-radius: ds-radius('md');
+
+  // Transitions
+  @include ds-transition((color, background-color));
+
+  &:hover {
+    color: ds-color('text-primary');
+    background: ds-color('surface-subtle');
+  }
+
+  &:focus-visible {
+    @include ds-focus-ring;
+  }
+
+  svg {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+// ============================================
+// MODAL BODY
+// ============================================
+
+.ds-modal-body {
+  padding: ds-spacing('xl');
+  color: ds-color('text-secondary');
+  line-height: var(--ds-line-height-relaxed);
+
+  // Scrollable body
+  &.ds-modal-body-scrollable {
+    max-height: 60vh;
+    overflow-y: auto;
+    @include ds-custom-scrollbar;
+  }
+}
+
+// ============================================
+// MODAL FOOTER
+// ============================================
+
+.ds-modal-footer {
+  @include ds-flex-between;
+  padding: ds-spacing('xl');
+  border-top: 1px solid ds-color('divider');
+  gap: ds-spacing('md');
+
+  &.ds-modal-footer-end {
+    justify-content: flex-end;
+  }
+
+  &.ds-modal-footer-center {
+    justify-content: center;
+  }
+
+  &.ds-modal-footer-column {
+    flex-direction: column;
+
+    .ds-btn {
+      width: 100%;
+    }
+  }
+}
+
+// ============================================
+// MODAL WITHOUT HEADER/FOOTER
+// ============================================
+
+.ds-modal-content-simple {
+  padding: ds-spacing('2xl');
+
+  .ds-modal-header,
+  .ds-modal-footer {
+    border: none;
+    padding: 0;
+  }
+
+  .ds-modal-body {
+    padding: ds-spacing('lg') 0;
+  }
+}
+
+// ============================================
+// CONFIRMATION MODAL VARIANT
+// ============================================
+
+.ds-modal-confirm {
+  text-align: center;
+
+  .ds-modal-icon {
+    @include ds-flex-center;
+    width: 64px;
+    height: 64px;
+    margin: 0 auto ds-spacing('lg');
+    border-radius: ds-radius('round');
+
+    svg {
+      width: 32px;
+      height: 32px;
+    }
+  }
+
+  &.ds-modal-confirm-error {
+    .ds-modal-icon {
+      background: rgba(217, 83, 79, 0.15);
+      color: ds-color('error');
+    }
+  }
+
+  &.ds-modal-confirm-success {
+    .ds-modal-icon {
+      background: rgba(76, 175, 80, 0.15);
+      color: ds-color('success');
+    }
+  }
+
+  &.ds-modal-confirm-warning {
+    .ds-modal-icon {
+      background: rgba(255, 191, 77, 0.15);
+      color: ds-color('warning');
+    }
+  }
+}
+
+// ============================================
+// RESPONSIVE
+// ============================================
+
+@media (max-width: 768px) {
+  .ds-modal-overlay {
+    padding: ds-spacing('md');
+  }
+
+  .ds-modal-content {
+    max-width: 100%;
+  }
+
+  .ds-modal-header,
+  .ds-modal-body,
+  .ds-modal-footer {
+    padding: ds-spacing('base');
+  }
+}

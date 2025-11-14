@@ -5,7 +5,11 @@ import router from "./router";
 import keycloak from "./auth/keycloak";
 import { useUserStore } from "@/store/user.js";
 import { useUiStore } from "@/store/ui.js";
+import { initTheme } from "@/utils/theme.js";
 import "@/scss/main.scss";
+
+// Initialize theme before app mounts
+initTheme();
 import {
   AlertCircle,
   X,

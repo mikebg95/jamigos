@@ -1,24 +1,30 @@
 // Import order is important!
-// 1. Variables and mixins first (no output)
+// 1. Design System (CSS variables, tokens, components)
+@use "design-system";
+
+// 2. Variables and mixins (legacy - still needed for non-DS components)
 @use "variables";
 @use "mixins";
 
-// 2. Base styles (reset, typography, layout, animations)
+// 3. Base styles (reset, typography, layout, animations)
 @use "base/reset";
 @use "base/typography";
 @use "base/layout";
 @use "base/animations";
 
-// 3. Components (buttons, cards, etc.)
+// 4. Components (buttons, cards, etc.)
 // Note: navbar styles moved to scoped component (NavbarComponent.vue)
 @use "components/buttons";
 @use "components/cards";
 
-// 4. App-specific styles
+// 5. App-specific styles
 #app {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  background: var(--ds-color-background);
+  color: var(--ds-color-text-primary);
+  font-family: var(--ds-font-family-base);
 
   @media (max-width: 768px) {
     padding-bottom: 80px; // Add space for bottom navigation on mobile

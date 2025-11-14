@@ -99,7 +99,7 @@ onBeforeUnmount(() => unlockUI());
 @use '@/scss/mixins' as *;
 
 .container {
-  padding: $spacing-md;
+  padding: var(--ds-spacing-base);
 }
 
 .spinner-overlay {
@@ -108,7 +108,7 @@ onBeforeUnmount(() => unlockUI());
   display: flex;
   justify-content: center;
   align-items: center;
-  background: rgba(10, 10, 15, 0.85);
+  background: rgba(0, 0, 0, 0.7);
   backdrop-filter: blur(20px);
   z-index: $z-toast;
 }
@@ -128,8 +128,8 @@ onBeforeUnmount(() => unlockUI());
 .error-page {
   @include flex-center;
   min-height: 100vh;
-  @include gradient-background;
-  padding: $spacing-xl;
+  background: var(--ds-color-background);
+  padding: var(--ds-spacing-xl);
 }
 
 .error-content {
@@ -137,9 +137,11 @@ onBeforeUnmount(() => unlockUI());
   align-items: center;
   text-align: center;
   max-width: 600px;
-  @include glass(0.05);
-  padding: $spacing-4xl $spacing-xl;
-  border-radius: $radius-2xl;
+  background: var(--ds-color-surface);
+  border: 1px solid var(--ds-color-border-subtle);
+  padding: var(--ds-spacing-4xl) var(--ds-spacing-xl);
+  border-radius: var(--ds-radius-2xl);
+  box-shadow: var(--ds-shadow-elevated);
 }
 
 .error-icon {
@@ -147,47 +149,47 @@ onBeforeUnmount(() => unlockUI());
   width: 80px;
   height: 80px;
   border-radius: 50%;
-  background: rgba(239, 68, 68, 0.1);
-  margin-bottom: $spacing-xl;
+  background: rgba(217, 83, 79, 0.15);
+  margin-bottom: var(--ds-spacing-xl);
 
   svg {
-    color: $color-error;
+    color: var(--ds-color-error);
   }
 }
 
 .error-message {
-  color: $text-secondary;
-  font-size: $font-lg;
-  margin: $spacing-md 0 $spacing-2xl;
+  color: var(--ds-color-text-secondary);
+  font-size: var(--ds-font-size-lg);
+  margin: var(--ds-spacing-base) 0 var(--ds-spacing-2xl);
 }
 
 .error-actions {
-  margin-bottom: $spacing-xl;
+  margin-bottom: var(--ds-spacing-xl);
 }
 
 .error-details {
-  margin-top: $spacing-xl;
+  margin-top: var(--ds-spacing-xl);
   width: 100%;
   text-align: left;
 
   summary {
     cursor: pointer;
-    color: $text-muted;
-    font-size: $font-sm;
+    color: var(--ds-color-text-tertiary);
+    font-size: var(--ds-font-size-sm);
     user-select: none;
 
     &:hover {
-      color: $text-secondary;
+      color: var(--ds-color-text-secondary);
     }
   }
 
   pre {
-    margin-top: $spacing-md;
-    padding: $spacing-md;
-    background: rgba(0, 0, 0, 0.3);
-    border-radius: $radius-md;
-    color: $color-error;
-    font-size: $font-sm;
+    margin-top: var(--ds-spacing-base);
+    padding: var(--ds-spacing-base);
+    background: var(--ds-color-surface-subtle);
+    border-radius: var(--ds-radius-md);
+    color: var(--ds-color-error);
+    font-size: var(--ds-font-size-sm);
     overflow-x: auto;
     white-space: pre-wrap;
     word-break: break-word;

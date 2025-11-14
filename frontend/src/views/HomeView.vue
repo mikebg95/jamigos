@@ -183,8 +183,8 @@ const features = FEATURES
 
 .home {
   min-height: 100vh;
-  @include gradient-background;
-  color: $text-primary;
+  background: var(--ds-color-background);
+  color: var(--ds-color-text-primary);
   overflow-x: hidden;
 }
 
@@ -218,8 +218,8 @@ const features = FEATURES
   align-items: center;
   gap: $spacing-sm;
   padding: $spacing-sm $spacing-md;
-  background: $surface-glass-medium;
-  border: 1px solid $border-light;
+  background: var(--ds-color-surface-subtle);
+  border: 1px solid var(--ds-color-border-subtle);
   border-radius: $radius-full;
   font-size: $font-sm;
   font-weight: $font-medium;
@@ -230,7 +230,7 @@ const features = FEATURES
 .badge-dot {
   width: 8px;
   height: 8px;
-  background: $color-success;
+  background: var(--ds-color-success);
   border-radius: 50%;
   animation: pulse 2s ease-in-out infinite;
 }
@@ -268,19 +268,22 @@ const features = FEATURES
 .stat-value {
   font-size: $font-3xl;
   font-weight: $font-bold;
-  @include gradient-text;
+  background: linear-gradient(135deg, var(--ds-color-primary), var(--ds-color-secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .stat-label {
   font-size: $font-sm;
-  color: $text-muted;
+  color: var(--ds-color-text-tertiary);
   margin-top: $spacing-xs;
 }
 
 .stat-divider {
   width: 1px;
   height: 40px;
-  background: $border-light;
+  background: var(--ds-color-divider);
 }
 
 /* Hero Visual */
@@ -337,7 +340,8 @@ const features = FEATURES
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background: $surface-overlay-medium;
+  background: var(--ds-color-text-tertiary);
+  opacity: 0.5;
 }
 
 .task-item {
@@ -345,11 +349,12 @@ const features = FEATURES
   align-items: center;
   gap: $spacing-sm;
   padding: $spacing-sm 0;
-  color: $text-primary;
+  color: var(--ds-color-text-primary);
   font-size: $font-base;
 
   &.completed {
-    color: $text-faint;
+    color: var(--ds-color-text-tertiary);
+    opacity: 0.7;
     text-decoration: line-through;
   }
 }
@@ -357,13 +362,13 @@ const features = FEATURES
 .checkbox {
   width: 20px;
   height: 20px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
+  border: 2px solid var(--ds-color-border-subtle);
   border-radius: $radius-sm;
   flex-shrink: 0;
 
   &.checked {
-    @include gradient-primary;
-    border-color: $color-primary-start;
+    background: var(--ds-color-primary);
+    border-color: var(--ds-color-primary);
     position: relative;
 
     &::after {
@@ -372,7 +377,7 @@ const features = FEATURES
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      color: white;
+      color: var(--ds-color-inverse-text);
       font-size: 12px;
     }
   }
@@ -388,18 +393,18 @@ const features = FEATURES
   display: flex;
   align-items: center;
   justify-content: center;
-  color: $color-primary-start;
+  color: var(--ds-color-primary);
 }
 
 .mini-stat-value {
   font-size: $font-2xl;
   font-weight: $font-bold;
-  color: white;
+  color: var(--ds-color-text-primary);
 }
 
 .mini-stat-label {
   font-size: $font-sm;
-  color: $text-muted;
+  color: var(--ds-color-text-secondary);
 }
 
 /* Features Section */
@@ -428,7 +433,7 @@ const features = FEATURES
   align-items: center;
   justify-content: center;
   margin-bottom: $spacing-md;
-  color: $color-primary-start;
+  color: var(--ds-color-primary);
 }
 
 /* CTA Section */

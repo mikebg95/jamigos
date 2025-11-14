@@ -1,0 +1,125 @@
+// ============================================
+// DESIGN SYSTEM - THEME GENERATOR
+// ============================================
+// This file generates CSS variables for light and dark themes
+
+@use 'tokens/colors' as *;
+@use 'tokens/typography' as *;
+@use 'tokens/spacing' as *;
+@use 'tokens/radii' as *;
+@use 'tokens/shadows' as *;
+@use 'tokens/animations' as *;
+
+// ============================================
+// MIXIN: Generate CSS Variables from Map
+// ============================================
+@mixin ds-generate-color-vars($map, $prefix: 'ds-color') {
+  @each $name, $value in $map {
+    --#{$prefix}-#{$name}: #{$value};
+  }
+}
+
+@mixin ds-generate-vars($map, $prefix) {
+  @each $name, $value in $map {
+    --#{$prefix}-#{$name}: #{$value};
+  }
+}
+
+@mixin ds-generate-shadow-vars($map, $prefix: 'ds-shadow') {
+  @each $name, $value in $map {
+    @if type-of($value) == 'list' and length($value) > 1 {
+      // Multi-layered shadow
+      --#{$prefix}-#{$name}: #{$value};
+    } @else {
+      // Single shadow or none
+      --#{$prefix}-#{$name}: #{$value};
+    }
+  }
+}
+
+// ============================================
+// LIGHT THEME
+// ============================================
+:root,
+:root[data-theme='light'] {
+  // Color Variables
+  @include ds-generate-color-vars($ds-colors-light);
+
+  // Shadow Variables
+  @include ds-generate-shadow-vars($ds-shadows-light);
+
+  // Typography Variables
+  --ds-font-family-base: #{$ds-font-family-base};
+  --ds-font-family-mono: #{$ds-font-family-mono};
+  @include ds-generate-vars($ds-font-sizes, 'ds-font-size');
+  @include ds-generate-vars($ds-font-weights, 'ds-font-weight');
+  @include ds-generate-vars($ds-line-heights, 'ds-line-height');
+  @include ds-generate-vars($ds-letter-spacing, 'ds-letter-spacing');
+
+  // Spacing Variables
+  @include ds-generate-vars($ds-spacing, 'ds-spacing');
+
+  // Radius Variables
+  @include ds-generate-vars($ds-radii, 'ds-radius');
+
+  // Animation Duration Variables
+  @include ds-generate-vars($ds-duration, 'ds-duration');
+
+  // Animation Easing Variables
+  @include ds-generate-vars($ds-easing, 'ds-ease');
+
+  // Color Scheme
+  color-scheme: light;
+}
+
+// ============================================
+// DARK THEME
+// ============================================
+:root[data-theme='dark'] {
+  // Color Variables
+  @include ds-generate-color-vars($ds-colors-dark);
+
+  // Shadow Variables
+  @include ds-generate-shadow-vars($ds-shadows-dark);
+
+  // Typography, spacing, radius, and animation stay the same
+  // (already defined in :root)
+
+  // Color Scheme
+  color-scheme: dark;
+}
+
+// ============================================
+// UTILITY: Easy access to CSS variables
+// ============================================
+// Helper functions to access CSS variables in SCSS
+
+// Get color variable
+@function ds-color($name) {
+  @return var(--ds-color-#{$name});
+}
+
+// Get spacing variable
+@function ds-spacing($name) {
+  @return var(--ds-spacing-#{$name});
+}
+
+// Get radius variable
+@function ds-radius($name) {
+  @return var(--ds-radius-#{$name});
+}
+
+// Get shadow variable
+@function ds-shadow($name) {
+  @return var(--ds-shadow-#{$name});
+}
+
+// Get font size variable
+@function ds-font-size($name) {
+  @return var(--ds-font-size-#{$name});
+}
+
+// Get font weight variable
+@function ds-font-weight($name) {
+  @return var(--ds-font-weight-#{$name});
+}

@@ -1,0 +1,24 @@
+// ============================================
+// DESIGN SYSTEM - SPACING TOKENS
+// ============================================
+
+// Spacing Scale (4px base grid)
+$ds-spacing: (
+  '0': 0,
+  'xs': 0.25rem,    // 4px
+  'sm': 0.5rem,     // 8px
+  'md': 0.75rem,    // 12px
+  'base': 1rem,     // 16px
+  'lg': 1.5rem,     // 24px
+  'xl': 2rem,       // 32px
+  '2xl': 2.5rem,    // 40px
+  '3xl': 3rem,      // 48px
+  '4xl': 4rem,      // 64px
+  '5xl': 5rem,      // 80px
+  '6xl': 6rem,      // 96px
+);
+
+// Container Sizing
+$ds-container-max-width: 1400px;
+$ds-container-padding: 2rem;
+$ds-container-padding-mobile: 1rem;

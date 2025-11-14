@@ -58,43 +58,41 @@ const dismiss = () => {
 </template>
 
 <style lang="scss" scoped>
-@use '@/scss/variables' as *;
-@use '@/scss/mixins' as *;
-
 .error-alert {
   display: flex;
   align-items: center;
-  gap: $spacing-md;
-  padding: $spacing-md $spacing-lg;
-  border-radius: $radius-lg;
-  @include glass(0.05);
-  border: 1px solid;
-  animation: slideDown 0.3s ease-out;
+  gap: var(--ds-spacing-base);
+  padding: var(--ds-spacing-base) var(--ds-spacing-lg);
+  border-radius: var(--ds-radius-lg);
+  background: var(--ds-color-surface);
+  border: 2px solid;
+  box-shadow: var(--ds-shadow-soft);
+  animation: slideDown var(--ds-duration-normal) var(--ds-ease-emphasized);
 
   &--error {
-    background: rgba(239, 68, 68, 0.1);
-    border-color: rgba(239, 68, 68, 0.3);
+    background: rgba(217, 83, 79, 0.1);
+    border-color: var(--ds-color-error);
 
     .error-alert__icon {
-      color: $color-error;
+      color: var(--ds-color-error);
     }
   }
 
   &--warning {
-    background: rgba(251, 191, 36, 0.1);
-    border-color: rgba(251, 191, 36, 0.3);
+    background: rgba(255, 191, 77, 0.1);
+    border-color: var(--ds-color-warning);
 
     .error-alert__icon {
-      color: #fbbf24;
+      color: var(--ds-color-warning);
     }
   }
 
   &--info {
-    background: rgba(59, 130, 246, 0.1);
-    border-color: rgba(59, 130, 246, 0.3);
+    background: rgba(14, 179, 167, 0.1);
+    border-color: var(--ds-color-info);
 
     .error-alert__icon {
-      color: #3b82f6;
+      color: var(--ds-color-info);
     }
   }
 }
@@ -113,9 +111,9 @@ const dismiss = () => {
 
 .error-alert__message {
   margin: 0;
-  color: $text-primary;
-  font-size: $font-base;
-  line-height: 1.5;
+  color: var(--ds-color-text-primary);
+  font-size: var(--ds-font-size-base);
+  line-height: var(--ds-line-height-normal);
 }
 
 .error-alert__dismiss {
@@ -123,28 +121,33 @@ const dismiss = () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: $spacing-xs;
+  padding: var(--ds-spacing-xs);
   background: transparent;
   border: none;
-  border-radius: $radius-md;
-  color: $text-muted;
+  border-radius: var(--ds-radius-md);
+  color: var(--ds-color-text-tertiary);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all var(--ds-duration-fast) var(--ds-ease-standard);
 
   &:hover {
-    background: rgba(255, 255, 255, 0.1);
-    color: $text-primary;
+    background: var(--ds-color-surface-subtle);
+    color: var(--ds-color-text-primary);
   }
 
   &:active {
     transform: scale(0.95);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--ds-color-primary);
+    outline-offset: 2px;
   }
 }
 
 // Transition animations
 .slide-down-enter-active,
 .slide-down-leave-active {
-  transition: all 0.3s ease;
+  transition: all var(--ds-duration-normal) var(--ds-ease-emphasized);
 }
 
 .slide-down-enter-from {

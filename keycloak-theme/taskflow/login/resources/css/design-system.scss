@@ -1,0 +1,150 @@
+// ============================================
+// DESIGN SYSTEM - KEYCLOAK THEME
+// ============================================
+
+@import 'tokens';
+
+// ============================================
+// GENERATE CSS VARIABLES
+// ============================================
+
+@mixin generate-color-vars($map, $prefix: 'ds-color') {
+  @each $name, $value in $map {
+    --#{$prefix}-#{$name}: #{$value};
+  }
+}
+
+@mixin generate-vars($map, $prefix) {
+  @each $name, $value in $map {
+    --#{$prefix}-#{$name}: #{$value};
+  }
+}
+
+// ============================================
+// LIGHT THEME (DEFAULT)
+// ============================================
+
+:root,
+:root[data-theme='light'],
+html {
+  @include generate-color-vars($ds-colors-light);
+  @include generate-vars($ds-spacing, 'ds-spacing');
+  @include generate-vars($ds-font-sizes, 'ds-font-size');
+  @include generate-vars($ds-font-weights, 'ds-font-weight');
+  @include generate-vars($ds-radii, 'ds-radius');
+  @include generate-vars($ds-duration, 'ds-duration');
+  @include generate-vars($ds-easing, 'ds-ease');
+
+  --ds-font-family: #{$ds-font-family};
+  color-scheme: light;
+}
+
+// ============================================
+// DARK THEME
+// ============================================
+
+:root[data-theme='dark'],
+html[data-theme='dark'] {
+  @include generate-color-vars($ds-colors-dark);
+  color-scheme: dark;
+}
+
+// ============================================
+// GLOBAL RESETS (Scoped to prevent conflicts)
+// ============================================
+
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--ds-font-family);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+// ============================================
+// KEYFRAME ANIMATIONS
+// ============================================
+
+@keyframes ds-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes ds-scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes ds-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes ds-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes ds-pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+// ============================================
+// UTILITY MIXINS
+// ============================================
+
+@mixin ds-transition($property: all, $duration: 'normal', $easing: 'standard') {
+  transition: $property var(--ds-duration-#{$duration}) var(--ds-ease-#{$easing});
+}
+
+@mixin ds-focus-ring {
+  outline: 2px solid var(--ds-color-primary);
+  outline-offset: 2px;
+}
+
+@mixin ds-shadow-soft {
+  box-shadow:
+    0 1px 2px var(--ds-color-shadow-light),
+    0 1px 3px var(--ds-color-shadow-light);
+}
+
+@mixin ds-shadow-medium {
+  box-shadow:
+    0 2px 4px var(--ds-color-shadow-light),
+    0 4px 8px var(--ds-color-shadow-medium);
+}
+
+@mixin ds-shadow-elevated {
+  box-shadow:
+    0 4px 6px var(--ds-color-shadow-medium),
+    0 10px 20px var(--ds-color-shadow-elevated);
+}

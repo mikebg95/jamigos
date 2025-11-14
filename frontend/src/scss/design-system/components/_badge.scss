@@ -1,0 +1,162 @@
+// ============================================
+// DESIGN SYSTEM - BADGE COMPONENT
+// ============================================
+
+@use '../theme' as *;
+@use '../mixins' as *;
+
+// ============================================
+// BASE BADGE
+// ============================================
+
+.ds-badge {
+  // Layout
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: ds-spacing('xs');
+
+  // Sizing
+  padding: ds-spacing('xs') ds-spacing('md');
+
+  // Typography
+  font-size: ds-font-size('xs');
+  font-weight: ds-font-weight('semibold');
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: var(--ds-letter-spacing-wide);
+  white-space: nowrap;
+
+  // Visual
+  border-radius: ds-radius('pill');
+
+  // Transitions
+  @include ds-transition(background-color);
+}
+
+// ============================================
+// BADGE VARIANTS (Colors)
+// ============================================
+
+.ds-badge-primary {
+  background: ds-color('primary');
+  color: ds-color('inverse-text');
+}
+
+.ds-badge-secondary {
+  background: ds-color('secondary');
+  color: ds-color('inverse-text');
+}
+
+.ds-badge-success {
+  background: ds-color('success');
+  color: ds-color('inverse-text');
+}
+
+.ds-badge-error {
+  background: ds-color('error');
+  color: ds-color('inverse-text');
+}
+
+.ds-badge-warning {
+  background: ds-color('warning');
+  color: ds-color('inverse-text');
+}
+
+.ds-badge-info {
+  background: ds-color('info');
+  color: ds-color('inverse-text');
+}
+
+.ds-badge-neutral {
+  background: ds-color('surface-subtle');
+  color: ds-color('text-primary');
+}
+
+.ds-badge-purple {
+  background: ds-color('purple');
+  color: ds-color('inverse-text');
+}
+
+// ============================================
+// BADGE VARIANTS (Outline)
+// ============================================
+
+.ds-badge-outline {
+  background: transparent;
+  border: 1px solid currentColor;
+
+  &.ds-badge-primary {
+    color: ds-color('primary');
+  }
+
+  &.ds-badge-secondary {
+    color: ds-color('secondary');
+  }
+
+  &.ds-badge-success {
+    color: ds-color('success');
+  }
+
+  &.ds-badge-error {
+    color: ds-color('error');
+  }
+
+  &.ds-badge-warning {
+    color: ds-color('warning');
+  }
+
+  &.ds-badge-info {
+    color: ds-color('info');
+  }
+}
+
+// ============================================
+// BADGE SIZES
+// ============================================
+
+.ds-badge-sm {
+  padding: 2px ds-spacing('sm');
+  font-size: 10px;
+}
+
+.ds-badge-lg {
+  padding: ds-spacing('sm') ds-spacing('lg');
+  font-size: ds-font-size('sm');
+}
+
+// ============================================
+// BADGE WITH DOT
+// ============================================
+
+.ds-badge-dot {
+  &::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: ds-radius('round');
+    background: currentColor;
+  }
+}
+
+// ============================================
+// BADGE WITH ICON
+// ============================================
+
+.ds-badge-icon {
+  svg {
+    width: 12px;
+    height: 12px;
+  }
+}
+
+// ============================================
+// BADGE GROUP
+// ============================================
+
+.ds-badge-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: ds-spacing('sm');
+  align-items: center;
+}

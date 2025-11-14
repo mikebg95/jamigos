@@ -1,0 +1,240 @@
+// ============================================
+// DESIGN SYSTEM - MIXINS
+// ============================================
+
+@use 'theme' as *;
+
+// ============================================
+// SHADOW MIXINS
+// ============================================
+
+@mixin ds-shadow-soft {
+  box-shadow: ds-shadow('soft');
+}
+
+@mixin ds-shadow-medium {
+  box-shadow: ds-shadow('medium');
+}
+
+@mixin ds-shadow-elevated {
+  box-shadow: ds-shadow('elevated');
+}
+
+@mixin ds-shadow-high {
+  box-shadow: ds-shadow('high');
+}
+
+@mixin ds-shadow-glow-primary {
+  box-shadow: ds-shadow('glow-primary');
+}
+
+@mixin ds-shadow-glow-secondary {
+  box-shadow: ds-shadow('glow-secondary');
+}
+
+// ============================================
+// ANIMATION MIXINS
+// ============================================
+
+@mixin ds-transition($properties: all, $duration: 'normal', $easing: 'standard') {
+  transition: $properties var(--ds-duration-#{$duration}) var(--ds-ease-#{$easing});
+}
+
+@mixin ds-animate-fade-in($duration: 'normal', $easing: 'standard') {
+  animation: ds-fade-in var(--ds-duration-#{$duration}) var(--ds-ease-#{$easing});
+}
+
+@mixin ds-animate-scale-in($duration: 'normal', $easing: 'emphasized') {
+  animation: ds-scale-in var(--ds-duration-#{$duration}) var(--ds-ease-#{$easing});
+}
+
+@mixin ds-animate-slide-up($duration: 'normal', $easing: 'emphasized') {
+  animation: ds-slide-up var(--ds-duration-#{$duration}) var(--ds-ease-#{$easing});
+}
+
+// ============================================
+// FOCUS STYLES
+// ============================================
+
+@mixin ds-focus-ring($color: 'primary', $offset: 2px) {
+  outline: 2px solid ds-color($color);
+  outline-offset: $offset;
+}
+
+@mixin ds-focus-visible($color: 'primary') {
+  &:focus {
+    outline: none;
+  }
+
+  &:focus-visible {
+    @include ds-focus-ring($color);
+  }
+}
+
+// ============================================
+// TYPOGRAPHY MIXINS
+// ============================================
+
+@mixin ds-text-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@mixin ds-text-clamp($lines: 2) {
+  display: -webkit-box;
+  -webkit-line-clamp: $lines;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+// ============================================
+// LAYOUT MIXINS
+// ============================================
+
+@mixin ds-flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin ds-flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+@mixin ds-flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+@mixin ds-absolute-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+@mixin ds-full-coverage {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+// ============================================
+// INTERACTIVE STATES
+// ============================================
+
+@mixin ds-hover-lift($translate: -4px) {
+  @include ds-transition(transform, 'normal', 'emphasized');
+
+  &:hover:not(:disabled) {
+    transform: translateY($translate);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+}
+
+@mixin ds-hover-scale($scale: 1.05) {
+  @include ds-transition(transform, 'normal', 'emphasized');
+
+  &:hover:not(:disabled) {
+    transform: scale($scale);
+  }
+
+  &:active:not(:disabled) {
+    transform: scale(0.98);
+  }
+}
+
+@mixin ds-hover-glow($color: 'primary') {
+  @include ds-transition((transform, box-shadow), 'normal', 'emphasized');
+
+  &:hover:not(:disabled) {
+    transform: translateY(-4px);
+    box-shadow: ds-shadow('glow-#{$color}');
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(-2px);
+  }
+}
+
+// ============================================
+// DISABLED STATE
+// ============================================
+
+@mixin ds-disabled {
+  &:disabled,
+  &[disabled],
+  &[aria-disabled='true'] {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+}
+
+// ============================================
+// SCROLLBAR STYLING
+// ============================================
+
+@mixin ds-custom-scrollbar($width: 8px) {
+  &::-webkit-scrollbar {
+    width: $width;
+    height: $width;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: ds-color('surface-subtle');
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: ds-color('text-tertiary');
+    border-radius: ds-radius('full');
+
+    &:hover {
+      background: ds-color('text-secondary');
+    }
+  }
+}
+
+// ============================================
+// GLASSMORPHISM EFFECT
+// ============================================
+
+@mixin ds-glass($backdrop-blur: 20px) {
+  background: ds-color('surface');
+  backdrop-filter: blur($backdrop-blur);
+  -webkit-backdrop-filter: blur($backdrop-blur);
+}
+
+// ============================================
+// SHIMMER LOADING EFFECT
+// ============================================
+
+@mixin ds-shimmer {
+  position: relative;
+  overflow: hidden;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      ds-color('surface-subtle') 50%,
+      transparent 100%
+    );
+    background-size: 200% 100%;
+    animation: ds-shimmer 2s infinite;
+  }
+}
