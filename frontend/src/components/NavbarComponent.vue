@@ -20,9 +20,9 @@ const store = useUserStore();
       <!-- Logo -->
       <router-link to="/" class="navbar-logo" aria-label="Jamigos home">
         <div class="logo-icon" aria-hidden="true">
-          <JamigosLogo :size="32" />
+          <JamigosLogo variant="minimal" height="32" />
         </div>
-        <span class="logo-text">Jamigos</span>
+        <span class="logo-text">JAMIGOS</span>
       </router-link>
 
       <!-- Desktop Navigation Links -->
@@ -125,7 +125,7 @@ const store = useUserStore();
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
   @media (max-width: $breakpoint-sm) {
-    :deep(svg) {
+    :deep(img) {
       width: 28px;
       height: 28px;
     }
@@ -133,13 +133,12 @@ const store = useUserStore();
 }
 
 .logo-text {
+  font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: var(--ds-font-size-2xl);
-  font-weight: var(--ds-font-weight-bold);
-  background: linear-gradient(135deg, var(--ds-color-primary) 0%, var(--ds-color-secondary) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  letter-spacing: -0.5px;
+  font-weight: 500;
+  color: #000000;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
 
   @media (max-width: $breakpoint-md) {
     font-size: var(--ds-font-size-xl);
@@ -148,6 +147,11 @@ const store = useUserStore();
   @media (max-width: $breakpoint-sm) {
     font-size: var(--ds-font-size-lg);
   }
+}
+
+/* White text in dark mode */
+:root[data-theme='dark'] .logo-text {
+  color: #ffffff;
 }
 
 /* Navigation Links */
