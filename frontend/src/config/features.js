@@ -1,42 +1,42 @@
 /**
- * Feature highlights for the home page
+ * Feature highlights for the Jamigos home page
  * Extracted to module-level constant to prevent recreation on every render
  *
  * Note: Using icon name strings (not component imports) because icons are
  * globally registered in main.js, allowing Vue to resolve them via <component :is="">
  */
 
-import { Sparkles, Lock, Zap, Globe, Palette, BarChart3 } from 'lucide-vue-next';
+import { Calendar, Sparkles, Upload, Search, Video, UserCircle } from 'lucide-vue-next';
 
 export const FEATURES = Object.freeze([
   {
+    icon: Calendar,
+    title: 'Create & Join Sessions',
+    description: 'Schedule jam sessions, set your genre preferences, and invite musicians in your area or online.'
+  },
+  {
     icon: Sparkles,
-    title: 'Smart Organization',
-    description: 'Organize your tasks with intelligent categorization and prioritization.'
+    title: 'AI-Powered Matching',
+    description: 'Smart algorithms connect you with musicians who match your skill level, style, and availability.'
   },
   {
-    icon: Lock,
-    title: 'Secure & Private',
-    description: 'Enterprise-grade security with Keycloak authentication to keep your data safe.'
+    icon: Upload,
+    title: 'Upload & Showcase',
+    description: 'Record your sessions and share them on your profile. Build a portfolio that shows what you can do.'
   },
   {
-    icon: Zap,
-    title: 'Lightning Fast',
-    description: 'Built with Vue 3 and modern technologies for blazing fast performance.'
+    icon: Search,
+    title: 'Discover Musicians',
+    description: 'Explore profiles, listen to recordings, and find your next collaborator or bandmate.'
   },
   {
-    icon: Globe,
-    title: 'Access Anywhere',
-    description: 'Seamlessly sync across all your devices with cloud-based storage.'
+    icon: Video,
+    title: 'Video & Audio',
+    description: 'Join virtual jam sessions with high-quality audio/video, or meet up in person.'
   },
   {
-    icon: Palette,
-    title: 'Beautiful Design',
-    description: 'Intuitive and elegant interface that makes task management a pleasure.'
-  },
-  {
-    icon: BarChart3,
-    title: 'Track Progress',
-    description: 'Monitor your productivity with detailed insights and analytics.'
+    icon: UserCircle,
+    title: 'Build Your Profile',
+    description: 'Showcase your instruments, genres, influences, and past sessions. Let your music speak.'
   }
 ]);

@@ -1,6 +1,7 @@
 <script setup>
 import AuthButtons from "@/components/AuthButtonsComponent.vue";
 import ThemeToggle from "@/components/ThemeToggle.vue";
+import JamigosLogo from "@/components/JamigosLogo.vue";
 import { useUserStore } from "@/store/user.js";
 import { UI } from '@/config/constants';
 
@@ -17,20 +18,11 @@ const store = useUserStore();
   <nav class="navbar" role="navigation" aria-label="Main navigation">
     <div class="navbar-container">
       <!-- Logo -->
-      <router-link to="/" class="navbar-logo" aria-label="TaskFlow home">
+      <router-link to="/" class="navbar-logo" aria-label="Jamigos home">
         <div class="logo-icon" aria-hidden="true">
-          <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect x="4" y="4" width="24" height="24" rx="6" fill="url(#gradient)" />
-            <path d="M10 16L14 20L22 12" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-            <defs>
-              <linearGradient id="gradient" x1="4" y1="4" x2="28" y2="28" gradientUnits="userSpaceOnUse">
-                <stop stop-color="#667eea"/>
-                <stop offset="1" stop-color="#764ba2"/>
-              </linearGradient>
-            </defs>
-          </svg>
+          <JamigosLogo :size="32" />
         </div>
-        <span class="logo-text">TaskFlow</span>
+        <span class="logo-text">Jamigos</span>
       </router-link>
 
       <!-- Desktop Navigation Links -->

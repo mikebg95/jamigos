@@ -47,22 +47,21 @@ const features = FEATURES
       <div class="hero-content">
         <div class="hero-badge">
           <span class="badge-dot"></span>
-          Now Available
+          Now in Beta
         </div>
 
         <h1 class="hero-title">
-          Organize Your Life,
-          <span class="gradient-text">One Task at a Time</span>
+          Where Musicians
+          <span class="gradient-text">Connect & Create</span>
         </h1>
 
         <p class="hero-description">
-          The modern todo application that helps you stay focused, organized, and productive.
-          Built with cutting-edge technology for the ultimate task management experience.
+          Join jam sessions, showcase your talent, and discover your next bandmate—all powered by AI-driven matching.
         </p>
 
         <div class="hero-actions">
           <button v-if="!isAuthenticated" @click="signup" class="btn btn-primary">
-            Get Started Free
+            Start Jamming Free
             <span class="btn-arrow">→</span>
           </button>
           <button v-if="!isAuthenticated" @click="login" class="btn btn-secondary">
@@ -76,65 +75,69 @@ const features = FEATURES
 
         <div class="hero-stats">
           <div class="stat">
+            <div class="stat-value">5K+</div>
+            <div class="stat-label">Musicians</div>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat">
             <div class="stat-value">10K+</div>
-            <div class="stat-label">Active Users</div>
+            <div class="stat-label">Jam Sessions</div>
           </div>
           <div class="stat-divider"></div>
           <div class="stat">
-            <div class="stat-value">1M+</div>
-            <div class="stat-label">Tasks Completed</div>
-          </div>
-          <div class="stat-divider"></div>
-          <div class="stat">
-            <div class="stat-value">99.9%</div>
-            <div class="stat-label">Uptime</div>
+            <div class="stat-value">500+</div>
+            <div class="stat-label">Bands Formed</div>
           </div>
         </div>
       </div>
 
       <div class="hero-visual">
         <div class="floating-card card-1">
-          <div class="card-header">
-            <div class="card-dot"></div>
-            <div class="card-dot"></div>
-            <div class="card-dot"></div>
-          </div>
-          <div class="card-content">
-            <div class="task-item completed">
-              <div class="checkbox checked"></div>
-              <span>Design landing page</span>
+          <div class="session-card">
+            <div class="session-header">
+              <span class="session-badge">Jazz Fusion</span>
+              <span class="session-time">Today, 7:00 PM</span>
             </div>
-            <div class="task-item completed">
-              <div class="checkbox checked"></div>
-              <span>Implement authentication</span>
+            <div class="session-title">Upcoming Jam Session</div>
+            <div class="session-musicians">
+              <div class="musician-avatar">JD</div>
+              <div class="musician-avatar">SM</div>
+              <div class="musician-avatar">TK</div>
+              <div class="musician-count">+2</div>
             </div>
-            <div class="task-item">
-              <div class="checkbox"></div>
-              <span>Deploy to production</span>
+            <div class="session-instruments">
+              <span class="instrument-tag">Guitar</span>
+              <span class="instrument-tag">Bass</span>
+              <span class="instrument-tag">Drums</span>
             </div>
           </div>
         </div>
 
         <div class="floating-card card-2">
           <div class="mini-stat">
-            <div class="mini-stat-icon">
-              <TrendingUp :size="UI.ICON_SIZE_LG" :stroke-width="UI.ICON_STROKE_WIDTH" />
-            </div>
+            <div class="mini-stat-icon music-note">♪</div>
             <div>
-              <div class="mini-stat-value">+24%</div>
-              <div class="mini-stat-label">Productivity</div>
+              <div class="mini-stat-value">+42</div>
+              <div class="mini-stat-label">New Sessions</div>
             </div>
           </div>
         </div>
 
         <div class="floating-card card-3">
-          <div class="mini-stat">
-            <div class="mini-stat-icon">
-              <Target :size="UI.ICON_SIZE_LG" :stroke-width="UI.ICON_STROKE_WIDTH" />
+          <div class="recording-card">
+            <div class="waveform">
+              <div class="wave-bar" style="height: 40%"></div>
+              <div class="wave-bar" style="height: 70%"></div>
+              <div class="wave-bar" style="height: 50%"></div>
+              <div class="wave-bar" style="height: 85%"></div>
+              <div class="wave-bar" style="height: 60%"></div>
+              <div class="wave-bar" style="height: 75%"></div>
+              <div class="wave-bar" style="height: 45%"></div>
+              <div class="wave-bar" style="height: 90%"></div>
             </div>
-            <div>
-              <div class="mini-stat-value">18/25</div>
-              <div class="mini-stat-label">Tasks Done</div>
+            <div class="recording-info">
+              <span class="recording-title">Blues Jam</span>
+              <span class="recording-date">Dec 12</span>
             </div>
           </div>
         </div>
@@ -144,9 +147,9 @@ const features = FEATURES
     <!-- Features Section -->
     <section class="features">
       <div class="section-header">
-        <h2 class="section-title">Everything You Need to Stay Productive</h2>
+        <h2 class="section-title">Everything You Need to Jam</h2>
         <p class="section-description">
-          Powerful features designed to help you manage tasks efficiently and achieve your goals.
+          From discovery to recording, Jamigos connects musicians at every step of the creative journey.
         </p>
       </div>
 
@@ -169,9 +172,9 @@ const features = FEATURES
     <!-- CTA Section -->
     <section class="cta">
       <div class="cta-card">
-        <h2 class="cta-title">Ready to Get Started?</h2>
+        <h2 class="cta-title">Ready to Find Your Next Jam?</h2>
         <p class="cta-description">
-          Join thousands of users who are already managing their tasks more effectively.
+          Join thousands of musicians creating, connecting, and collaborating on Jamigos.
         </p>
         <div class="cta-actions">
           <button v-if="!isAuthenticated" @click="signup" class="btn btn-primary btn-large">
@@ -179,7 +182,7 @@ const features = FEATURES
             <span class="btn-arrow">→</span>
           </button>
           <button v-if="isAuthenticated" @click="goToDashboard" class="btn btn-primary btn-large">
-            Open Dashboard
+            Go to Dashboard
             <span class="btn-arrow">→</span>
           </button>
         </div>
@@ -341,57 +344,148 @@ const features = FEATURES
   }
 }
 
-.card-header {
+// Session Card Styles
+.session-card {
+  width: 100%;
+}
+
+.session-header {
   display: flex;
-  gap: $spacing-sm;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: $spacing-md;
 }
 
-.card-dot {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background: var(--ds-color-text-tertiary);
-  opacity: 0.5;
+.session-badge {
+  display: inline-block;
+  padding: $spacing-xs $spacing-sm;
+  background: linear-gradient(135deg, var(--ds-color-primary), var(--ds-color-secondary));
+  border-radius: $radius-full;
+  font-size: $font-xs;
+  font-weight: $font-semibold;
+  color: var(--ds-color-inverse-text);
 }
 
-.task-item {
+.session-time {
+  font-size: $font-xs;
+  color: var(--ds-color-text-tertiary);
+}
+
+.session-title {
+  font-size: $font-lg;
+  font-weight: $font-semibold;
+  color: var(--ds-color-text-primary);
+  margin-bottom: $spacing-md;
+}
+
+.session-musicians {
   display: flex;
   align-items: center;
-  gap: $spacing-sm;
-  padding: $spacing-sm 0;
-  color: var(--ds-color-text-primary);
-  font-size: $font-base;
+  gap: $spacing-xs;
+  margin-bottom: $spacing-md;
+}
 
-  &.completed {
-    color: var(--ds-color-text-tertiary);
-    opacity: 0.7;
-    text-decoration: line-through;
+.musician-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--ds-color-primary), var(--ds-color-secondary));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: $font-xs;
+  font-weight: $font-bold;
+  color: var(--ds-color-inverse-text);
+  border: 2px solid var(--ds-color-background);
+}
+
+.musician-count {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--ds-color-surface-subtle);
+  border: 1px dashed var(--ds-color-border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: $font-xs;
+  color: var(--ds-color-text-secondary);
+}
+
+.session-instruments {
+  display: flex;
+  gap: $spacing-xs;
+  flex-wrap: wrap;
+}
+
+.instrument-tag {
+  padding: $spacing-xs $spacing-sm;
+  background: var(--ds-color-surface-subtle);
+  border: 1px solid var(--ds-color-border-subtle);
+  border-radius: $radius-sm;
+  font-size: $font-xs;
+  color: var(--ds-color-text-secondary);
+}
+
+// Waveform Styles
+.recording-card {
+  width: 100%;
+}
+
+.waveform {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 4px;
+  height: 60px;
+  margin-bottom: $spacing-md;
+}
+
+.wave-bar {
+  flex: 1;
+  background: linear-gradient(180deg, var(--ds-color-primary) 0%, var(--ds-color-secondary) 100%);
+  border-radius: $radius-xs;
+  animation: pulseScale 1.5s ease-in-out infinite;
+  min-height: 20%;
+
+  &:nth-child(2) {
+    animation-delay: 0.1s;
+  }
+  &:nth-child(3) {
+    animation-delay: 0.2s;
+  }
+  &:nth-child(4) {
+    animation-delay: 0.3s;
+  }
+  &:nth-child(5) {
+    animation-delay: 0.4s;
+  }
+  &:nth-child(6) {
+    animation-delay: 0.5s;
+  }
+  &:nth-child(7) {
+    animation-delay: 0.6s;
+  }
+  &:nth-child(8) {
+    animation-delay: 0.7s;
   }
 }
 
-.checkbox {
-  width: 20px;
-  height: 20px;
-  border: 2px solid var(--ds-color-border-subtle);
-  border-radius: $radius-sm;
-  flex-shrink: 0;
+.recording-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 
-  &.checked {
-    background: var(--ds-color-primary);
-    border-color: var(--ds-color-primary);
-    position: relative;
+.recording-title {
+  font-size: $font-base;
+  font-weight: $font-medium;
+  color: var(--ds-color-text-primary);
+}
 
-    &::after {
-      content: '✓';
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      color: var(--ds-color-inverse-text);
-      font-size: 12px;
-    }
-  }
+.recording-date {
+  font-size: $font-sm;
+  color: var(--ds-color-text-tertiary);
 }
 
 .mini-stat {
@@ -405,6 +499,15 @@ const features = FEATURES
   align-items: center;
   justify-content: center;
   color: var(--ds-color-primary);
+
+  &.music-note {
+    font-size: $font-3xl;
+    font-weight: $font-bold;
+    background: linear-gradient(135deg, var(--ds-color-primary), var(--ds-color-secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
 }
 
 .mini-stat-value {
