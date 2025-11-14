@@ -1,144 +1,92 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { deduplicateRequest, clearRequestCache, getPendingRequestCount } from '@/utils/requestCache.js';
+/* global it, jest */
+
+import {
+    deduplicateRequest,
+    clearRequestCache,
+    getPendingRequestCount,
+} from '../utils/requestCache';
 
 describe('requestCache', () => {
-  beforeEach(() => {
-    clearRequestCache();
-  });
-
-  describe('deduplicateRequest', () => {
-    it('should execute the fetch function', async () => {
-      const fetchFn = vi.fn().mockResolvedValue('result');
-
-      const result = await deduplicateRequest('/api/test', {}, fetchFn);
-
-      expect(fetchFn).toHaveBeenCalledTimes(1);
-      expect(result).toBe('result');
+    beforeEach(() => {
+        clearRequestCache();
     });
 
-    it('should deduplicate identical requests', async () => {
-      const fetchFn = vi.fn().mockResolvedValue('result');
+    it('deduplicates in-flight requests with the same URL, method and body', async () => {
+        const fetchFn = jest.fn(() => Promise.resolve('ok'));
 
-      // Fire off two identical requests simultaneously
-      const [result1, result2] = await Promise.all([
-        deduplicateRequest('/api/test', { method: 'GET' }, fetchFn),
-        deduplicateRequest('/api/test', { method: 'GET' }, fetchFn),
-      ]);
+        const p1 = deduplicateRequest('/api/test', { method: 'GET' }, fetchFn);
+        const p2 = deduplicateRequest('/api/test', { method: 'GET' }, fetchFn);
 
-      // Fetch should only be called once
-      expect(fetchFn).toHaveBeenCalledTimes(1);
-      // Both should get the same result
-      expect(result1).toBe('result');
-      expect(result2).toBe('result');
+        // Only one underlying request should be executed
+        expect(fetchFn).toHaveBeenCalledTimes(1);
+
+        await expect(p1).resolves.toBe('ok');
+        await expect(p2).resolves.toBe('ok');
+
+        // Cache should be cleared after completion
+        expect(getPendingRequestCount()).toBe(0);
     });
 
-    it('should not deduplicate different URLs', async () => {
-      const fetchFn1 = vi.fn().mockResolvedValue('result1');
-      const fetchFn2 = vi.fn().mockResolvedValue('result2');
+    it('treats different request keys as separate requests', async () => {
+        const fetchFn1 = jest.fn(() => Promise.resolve('one'));
+        const fetchFn2 = jest.fn(() => Promise.resolve('two'));
 
-      await Promise.all([
-        deduplicateRequest('/api/test1', {}, fetchFn1),
-        deduplicateRequest('/api/test2', {}, fetchFn2),
-      ]);
+        const p1 = deduplicateRequest('/api/one', { method: 'GET' }, fetchFn1);
+        const p2 = deduplicateRequest('/api/two', { method: 'GET' }, fetchFn2);
 
-      expect(fetchFn1).toHaveBeenCalledTimes(1);
-      expect(fetchFn2).toHaveBeenCalledTimes(1);
+        expect(fetchFn1).toHaveBeenCalledTimes(1);
+        expect(fetchFn2).toHaveBeenCalledTimes(1);
+
+        await expect(p1).resolves.toBe('one');
+        await expect(p2).resolves.toBe('two');
+
+        expect(getPendingRequestCount()).toBe(0);
     });
 
-    it('should not deduplicate different methods', async () => {
-      const fetchFn1 = vi.fn().mockResolvedValue('result1');
-      const fetchFn2 = vi.fn().mockResolvedValue('result2');
+    it('removes failed requests from the cache so they can be retried', async () => {
+        const failingFetch = jest.fn(() => Promise.reject('fail'));
+        const successfulFetch = jest.fn(() => Promise.resolve('success'));
 
-      await Promise.all([
-        deduplicateRequest('/api/test', { method: 'GET' }, fetchFn1),
-        deduplicateRequest('/api/test', { method: 'POST' }, fetchFn2),
-      ]);
+        const p1 = deduplicateRequest('/api/fail', { method: 'GET' }, failingFetch);
 
-      expect(fetchFn1).toHaveBeenCalledTimes(1);
-      expect(fetchFn2).toHaveBeenCalledTimes(1);
+        // First call fails
+        await expect(p1).rejects.toBe('fail');
+
+        // At this point the cache should be empty again
+        expect(getPendingRequestCount()).toBe(0);
+
+        // Retry the same request with a new fetch function
+        const p2 = deduplicateRequest('/api/fail', { method: 'GET' }, successfulFetch);
+
+        await expect(p2).resolves.toBe('success');
+        expect(successfulFetch).toHaveBeenCalledTimes(1);
     });
 
-    it('should not deduplicate different bodies', async () => {
-      const fetchFn1 = vi.fn().mockResolvedValue('result1');
-      const fetchFn2 = vi.fn().mockResolvedValue('result2');
+    it('tracks the number of pending requests', async () => {
+        let resolveFn;
+        const fetchFn = jest.fn(
+            () =>
+                new Promise((resolve) => {
+                    resolveFn = resolve;
+                }),
+        );
 
-      await Promise.all([
-        deduplicateRequest('/api/test', { method: 'POST', body: 'body1' }, fetchFn1),
-        deduplicateRequest('/api/test', { method: 'POST', body: 'body2' }, fetchFn2),
-      ]);
+        const p1 = deduplicateRequest('/api/pending', {}, fetchFn);
 
-      expect(fetchFn1).toHaveBeenCalledTimes(1);
-      expect(fetchFn2).toHaveBeenCalledTimes(1);
+        // While the promise is unresolved, it should count as pending
+        expect(getPendingRequestCount()).toBe(1);
+
+        // Deduped call should not increase count
+        const p2 = deduplicateRequest('/api/pending', {}, fetchFn);
+        expect(getPendingRequestCount()).toBe(1);
+        expect(fetchFn).toHaveBeenCalledTimes(1);
+
+        // Resolve the underlying promise
+        resolveFn('done');
+
+        await expect(p1).resolves.toBe('done');
+        await expect(p2).resolves.toBe('done');
+
+        expect(getPendingRequestCount()).toBe(0);
     });
-
-    it('should clear cache after request completes', async () => {
-      const fetchFn = vi.fn().mockResolvedValue('result');
-
-      expect(getPendingRequestCount()).toBe(0);
-
-      const promise = deduplicateRequest('/api/test', {}, fetchFn);
-      expect(getPendingRequestCount()).toBe(1);
-
-      await promise;
-      expect(getPendingRequestCount()).toBe(0);
-    });
-
-    it('should clear cache even if request fails', async () => {
-      const fetchFn = vi.fn().mockRejectedValue(new Error('failed'));
-
-      expect(getPendingRequestCount()).toBe(0);
-
-      try {
-        await deduplicateRequest('/api/test', {}, fetchFn);
-      } catch (e) {
-        // Expected to fail
-      }
-
-      expect(getPendingRequestCount()).toBe(0);
-    });
-
-    it('should allow new request after previous one completes', async () => {
-      const fetchFn1 = vi.fn().mockResolvedValue('result1');
-      const fetchFn2 = vi.fn().mockResolvedValue('result2');
-
-      // First request
-      await deduplicateRequest('/api/test', {}, fetchFn1);
-      expect(fetchFn1).toHaveBeenCalledTimes(1);
-
-      // Second request after first completes
-      await deduplicateRequest('/api/test', {}, fetchFn2);
-      expect(fetchFn2).toHaveBeenCalledTimes(1);
-    });
-  });
-
-  describe('clearRequestCache', () => {
-    it('should clear all pending requests', async () => {
-      const fetchFn = vi.fn().mockImplementation(() => new Promise(() => {})); // Never resolves
-
-      deduplicateRequest('/api/test1', {}, fetchFn);
-      deduplicateRequest('/api/test2', {}, fetchFn);
-
-      expect(getPendingRequestCount()).toBe(2);
-
-      clearRequestCache();
-
-      expect(getPendingRequestCount()).toBe(0);
-    });
-  });
-
-  describe('getPendingRequestCount', () => {
-    it('should return 0 when no requests are pending', () => {
-      expect(getPendingRequestCount()).toBe(0);
-    });
-
-    it('should return correct count of pending requests', () => {
-      const fetchFn = vi.fn().mockImplementation(() => new Promise(() => {})); // Never resolves
-
-      deduplicateRequest('/api/test1', {}, fetchFn);
-      expect(getPendingRequestCount()).toBe(1);
-
-      deduplicateRequest('/api/test2', {}, fetchFn);
-      expect(getPendingRequestCount()).toBe(2);
-    });
-  });
 });

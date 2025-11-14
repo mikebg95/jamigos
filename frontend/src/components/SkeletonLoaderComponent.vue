@@ -1,5 +1,5 @@
 <script setup>
-const props = defineProps({
+defineProps({
   type: {
     type: String,
     default: 'text', // text, rect, circle, list
@@ -29,9 +29,9 @@ const props = defineProps({
     <!-- List type: multiple skeleton items -->
     <template v-if="type === 'list'">
       <div
-        v-for="i in count"
-        :key="i"
-        class="skeleton-item skeleton-item--list"
+          v-for="i in count"
+          :key="i"
+          class="skeleton-item skeleton-item--list"
       >
         <div class="skeleton skeleton--circle" style="width: 40px; height: 40px;"></div>
         <div class="skeleton-text-block">
@@ -44,10 +44,10 @@ const props = defineProps({
     <!-- Single skeleton items -->
     <template v-else>
       <div
-        v-for="i in count"
-        :key="i"
-        :class="['skeleton', `skeleton--${type}`]"
-        :style="{ width, height }"
+          v-for="i in count"
+          :key="i"
+          :class="['skeleton', `skeleton--${type}`]"
+          :style="{ width, height }"
       ></div>
     </template>
   </div>
@@ -64,10 +64,10 @@ const props = defineProps({
 
 .skeleton {
   background: linear-gradient(
-    90deg,
-    rgba(255, 255, 255, 0.05) 0%,
-    rgba(255, 255, 255, 0.1) 50%,
-    rgba(255, 255, 255, 0.05) 100%
+          90deg,
+          rgba(255, 255, 255, 0.05) 0%,
+          rgba(255, 255, 255, 0.1) 50%,
+          rgba(255, 255, 255, 0.05) 100%
   );
   background-size: 200% 100%;
   animation: shimmer 1.5s ease-in-out infinite;
