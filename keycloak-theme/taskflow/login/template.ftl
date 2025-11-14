@@ -1,12 +1,61 @@
 <#macro registrationLayout bodyClass="" displayInfo=false displayMessage=true displayRequiredFields=false>
 <!DOCTYPE html>
-<html lang="${(locale.currentLanguageTag)!'en'}" data-theme="light">
+<html lang="${(locale.currentLanguageTag)!'en'}">
 
 <head>
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta name="robots" content="noindex, nofollow">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- CRITICAL: Set theme IMMEDIATELY before any CSS loads to prevent flash -->
+    <script>
+        (function() {
+            let theme = null;
+
+            // Method 1: Try to read from redirect_uri parameter (highest priority)
+            try {
+                const urlParams = new URLSearchParams(window.location.search);
+                const redirectUri = urlParams.get('redirect_uri');
+
+                if (redirectUri) {
+                    // Try to extract theme from redirect_uri (supports both ?theme=X and #theme=X)
+                    const themeMatch = redirectUri.match(/[?&]theme=(light|dark)/);
+                    if (themeMatch && themeMatch[1]) {
+                        theme = themeMatch[1];
+                        console.log('[Keycloak Theme] Found theme in redirect_uri:', theme);
+                    }
+                }
+            } catch (e) {
+                console.warn('[Keycloak Theme] Failed to parse redirect_uri:', e);
+            }
+
+            // Method 2: Check localStorage (might be set from previous session on this domain)
+            if (!theme) {
+                const stored = localStorage.getItem('app-theme');
+                if (stored === 'light' || stored === 'dark') {
+                    theme = stored;
+                    console.log('[Keycloak Theme] Using localStorage theme:', theme);
+                }
+            }
+
+            // Method 3: Check system preference as final fallback
+            if (!theme) {
+                if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                    theme = 'dark';
+                    console.log('[Keycloak Theme] Using system preference: dark');
+                } else {
+                    theme = 'light';
+                    console.log('[Keycloak Theme] Using default: light');
+                }
+            }
+
+            // Set theme immediately
+            document.documentElement.setAttribute('data-theme', theme);
+            localStorage.setItem('app-theme', theme);
+            console.log('[Keycloak Theme] Applied theme:', theme);
+        })();
+    </script>
 
     <#if properties.meta?has_content>
         <#list properties.meta?split(' ') as meta>
@@ -40,15 +89,6 @@
             <script src="${script}" type="text/javascript"></script>
         </#list>
     </#if>
-
-    <script type="text/javascript">
-        // Theme detection and initialization
-        (function() {
-            const theme = localStorage.getItem('app-theme') ||
-                         (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-            document.documentElement.setAttribute('data-theme', theme);
-        })();
-    </script>
 </head>
 
 <body class="${bodyClass}">

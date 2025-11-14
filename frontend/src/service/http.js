@@ -4,6 +4,7 @@ import { useUiStore } from '@/store/ui.js';
 import { TIMING } from '@/config/constants';
 import * as Sentry from '@sentry/vue';
 import { deduplicateRequest } from '@/utils/requestCache.js';
+import { getTheme } from '@/utils/theme.js';
 
 async function getValidToken() {
     await keycloak.updateToken(TIMING.TOKEN_REFRESH_BUFFER_SEC).catch((err) => {
@@ -41,7 +42,10 @@ export async function apiFetch(path, options = {}) {
             });
 
             if (res.status === 401) {
-                keycloak.login({ redirectUri: window.location.href });
+                const theme = getTheme();
+                sessionStorage.setItem('pending-auth-theme', theme);
+                const redirectUri = `${window.location.origin}${window.location.pathname}?theme=${theme}`;
+                keycloak.login({ redirectUri });
                 return;
             }
 

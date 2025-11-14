@@ -5,6 +5,7 @@ import keycloak from '@/auth/keycloak.js'
 import { useUiStore } from '@/store/ui.js'
 import { UI } from '@/config/constants'
 import { FEATURES } from '@/config/features.js'
+import { getTheme } from '@/utils/theme.js'
 
 const router = useRouter()
 const ui = useUiStore()
@@ -13,12 +14,22 @@ const isAuthenticated = computed(() => keycloak.authenticated)
 
 const login = () => {
   ui.startLoading()
-  keycloak.login()
+  const theme = getTheme()
+  // Store theme in sessionStorage so it persists across redirect
+  sessionStorage.setItem('pending-auth-theme', theme)
+  // Add theme to redirect URI as query parameter
+  const redirectUri = `${window.location.origin}${window.location.pathname}?theme=${theme}`
+  keycloak.login({ redirectUri })
 }
 
 const signup = () => {
   ui.startLoading()
-  keycloak.register()
+  const theme = getTheme()
+  // Store theme in sessionStorage so it persists across redirect
+  sessionStorage.setItem('pending-auth-theme', theme)
+  // Add theme to redirect URI as query parameter
+  const redirectUri = `${window.location.origin}${window.location.pathname}?theme=${theme}`
+  keycloak.register({ redirectUri })
 }
 
 const goToDashboard = () => {

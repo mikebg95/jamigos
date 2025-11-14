@@ -2,12 +2,18 @@
 import keycloak from "../auth/keycloak";
 import { useUiStore } from "@/store/ui.js";
 import { UI } from '@/config/constants';
+import { getTheme } from '@/utils/theme.js';
 
 const ui = useUiStore();
 
 const login = () => {
   ui.startLoading();
-  keycloak.login();
+  const theme = getTheme();
+  // Store theme in sessionStorage so it persists across redirect
+  sessionStorage.setItem('pending-auth-theme', theme);
+  // Add theme to redirect URI as query parameter
+  const redirectUri = `${window.location.origin}${window.location.pathname}?theme=${theme}`;
+  keycloak.login({ redirectUri });
 }
 const logout = () => {
   ui.startLoading();
@@ -15,7 +21,12 @@ const logout = () => {
 }
 const signup = () => {
   ui.startLoading();
-  keycloak.register();
+  const theme = getTheme();
+  // Store theme in sessionStorage so it persists across redirect
+  sessionStorage.setItem('pending-auth-theme', theme);
+  // Add theme to redirect URI as query parameter
+  const redirectUri = `${window.location.origin}${window.location.pathname}?theme=${theme}`;
+  keycloak.register({ redirectUri });
 }
 </script>
 
