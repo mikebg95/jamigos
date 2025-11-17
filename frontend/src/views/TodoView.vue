@@ -3,11 +3,12 @@ import { ref, onMounted } from 'vue';
 import ItemService from '@/service/ItemService.js';
 import { VALIDATION } from '@/config/constants';
 import { useItemOperations } from '@/composables/useItemOperations.js';
-import ErrorAlert from '@/components/ErrorAlertComponent.vue';
+import { useToastStore } from '@/store/toast.js';
 import SkeletonLoader from '@/components/SkeletonLoaderComponent.vue';
 
 // Use composable for item operations
-const { items, error, loading, loadItems, deleteItem } = useItemOperations();
+const { items, loading, loadItems, deleteItem } = useItemOperations();
+const toast = useToastStore();
 
 const newItem = ref('');
 const MAX_ITEM_LENGTH = VALIDATION.MAX_TASK_LENGTH;
@@ -17,12 +18,12 @@ async function addItem() {
 
   // Input validation
   if (!text) {
-    error.value = 'Please enter a task description.';
+    toast.warning('Please enter a task description.');
     return;
   }
 
   if (text.length > MAX_ITEM_LENGTH) {
-    error.value = `Task description is too long (maximum ${MAX_ITEM_LENGTH} characters).`;
+    toast.warning(`Task description is too long (maximum ${MAX_ITEM_LENGTH} characters).`);
     return;
   }
 
@@ -30,14 +31,14 @@ async function addItem() {
     await ItemService.addItem(text);
     await loadItems();
     newItem.value = '';
-    error.value = ''; // Clear error on success
+    toast.success('Task added successfully!');
   } catch (e) {
     if (e.message.includes('timeout')) {
-      error.value = 'Request timed out. Please try adding the item again.';
+      toast.error('Request timed out. Please try adding the item again.');
     } else if (e.message.includes('403')) {
-      error.value = "You don't have permission to add items.";
+      toast.error("You don't have permission to add items.");
     } else {
-      error.value = 'Failed to add item. Please try again.';
+      toast.error('Failed to add item. Please try again.');
     }
     if (import.meta.env.DEV) {
       console.error('Add item error:', e);
@@ -59,7 +60,7 @@ onMounted(loadItems);
       </div>
 
       <!-- Empty state -->
-      <div v-else-if="!items.length && !error" class="empty-state">
+      <div v-else-if="!items.length" class="empty-state">
         <p>No tasks yet. Add one below to get started!</p>
       </div>
 
@@ -87,19 +88,9 @@ onMounted(loadItems);
           :placeholder="`Add a new task (max ${MAX_ITEM_LENGTH} characters)`"
           autocomplete="off"
           :maxlength="MAX_ITEM_LENGTH"
-          :aria-invalid="error && !loading ? 'true' : 'false'"
-          :aria-describedby="error ? 'error-message' : undefined"
         />
         <button type="submit" aria-label="Add task">Add</button>
       </form>
-
-      <!-- Error message -->
-      <ErrorAlert
-        v-if="error"
-        id="error-message"
-        :message="error"
-        @dismiss="error = ''"
-      />
     </div>
   </div>
 </template>

@@ -5,11 +5,12 @@
 
 import { ref } from 'vue';
 import ItemService from '@/service/ItemService.js';
+import { useToastStore } from '@/store/toast.js';
 
 export function useItemOperations(getAllItems = false) {
   const items = ref([]);
-  const error = ref('');
   const loading = ref(false);
+  const toast = useToastStore();
 
   /**
    * Track ongoing request to prevent race conditions
@@ -30,7 +31,6 @@ export function useItemOperations(getAllItems = false) {
     const requestId = ++currentLoadRequest;
 
     loading.value = true;
-    error.value = '';
 
     try {
       const result = loadAll
@@ -44,7 +44,7 @@ export function useItemOperations(getAllItems = false) {
     } catch (e) {
       // Only show error if this is still the latest request
       if (requestId === currentLoadRequest) {
-        error.value = getErrorMessage(e);
+        toast.error(getErrorMessage(e));
         if (import.meta.env.DEV) {
           console.error('Load items error:', e);
         }
@@ -65,8 +65,9 @@ export function useItemOperations(getAllItems = false) {
     try {
       await ItemService.deleteItem(id);
       await loadItems();
+      toast.success('Task deleted successfully!');
     } catch (e) {
-      error.value = getDeleteErrorMessage(e);
+      toast.error(getDeleteErrorMessage(e));
       if (import.meta.env.DEV) {
         console.error('Delete item error:', e);
       }
@@ -109,7 +110,6 @@ export function useItemOperations(getAllItems = false) {
 
   return {
     items,
-    error,
     loading,
     loadItems,
     deleteItem,

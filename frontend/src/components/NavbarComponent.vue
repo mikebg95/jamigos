@@ -3,16 +3,20 @@ import AuthButtons from "@/components/AuthButtonsComponent.vue";
 import ThemeToggle from "@/components/ThemeToggle.vue";
 import SearchButton from "@/components/SearchButton.vue";
 import NotificationsButton from "@/components/NotificationsButton.vue";
+import MenuButton from "@/components/MenuButton.vue";
+import MenuPanel from "@/components/MenuPanel.vue";
 import JamigosLogo from "@/components/JamigosLogo.vue";
 import { LayoutGrid, UserCircle, MessageCircle, Compass, X } from 'lucide-vue-next';
 import { useUserStore } from "@/store/user.js";
 import { useNotifications } from '@/composables/useNotifications.js';
 import { useSearch } from '@/composables/useSearch.js';
+import { useMenu } from '@/composables/useMenu.js';
 import { UI } from '@/config/constants';
 
 const store = useUserStore();
 const { closeNotifications } = useNotifications();
 const { isSearchOpen, searchQuery, closeSearch } = useSearch();
+const { isMenuOpen } = useMenu();
 
 // Close notifications when any navbar item is clicked
 const handleNavClick = () => {
@@ -73,6 +77,7 @@ const handleNavClick = () => {
             <SearchButton />
           </div>
         </Transition>
+        <MenuButton v-if="store.isAuthenticated" class="hide-on-mobile-search" />
         <ThemeToggle />
         <NotificationsButton v-if="store.isAuthenticated" class="hide-on-mobile-search" />
         <AuthButtons @nav-click="handleNavClick" class="hide-on-mobile-search" />
@@ -80,17 +85,15 @@ const handleNavClick = () => {
     </div>
   </nav>
 
+  <!-- Menu Panel -->
+  <MenuPanel v-if="store.isAuthenticated" :is-open="isMenuOpen" />
+
   <!-- Mobile Bottom Navigation -->
   <nav class="bottom-nav" v-if="store.isAuthenticated" role="navigation" aria-label="Mobile navigation">
     <router-link to="/dashboard" class="bottom-nav-item" aria-label="Go to dashboard" @click="handleNavClick">
       <LayoutGrid :size="UI.ICON_SIZE_MD" :stroke-width="UI.ICON_STROKE_WIDTH" aria-hidden="true" />
       <span class="bottom-nav-label">Dashboard</span>
     </router-link>
-
-<!--    <router-link to="/todo" class="bottom-nav-item" aria-label="Manage your tasks" @click="handleNavClick">-->
-<!--      <CheckSquare :size="UI.ICON_SIZE_MD" :stroke-width="UI.ICON_STROKE_WIDTH" aria-hidden="true" />-->
-<!--      <span class="bottom-nav-label">Tasks</span>-->
-<!--    </router-link>-->
 
     <router-link to="/explore" class="bottom-nav-item" aria-label="Explore" @click="handleNavClick">
       <Compass :size="UI.ICON_SIZE_MD" :stroke-width="UI.ICON_STROKE_WIDTH" aria-hidden="true" />
@@ -101,11 +104,6 @@ const handleNavClick = () => {
       <MessageCircle :size="UI.ICON_SIZE_MD" :stroke-width="UI.ICON_STROKE_WIDTH" aria-hidden="true" />
       <span class="bottom-nav-label">Messages</span>
     </router-link>
-
-<!--    <router-link to="/info" class="bottom-nav-item" aria-label="View information" @click="handleNavClick">-->
-<!--      <Info :size="UI.ICON_SIZE_MD" :stroke-width="UI.ICON_STROKE_WIDTH" aria-hidden="true" />-->
-<!--      <span class="bottom-nav-label">Info</span>-->
-<!--    </router-link>-->
 
     <router-link to="/profile" class="bottom-nav-item" aria-label="View your profile" @click="handleNavClick">
       <UserCircle :size="UI.ICON_SIZE_MD" :stroke-width="UI.ICON_STROKE_WIDTH" aria-hidden="true" />

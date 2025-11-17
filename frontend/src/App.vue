@@ -1,5 +1,6 @@
 <script setup>
 import NavbarComponent from "@/components/NavbarComponent.vue";
+import ToastContainer from "@/components/ToastContainer.vue";
 import { useUiStore } from "@/store/ui.js";
 import { DotLoader } from "vue3-spinner";
 import { watch, onBeforeUnmount, onErrorCaptured, ref } from "vue";
@@ -84,6 +85,9 @@ onBeforeUnmount(() => unlockUI());
         <span class="sr-only">Loading, please wait...</span>
       </div>
     </Transition>
+
+    <!-- Global toast notifications -->
+    <ToastContainer />
 
     <div class="app-container">
       <NavbarComponent />

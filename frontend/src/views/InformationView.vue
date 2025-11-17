@@ -1,11 +1,10 @@
 <script setup>
 import { onMounted } from 'vue';
 import { useItemOperations } from '@/composables/useItemOperations.js';
-import ErrorAlert from '@/components/ErrorAlertComponent.vue';
 import SkeletonLoader from '@/components/SkeletonLoaderComponent.vue';
 
 // Use composable for item operations (admin view - loads all items)
-const { items, error, loading, loadItems, deleteItem } = useItemOperations(true);
+const { items, loading, loadItems, deleteItem } = useItemOperations(true);
 
 onMounted(loadItems);
 </script>
@@ -21,7 +20,7 @@ onMounted(loadItems);
       </div>
 
       <!-- Empty state -->
-      <div v-else-if="!items.length && !error" class="empty-state">
+      <div v-else-if="!items.length" class="empty-state">
         <p>No items found in the system.</p>
       </div>
 
@@ -38,13 +37,6 @@ onMounted(loadItems);
           </button>
         </li>
       </ul>
-
-      <!-- Error message -->
-      <ErrorAlert
-        v-if="error"
-        :message="error"
-        @dismiss="error = ''"
-      />
     </div>
   </div>
 </template>

@@ -6,6 +6,17 @@ import * as Sentry from '@sentry/vue';
 import { deduplicateRequest } from '@/utils/requestCache.js';
 import { getTheme } from '@/utils/theme.js';
 
+// API base URL logic:
+// - When VITE_API_BASE_URL is set (mobile builds), construct full URLs: VITE_API_BASE_URL + path
+// - When VITE_API_BASE_URL is not set (web dev/prod), use relative paths: /api → Nginx proxy
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
+
+function buildUrl(path) {
+    // If API_BASE_URL is set, construct full URL (for mobile)
+    // Otherwise, return path as-is (for web with Nginx proxy)
+    return API_BASE_URL ? `${API_BASE_URL}${path}` : path;
+}
+
 async function getValidToken() {
     await keycloak.updateToken(TIMING.TOKEN_REFRESH_BUFFER_SEC).catch((err) => {
         // Log token refresh failures for debugging
@@ -35,7 +46,8 @@ export async function apiFetch(path, options = {}) {
                 Authorization: `Bearer ${token}`,
             };
 
-            const res = await fetch(path, {
+            const url = buildUrl(path);
+            const res = await fetch(url, {
                 ...options,
                 headers,
                 signal: controller.signal,
@@ -55,7 +67,7 @@ export async function apiFetch(path, options = {}) {
             }
 
             if (!res.ok) {
-                const error = new Error(`${options.method || 'GET'} ${path} -> ${res.status}`);
+                const error = new Error(`${options.method || 'GET'} ${url} -> ${res.status}`);
 
                 // Send HTTP errors to Sentry (except auth errors which are expected)
                 if (res.status !== 401 && res.status !== 403) {
@@ -66,7 +78,7 @@ export async function apiFetch(path, options = {}) {
                         contexts: {
                             http: {
                                 method: options.method || 'GET',
-                                url: path,
+                                url: url,
                                 status_code: res.status,
                             },
                         },
@@ -91,7 +103,7 @@ export async function apiFetch(path, options = {}) {
                     contexts: {
                         http: {
                             method: options.method || 'GET',
-                            url: path,
+                            url: buildUrl(path),
                         },
                     },
                 });

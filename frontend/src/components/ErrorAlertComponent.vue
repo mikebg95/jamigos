@@ -1,9 +1,9 @@
 <script setup>
-import { ref } from 'vue';
-import { AlertCircle, X } from 'lucide-vue-next';
+import { ref, computed } from 'vue';
+import { AlertCircle, AlertTriangle, Info, CheckCircle, X } from 'lucide-vue-next';
 import { UI } from '@/config/constants';
 
-defineProps({
+const props = defineProps({
   message: {
     type: String,
     required: true,
@@ -14,9 +14,24 @@ defineProps({
   },
   type: {
     type: String,
-    default: 'error', // error, warning, info
-    validator: (value) => ['error', 'warning', 'info'].includes(value),
+    default: 'error', // error, warning, info, success
+    validator: (value) => ['error', 'warning', 'info', 'success'].includes(value),
   },
+});
+
+// Select icon based on type
+const icon = computed(() => {
+  switch (props.type) {
+    case 'success':
+      return CheckCircle;
+    case 'warning':
+      return AlertTriangle;
+    case 'info':
+      return Info;
+    case 'error':
+    default:
+      return AlertCircle;
+  }
 });
 
 const emit = defineEmits(['dismiss']);
@@ -38,7 +53,8 @@ const dismiss = () => {
         aria-live="assertive"
     >
       <div class="error-alert__icon">
-        <AlertCircle
+        <component
+            :is="icon"
             :size="UI.ICON_SIZE_SM"
             :stroke-width="UI.ICON_STROKE_WIDTH"
             aria-hidden="true"
@@ -75,34 +91,87 @@ const dismiss = () => {
   gap: $spacing-md;
   padding: $spacing-md $spacing-lg;
   border-radius: $radius-lg;
-  @include glass(0.05);
   border: 1px solid;
   animation: slideDown 0.3s ease-out;
 
   &--error {
-    background: rgba(239, 68, 68, 0.1);
-    border-color: rgba(239, 68, 68, 0.3);
+    background: #fee;
+    border-color: #fcc;
 
     .error-alert__icon {
-      color: $color-error;
+      color: #dc2626;
     }
   }
 
   &--warning {
-    background: rgba(251, 191, 36, 0.1);
-    border-color: rgba(251, 191, 36, 0.3);
+    background: #fef3c7;
+    border-color: #fde68a;
 
     .error-alert__icon {
-      color: #fbbf24;
+      color: #d97706;
     }
   }
 
   &--info {
-    background: rgba(59, 130, 246, 0.1);
-    border-color: rgba(59, 130, 246, 0.3);
+    background: #dbeafe;
+    border-color: #bfdbfe;
 
     .error-alert__icon {
-      color: #3b82f6;
+      color: #2563eb;
+    }
+  }
+
+  &--success {
+    background: #dcfce7;
+    border-color: #bbf7d0;
+
+    .error-alert__icon {
+      color: #16a34a;
+    }
+  }
+}
+
+// Dark mode support
+:root[data-theme='dark'] {
+  .error-alert {
+    &--error {
+      background: #7f1d1d;
+      border-color: #991b1b;
+      color: #fecaca;
+
+      .error-alert__icon {
+        color: #fca5a5;
+      }
+    }
+
+    &--warning {
+      background: #78350f;
+      border-color: #92400e;
+      color: #fde68a;
+
+      .error-alert__icon {
+        color: #fbbf24;
+      }
+    }
+
+    &--info {
+      background: #1e3a8a;
+      border-color: #1e40af;
+      color: #bfdbfe;
+
+      .error-alert__icon {
+        color: #93c5fd;
+      }
+    }
+
+    &--success {
+      background: #14532d;
+      border-color: #166534;
+      color: #bbf7d0;
+
+      .error-alert__icon {
+        color: #86efac;
+      }
     }
   }
 }
