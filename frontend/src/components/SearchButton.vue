@@ -1,21 +1,21 @@
 <script setup>
-import { Search } from 'lucide-vue-next';
+import { Search, X } from 'lucide-vue-next';
 import { UI } from '@/config/constants';
+import { useSearch } from '@/composables/useSearch.js';
 
-const handleClick = () => {
-  // TODO: Implement search functionality
-  console.log('Search clicked');
-};
+const { isSearchOpen, toggleSearch } = useSearch();
 </script>
 
 <template>
   <button
-    @click="handleClick"
+    @click="toggleSearch"
     class="icon-button"
-    aria-label="Search"
-    title="Search"
+    :class="{ 'active': isSearchOpen }"
+    :aria-label="isSearchOpen ? 'Close search' : 'Search'"
+    :title="isSearchOpen ? 'Close search' : 'Search'"
   >
-    <Search :size="20" :stroke-width="UI.ICON_STROKE_WIDTH" />
+    <X v-if="isSearchOpen" :size="20" :stroke-width="UI.ICON_STROKE_WIDTH" />
+    <Search v-else :size="20" :stroke-width="UI.ICON_STROKE_WIDTH" />
   </button>
 </template>
 
@@ -56,6 +56,16 @@ const handleClick = () => {
   &:focus-visible {
     outline: 2px solid var(--ds-color-primary);
     outline-offset: 2px;
+  }
+
+  // Active state when search is open
+  &.active {
+    color: var(--ds-color-primary);
+    background: rgba(249, 165, 72, 0.15);
+
+    svg {
+      transform: scale(1.1);
+    }
   }
 
   svg {

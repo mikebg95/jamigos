@@ -3,6 +3,7 @@ import keycloak from "../auth/keycloak";
 import { useUiStore } from "@/store/ui.js";
 import { UI } from '@/config/constants';
 import { getTheme } from '@/utils/theme.js';
+import { UserCircle } from 'lucide-vue-next';
 
 const ui = useUiStore();
 const emit = defineEmits(['nav-click']);
@@ -100,7 +101,7 @@ const signup = () => {
   }
 
   .username {
-    @media (max-width: 480px) {
+    @media (max-width: $breakpoint-lg) {
       display: none;
     }
   }

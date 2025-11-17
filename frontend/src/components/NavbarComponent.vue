@@ -4,13 +4,15 @@ import ThemeToggle from "@/components/ThemeToggle.vue";
 import SearchButton from "@/components/SearchButton.vue";
 import NotificationsButton from "@/components/NotificationsButton.vue";
 import JamigosLogo from "@/components/JamigosLogo.vue";
-import { LayoutGrid, CheckSquare, Info, UserCircle, MessageCircle, Compass } from 'lucide-vue-next';
+import { LayoutGrid, CheckSquare, Info, UserCircle, MessageCircle, Compass, X } from 'lucide-vue-next';
 import { useUserStore } from "@/store/user.js";
 import { useNotifications } from '@/composables/useNotifications.js';
+import { useSearch } from '@/composables/useSearch.js';
 import { UI } from '@/config/constants';
 
 const store = useUserStore();
 const { closeNotifications } = useNotifications();
+const { isSearchOpen, searchQuery, closeSearch } = useSearch();
 
 // Close notifications when any navbar item is clicked
 const handleNavClick = () => {
@@ -26,7 +28,7 @@ const handleNavClick = () => {
 
   <!-- Top Navbar -->
   <nav class="navbar" role="navigation" aria-label="Main navigation">
-    <div class="navbar-container">
+    <div class="navbar-container" :class="{ 'search-active': isSearchOpen }">
       <!-- Logo -->
       <router-link to="/" class="navbar-logo" aria-label="Jamigos home" @click="handleNavClick">
         <div class="logo-icon" aria-hidden="true">
@@ -36,7 +38,7 @@ const handleNavClick = () => {
       </router-link>
 
       <!-- Desktop Navigation Links -->
-      <nav class="navbar-links" v-if="store.isAuthenticated" aria-label="Primary">
+      <nav class="navbar-links hide-on-mobile-search" v-if="store.isAuthenticated" aria-label="Primary">
         <router-link to="/dashboard" class="nav-link" aria-label="Go to dashboard" @click="handleNavClick">
           Dashboard
         </router-link>
@@ -48,12 +50,26 @@ const handleNavClick = () => {
         </router-link>
       </nav>
 
+      <!-- Search Bar - appears when search is active -->
+      <div v-if="isSearchOpen" class="search-bar">
+        <input
+          v-model="searchQuery"
+          type="text"
+          placeholder="Search..."
+          class="search-input"
+          autofocus
+        />
+        <button @click="closeSearch" class="search-close-button" aria-label="Close search">
+          <X :size="20" :stroke-width="UI.ICON_STROKE_WIDTH" />
+        </button>
+      </div>
+
       <!-- Theme Toggle & Auth Buttons -->
       <div class="navbar-actions">
-        <div @click="handleNavClick"><SearchButton v-if="store.isAuthenticated" /></div>
+        <div @click="handleNavClick"><SearchButton v-if="store.isAuthenticated && !isSearchOpen" /></div>
         <ThemeToggle />
-        <NotificationsButton v-if="store.isAuthenticated" />
-        <AuthButtons @nav-click="handleNavClick" />
+        <NotificationsButton v-if="store.isAuthenticated" class="hide-on-mobile-search" />
+        <AuthButtons @nav-click="handleNavClick" class="hide-on-mobile-search" />
       </div>
     </div>
   </nav>
@@ -173,11 +189,90 @@ const handleNavClick = () => {
   @media (max-width: 480px) {
     display: none;
   }
+
+  // Hide text when search is active only on very small screens
+  .navbar-container.search-active & {
+    @media (max-width: 480px) {
+      display: none;
+    }
+  }
 }
 
 /* White text in dark mode */
 :root[data-theme='dark'] .logo-text {
   color: #ffffff;
+}
+
+/* Search bar */
+.search-bar {
+  flex: 1;
+  margin: 0 var(--ds-spacing-md);
+  max-width: 600px;
+  position: relative;
+
+  @media (max-width: $breakpoint-md) {
+    max-width: none;
+    margin: 0 var(--ds-spacing-sm);
+  }
+}
+
+.search-input {
+  width: 100%;
+  padding: var(--ds-spacing-sm) var(--ds-spacing-base);
+  border: 1px solid var(--ds-color-border);
+  border-radius: var(--ds-radius-lg);
+  background: var(--ds-color-surface-subtle);
+  color: var(--ds-color-text-primary);
+  font-size: var(--ds-font-size-base);
+  transition: all var(--ds-duration-normal) var(--ds-ease-emphasized);
+
+  padding-right: 40px; // Make room for close button
+
+  &::placeholder {
+    color: var(--ds-color-text-tertiary);
+  }
+
+  &:focus {
+    outline: none;
+    border-color: var(--ds-color-primary);
+    background: var(--ds-color-surface);
+    box-shadow: 0 0 0 3px rgba(249, 165, 72, 0.1);
+  }
+}
+
+.search-close-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--ds-color-text-secondary);
+  cursor: pointer;
+  padding: var(--ds-spacing-xs);
+  border-radius: var(--ds-radius-md);
+  transition: all var(--ds-duration-fast) var(--ds-ease-standard);
+
+  &:hover {
+    color: var(--ds-color-text-primary);
+    background: var(--ds-color-surface-hover);
+  }
+
+  &:active {
+    transform: translateY(-50%) scale(0.95);
+  }
+}
+
+/* Hide elements when search is active on mobile and medium screens */
+.hide-on-mobile-search {
+  @media (max-width: $breakpoint-lg) {
+    .navbar-container.search-active & {
+      display: none;
+    }
+  }
 }
 
 /* Navigation Links */
