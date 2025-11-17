@@ -5,6 +5,9 @@ import ErrorAlert from '@/components/ErrorAlertComponent.vue';
 // Mock Lucide icons
 vi.mock('lucide-vue-next', () => ({
   AlertCircle: { name: 'AlertCircle', template: '<div class="alert-circle-icon" />' },
+  AlertTriangle: { name: 'AlertTriangle', template: '<div class="alert-triangle-icon" />' },
+  Info: { name: 'Info', template: '<div class="info-icon" />' },
+  CheckCircle: { name: 'CheckCircle', template: '<div class="check-circle-icon" />' },
   X: { name: 'X', template: '<div class="x-icon" />' },
 }));
 
