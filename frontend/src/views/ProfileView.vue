@@ -2,15 +2,58 @@
 import { useUserStore } from "../store/user.js";
 import { useUiStore } from "../store/ui.js";
 import keycloak from "../auth/keycloak";
+import { useRouter } from 'vue-router';
 import { LogOut } from "lucide-vue-next";
 import { UI } from '@/config/constants';
 
 const userStore = useUserStore();
 const uiStore = useUiStore();
+const router = useRouter();
 
-const logout = () => {
+const logout = async () => {
   uiStore.startLoading();
-  keycloak.logout({ redirectUri: window.location.origin });
+
+  // Detect if running in Capacitor (mobile)
+  const isCapacitor = !!(window.Capacitor && window.Capacitor.getPlatform() !== 'web');
+
+  if (isCapacitor) {
+    // Mobile logout: Call Keycloak logout endpoint first, then clear tokens
+    console.log('[Logout] Mobile logout - logging out of Keycloak');
+
+    try {
+      // Import CapacitorAuthHandler to call logout
+      const { CapacitorAuthHandler } = await import('../auth/capacitorAuth.js');
+
+      const KEYCLOAK_URL = import.meta.env.VITE_KEYCLOAK_URL;
+      const KEYCLOAK_REALM = import.meta.env.VITE_KEYCLOAK_REALM;
+      const KEYCLOAK_CLIENT_ID = import.meta.env.VITE_KEYCLOAK_CLIENT_ID;
+
+      const authHandler = new CapacitorAuthHandler(KEYCLOAK_URL, KEYCLOAK_REALM, KEYCLOAK_CLIENT_ID);
+
+      // Get refresh token before clearing
+      const storedTokens = localStorage.getItem('keycloak_tokens');
+      const tokens = storedTokens ? JSON.parse(storedTokens) : null;
+
+      if (tokens?.refresh_token) {
+        // Log out of Keycloak server
+        await authHandler.logout(tokens.refresh_token);
+      }
+    } catch (error) {
+      console.error('[Logout] Keycloak logout failed:', error);
+      // Continue with local logout even if server logout fails
+    }
+
+    // Clear all auth data
+    localStorage.removeItem('keycloak_tokens');
+    sessionStorage.clear();
+    userStore.clearUser();
+
+    // Force reload to trigger login again
+    window.location.replace('/');
+  } else {
+    // Web logout: Use Keycloak JS adapter
+    keycloak.logout({ redirectUri: window.location.origin });
+  }
 };
 </script>
 

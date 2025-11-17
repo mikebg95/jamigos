@@ -25,6 +25,16 @@ export const useUserStore = defineStore('user', {
                 email: tokenParsed?.email || "",
             };
         },
+        clearUser() {
+            this.isAuthenticated = false;
+            this.user = {
+                roles: [],
+                username: "",
+                firstName: "",
+                lastName: "",
+                email: "",
+            };
+        },
         hasRole(role) {
             return this.user.roles.includes(role);
         },
