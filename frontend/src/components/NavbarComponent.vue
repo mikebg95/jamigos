@@ -6,9 +6,16 @@ import NotificationsButton from "@/components/NotificationsButton.vue";
 import JamigosLogo from "@/components/JamigosLogo.vue";
 import { LayoutGrid, CheckSquare, Info, UserCircle, MessageCircle, Compass } from 'lucide-vue-next';
 import { useUserStore } from "@/store/user.js";
+import { useNotifications } from '@/composables/useNotifications.js';
 import { UI } from '@/config/constants';
 
 const store = useUserStore();
+const { closeNotifications } = useNotifications();
+
+// Close notifications when any navbar item is clicked
+const handleNavClick = () => {
+  closeNotifications();
+};
 </script>
 
 <template>
@@ -21,7 +28,7 @@ const store = useUserStore();
   <nav class="navbar" role="navigation" aria-label="Main navigation">
     <div class="navbar-container">
       <!-- Logo -->
-      <router-link to="/" class="navbar-logo" aria-label="Jamigos home">
+      <router-link to="/" class="navbar-logo" aria-label="Jamigos home" @click="handleNavClick">
         <div class="logo-icon" aria-hidden="true">
           <JamigosLogo variant="minimal" height="32" />
         </div>
@@ -30,13 +37,13 @@ const store = useUserStore();
 
       <!-- Desktop Navigation Links -->
       <nav class="navbar-links" v-if="store.isAuthenticated" aria-label="Primary">
-        <router-link to="/dashboard" class="nav-link" aria-label="Go to dashboard">
+        <router-link to="/dashboard" class="nav-link" aria-label="Go to dashboard" @click="handleNavClick">
           Dashboard
         </router-link>
-        <router-link to="/info" class="nav-link" aria-label="View information">
+        <router-link to="/info" class="nav-link" aria-label="View information" @click="handleNavClick">
           Info
         </router-link>
-        <router-link to="/todo" class="nav-link" aria-label="Manage your tasks">
+        <router-link to="/todo" class="nav-link" aria-label="Manage your tasks" @click="handleNavClick">
           To-do
         </router-link>
       </nav>
@@ -44,41 +51,41 @@ const store = useUserStore();
       <!-- Theme Toggle & Auth Buttons -->
       <div class="navbar-actions">
         <ThemeToggle />
-        <SearchButton v-if="store.isAuthenticated" />
+        <div @click="handleNavClick"><SearchButton v-if="store.isAuthenticated" /></div>
         <NotificationsButton v-if="store.isAuthenticated" />
-        <AuthButtons />
+        <AuthButtons @nav-click="handleNavClick" />
       </div>
     </div>
   </nav>
 
   <!-- Mobile Bottom Navigation -->
   <nav class="bottom-nav" v-if="store.isAuthenticated" role="navigation" aria-label="Mobile navigation">
-    <router-link to="/dashboard" class="bottom-nav-item" aria-label="Go to dashboard">
+    <router-link to="/dashboard" class="bottom-nav-item" aria-label="Go to dashboard" @click="handleNavClick">
       <LayoutGrid :size="UI.ICON_SIZE_MD" :stroke-width="UI.ICON_STROKE_WIDTH" aria-hidden="true" />
       <span class="bottom-nav-label">Dashboard</span>
     </router-link>
 
-<!--    <router-link to="/todo" class="bottom-nav-item" aria-label="Manage your tasks">-->
+<!--    <router-link to="/todo" class="bottom-nav-item" aria-label="Manage your tasks" @click="handleNavClick">-->
 <!--      <CheckSquare :size="UI.ICON_SIZE_MD" :stroke-width="UI.ICON_STROKE_WIDTH" aria-hidden="true" />-->
 <!--      <span class="bottom-nav-label">Tasks</span>-->
 <!--    </router-link>-->
 
-    <router-link to="/explore" class="bottom-nav-item" aria-label="Explore">
+    <router-link to="/explore" class="bottom-nav-item" aria-label="Explore" @click="handleNavClick">
       <Compass :size="UI.ICON_SIZE_MD" :stroke-width="UI.ICON_STROKE_WIDTH" aria-hidden="true" />
       <span class="bottom-nav-label">Explore</span>
     </router-link>
 
-    <router-link to="/messages" class="bottom-nav-item" aria-label="View messages">
+    <router-link to="/messages" class="bottom-nav-item" aria-label="View messages" @click="handleNavClick">
       <MessageCircle :size="UI.ICON_SIZE_MD" :stroke-width="UI.ICON_STROKE_WIDTH" aria-hidden="true" />
       <span class="bottom-nav-label">Messages</span>
     </router-link>
 
-<!--    <router-link to="/info" class="bottom-nav-item" aria-label="View information">-->
+<!--    <router-link to="/info" class="bottom-nav-item" aria-label="View information" @click="handleNavClick">-->
 <!--      <Info :size="UI.ICON_SIZE_MD" :stroke-width="UI.ICON_STROKE_WIDTH" aria-hidden="true" />-->
 <!--      <span class="bottom-nav-label">Info</span>-->
 <!--    </router-link>-->
 
-    <router-link to="/profile" class="bottom-nav-item" aria-label="View your profile">
+    <router-link to="/profile" class="bottom-nav-item" aria-label="View your profile" @click="handleNavClick">
       <UserCircle :size="UI.ICON_SIZE_MD" :stroke-width="UI.ICON_STROKE_WIDTH" aria-hidden="true" />
       <span class="bottom-nav-label">Profile</span>
     </router-link>

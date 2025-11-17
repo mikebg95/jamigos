@@ -5,6 +5,7 @@ import { UI } from '@/config/constants';
 import { getTheme } from '@/utils/theme.js';
 
 const ui = useUiStore();
+const emit = defineEmits(['nav-click']);
 
 const login = () => {
   ui.startLoading();
@@ -37,6 +38,7 @@ const signup = () => {
       v-if="keycloak.authenticated"
       class="profile-link"
       :aria-label="`View profile for ${keycloak.tokenParsed?.preferred_username}`"
+      @click="emit('nav-click')"
     >
       <UserCircle :size="UI.ICON_SIZE_SM" :stroke-width="UI.ICON_STROKE_WIDTH" aria-hidden="true" />
       <span class="username">{{ keycloak.tokenParsed?.preferred_username }}</span>
