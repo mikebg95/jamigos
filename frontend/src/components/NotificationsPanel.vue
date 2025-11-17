@@ -166,7 +166,7 @@ const closePanel = () => {
   margin-bottom: var(--ds-spacing-sm);
   border-radius: var(--ds-radius-lg);
   background: var(--ds-color-surface-subtle);
-  transition: all var(--ds-duration-fast) var(--ds-ease-standard);
+  transition: background-color 0s, transform var(--ds-duration-fast) var(--ds-ease-standard);
 
   &.unread {
     background: rgba(249, 165, 72, 0.08);
