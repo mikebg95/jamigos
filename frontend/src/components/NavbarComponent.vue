@@ -51,22 +51,28 @@ const handleNavClick = () => {
       </nav>
 
       <!-- Search Bar - appears when search is active -->
-      <div v-if="isSearchOpen" class="search-bar">
-        <input
-          v-model="searchQuery"
-          type="text"
-          placeholder="Search..."
-          class="search-input"
-          autofocus
-        />
-        <button @click="closeSearch" class="search-close-button" aria-label="Close search">
-          <X :size="20" :stroke-width="UI.ICON_STROKE_WIDTH" />
-        </button>
-      </div>
+      <Transition name="search-appear">
+        <div v-if="isSearchOpen" class="search-bar">
+          <input
+            v-model="searchQuery"
+            type="text"
+            placeholder="Search..."
+            class="search-input"
+            autofocus
+          />
+          <button @click="closeSearch" class="search-close-button" aria-label="Close search">
+            <X :size="20" :stroke-width="UI.ICON_STROKE_WIDTH" />
+          </button>
+        </div>
+      </Transition>
 
       <!-- Theme Toggle & Auth Buttons -->
       <div class="navbar-actions">
-        <div @click="handleNavClick"><SearchButton v-if="store.isAuthenticated && !isSearchOpen" /></div>
+        <Transition name="search-button-appear">
+          <div v-if="store.isAuthenticated && !isSearchOpen" @click="handleNavClick">
+            <SearchButton />
+          </div>
+        </Transition>
         <ThemeToggle />
         <NotificationsButton v-if="store.isAuthenticated" class="hide-on-mobile-search" />
         <AuthButtons @nav-click="handleNavClick" class="hide-on-mobile-search" />
@@ -264,13 +270,93 @@ const handleNavClick = () => {
   &:active {
     transform: translateY(-50%) scale(0.95);
   }
+
+  &:focus,
+  &:focus-visible {
+    outline: none;
+  }
+}
+
+// Make close button disappear instantly when search bar is closing
+.search-appear-leave-active .search-close-button {
+  opacity: 0;
+  transition: none;
+}
+
+/* Search bar animation */
+.search-appear-enter-active {
+  animation: search-pop-in 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.search-appear-leave-active {
+  animation: search-pop-out 0.25s cubic-bezier(0.32, 0, 0.67, 0);
+}
+
+@keyframes search-pop-in {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateX(-15px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateX(0);
+  }
+}
+
+@keyframes search-pop-out {
+  from {
+    opacity: 1;
+    transform: scale(1) translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.95) translateX(-10px);
+  }
+}
+
+/* Search button animation (when search bar closes) */
+.search-button-appear-enter-active {
+  animation: button-pop-in 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.search-button-appear-leave-active {
+  animation: button-pop-out 0.2s cubic-bezier(0.32, 0, 0.67, 0);
+}
+
+@keyframes button-pop-in {
+  from {
+    opacity: 0;
+    transform: scale(0.8) rotate(-10deg);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+@keyframes button-pop-out {
+  from {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.9) rotate(5deg);
+  }
 }
 
 /* Hide elements when search is active on mobile and medium screens */
 .hide-on-mobile-search {
+  transition: opacity 0.3s var(--ds-ease-emphasized),
+              transform 0.3s var(--ds-ease-emphasized);
+
   @media (max-width: $breakpoint-lg) {
     .navbar-container.search-active & {
-      display: none;
+      opacity: 0;
+      transform: scale(0.95) translateX(10px);
+      pointer-events: none;
+      position: absolute;
+      right: 0;
     }
   }
 }
@@ -280,9 +366,22 @@ const handleNavClick = () => {
   display: flex;
   gap: var(--ds-spacing-sm);
   margin-left: var(--ds-spacing-lg);
+  transition: opacity 0.3s var(--ds-ease-emphasized),
+              transform 0.3s var(--ds-ease-emphasized);
 
   @media (max-width: $breakpoint-md) {
     display: none;
+  }
+
+  // Animate out when search is active on medium screens
+  @media (min-width: $breakpoint-md) and (max-width: $breakpoint-lg) {
+    .navbar-container.search-active & {
+      opacity: 0;
+      transform: scale(0.95) translateX(-10px);
+      pointer-events: none;
+      position: absolute;
+      left: 100px;
+    }
   }
 }
 
