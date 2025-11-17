@@ -44,7 +44,7 @@ const signup = () => {
     <button
       v-if="!keycloak.authenticated"
       @click="login"
-      class="btn-secondary"
+      class="ds-btn ds-btn-secondary"
       aria-label="Log in to your account"
     >
       Log in
@@ -52,23 +52,17 @@ const signup = () => {
     <button
       v-if="!keycloak.authenticated"
       @click="signup"
-      class="btn-primary"
+      class="ds-btn ds-btn-primary"
       aria-label="Sign up for a new account"
     >
       Sign Up
-    </button>
-    <button
-      v-else
-      @click="logout"
-      class="btn-primary"
-      aria-label="Log out of your account"
-    >
-      Log out
     </button>
   </div>
 </template>
 
 <style scoped lang="scss">
+@use '@/scss/variables' as *;
+
 .auth-buttons {
   display: flex;
   gap: var(--ds-spacing-sm);
@@ -108,72 +102,10 @@ const signup = () => {
       display: none;
     }
   }
-}
 
-.btn-primary,
-.btn-secondary {
-  padding: var(--ds-spacing-md) var(--ds-spacing-xl);
-  border: none;
-  border-radius: var(--ds-radius-lg);
-  font-size: var(--ds-font-size-base);
-  font-weight: var(--ds-font-weight-semibold);
-  cursor: pointer;
-  transition: all var(--ds-duration-normal) var(--ds-ease-emphasized);
-  position: relative;
-  overflow: hidden;
-  white-space: nowrap;
-
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-    transition: left var(--ds-duration-slower);
-  }
-
-  &:hover::before {
-    left: 100%;
-  }
-
-  &:active {
-    transform: translateY(0);
-  }
-
-  &:focus-visible {
-    outline: 2px solid var(--ds-color-primary);
-    outline-offset: 2px;
-  }
-
-  @media (max-width: 640px) {
-    padding: var(--ds-spacing-sm) var(--ds-spacing-base);
-    font-size: var(--ds-font-size-sm);
-  }
-}
-
-.btn-primary {
-  background: var(--ds-color-primary);
-  color: var(--ds-color-inverse-text);
-  box-shadow: var(--ds-shadow-soft);
-
-  &:hover {
-    background: var(--ds-color-primary-dark);
-    transform: translateY(-2px);
-    box-shadow: var(--ds-shadow-glow-primary);
-  }
-}
-
-.btn-secondary {
-  background: var(--ds-color-secondary);
-  color: var(--ds-color-inverse-text);
-  box-shadow: var(--ds-shadow-soft);
-
-  &:hover {
-    background: var(--ds-color-secondary-dark);
-    transform: translateY(-2px);
-    box-shadow: var(--ds-shadow-glow-secondary);
+  // Hide on mobile since it's in the bottom navbar
+  @media (max-width: $breakpoint-md) {
+    display: none;
   }
 }
 </style>

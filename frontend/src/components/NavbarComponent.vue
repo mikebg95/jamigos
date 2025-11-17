@@ -1,7 +1,10 @@
 <script setup>
 import AuthButtons from "@/components/AuthButtonsComponent.vue";
 import ThemeToggle from "@/components/ThemeToggle.vue";
+import SearchButton from "@/components/SearchButton.vue";
+import NotificationsButton from "@/components/NotificationsButton.vue";
 import JamigosLogo from "@/components/JamigosLogo.vue";
+import { LayoutGrid, CheckSquare, Info, UserCircle, MessageCircle, Compass } from 'lucide-vue-next';
 import { useUserStore } from "@/store/user.js";
 import { UI } from '@/config/constants';
 
@@ -41,6 +44,8 @@ const store = useUserStore();
       <!-- Theme Toggle & Auth Buttons -->
       <div class="navbar-actions">
         <ThemeToggle />
+        <SearchButton v-if="store.isAuthenticated" />
+        <NotificationsButton v-if="store.isAuthenticated" />
         <AuthButtons />
       </div>
     </div>
@@ -53,15 +58,25 @@ const store = useUserStore();
       <span class="bottom-nav-label">Dashboard</span>
     </router-link>
 
-    <router-link to="/todo" class="bottom-nav-item" aria-label="Manage your tasks">
-      <CheckSquare :size="UI.ICON_SIZE_MD" :stroke-width="UI.ICON_STROKE_WIDTH" aria-hidden="true" />
-      <span class="bottom-nav-label">Tasks</span>
+<!--    <router-link to="/todo" class="bottom-nav-item" aria-label="Manage your tasks">-->
+<!--      <CheckSquare :size="UI.ICON_SIZE_MD" :stroke-width="UI.ICON_STROKE_WIDTH" aria-hidden="true" />-->
+<!--      <span class="bottom-nav-label">Tasks</span>-->
+<!--    </router-link>-->
+
+    <router-link to="/explore" class="bottom-nav-item" aria-label="Explore">
+      <Compass :size="UI.ICON_SIZE_MD" :stroke-width="UI.ICON_STROKE_WIDTH" aria-hidden="true" />
+      <span class="bottom-nav-label">Explore</span>
     </router-link>
 
-    <router-link to="/info" class="bottom-nav-item" aria-label="View information">
-      <Info :size="UI.ICON_SIZE_MD" :stroke-width="UI.ICON_STROKE_WIDTH" aria-hidden="true" />
-      <span class="bottom-nav-label">Info</span>
+    <router-link to="/messages" class="bottom-nav-item" aria-label="View messages">
+      <MessageCircle :size="UI.ICON_SIZE_MD" :stroke-width="UI.ICON_STROKE_WIDTH" aria-hidden="true" />
+      <span class="bottom-nav-label">Messages</span>
     </router-link>
+
+<!--    <router-link to="/info" class="bottom-nav-item" aria-label="View information">-->
+<!--      <Info :size="UI.ICON_SIZE_MD" :stroke-width="UI.ICON_STROKE_WIDTH" aria-hidden="true" />-->
+<!--      <span class="bottom-nav-label">Info</span>-->
+<!--    </router-link>-->
 
     <router-link to="/profile" class="bottom-nav-item" aria-label="View your profile">
       <UserCircle :size="UI.ICON_SIZE_MD" :stroke-width="UI.ICON_STROKE_WIDTH" aria-hidden="true" />
@@ -146,6 +161,10 @@ const store = useUserStore();
 
   @media (max-width: $breakpoint-sm) {
     font-size: var(--ds-font-size-lg);
+  }
+
+  @media (max-width: 480px) {
+    display: none;
   }
 }
 

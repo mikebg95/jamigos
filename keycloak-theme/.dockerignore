@@ -1,0 +1,22 @@
+# Documentation
+README.md
+SETUP.md
+IMPLEMENTATION_SUMMARY.md
+
+# SCSS source files (only include compiled CSS)
+**/*.scss
+
+# Git
+.git
+.gitignore
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db

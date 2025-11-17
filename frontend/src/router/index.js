@@ -6,6 +6,8 @@ import Forbidden from '../views/ForbiddenView.vue'
 import PageNotFound from '../views/PageNotFoundView.vue'
 import Todo from "@/views/TodoView.vue";
 import Profile from "@/views/ProfileView.vue"
+import Messages from "@/views/MessagesView.vue"
+import Explore from "@/views/ExploreView.vue"
 import {useUserStore} from "@/store/user.js";
 
 const routes = [
@@ -42,6 +44,16 @@ const routes = [
     {
         path: '/todo',
         component: Todo,
+        meta: { requiresAuth: true }
+    },
+    {
+        path: '/messages',
+        component: Messages,
+        meta: { requiresAuth: true }
+    },
+    {
+        path: '/explore',
+        component: Explore,
         meta: { requiresAuth: true }
     },
 ]
