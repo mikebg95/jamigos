@@ -82,12 +82,16 @@ Object.entries(icons).forEach(([name, component]) => {
 const uiStore = useUiStore();
 uiStore.startLoading();
 
+// Detect if running in Capacitor (mobile)
+const isCapacitor = window.Capacitor !== undefined;
+
 keycloak
     .init({
-        onLoad: "check-sso",
+        onLoad: isCapacitor ? "login-required" : "check-sso",
         pkceMethod: "S256",
         checkLoginIframe: false,
-        silentCheckSsoRedirectUri: `${window.location.origin}/silent-check-sso.html`, // redirect to silent-check-sso.html
+        // Only use silent check-sso for web, not mobile
+        ...(isCapacitor ? {} : { silentCheckSsoRedirectUri: `${window.location.origin}/silent-check-sso.html` }),
     })
     .then(async () => {
         const userStore = useUserStore();
@@ -109,6 +113,12 @@ keycloak
             await router.replace("/dashboard");
         }
 
+        app.mount("#app");
+    })
+    .catch((error) => {
+        console.error('Keycloak initialization failed:', error);
+        // Mount app anyway so user sees something instead of black screen
+        alert(`Authentication initialization failed: ${error.message}\n\nThe app will load but you may need to refresh.`);
         app.mount("#app");
     })
     .finally(() => {

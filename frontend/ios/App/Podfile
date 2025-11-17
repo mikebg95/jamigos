@@ -21,4 +21,13 @@ end
 
 post_install do |installer|
   assertDeploymentTarget(installer)
+
+  # Disable sandboxing for build scripts to fix file access errors
+  installer.pods_project.targets.each do |target|
+    target.build_phases.each do |build_phase|
+      if build_phase.is_a?(Xcodeproj::Project::Object::PBXShellScriptBuildPhase)
+        build_phase.shell_script = "export DISABLE_SANDBOX=1\n" + build_phase.shell_script
+      end
+    end
+  end
 end
