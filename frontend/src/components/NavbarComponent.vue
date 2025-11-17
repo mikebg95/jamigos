@@ -4,7 +4,7 @@ import ThemeToggle from "@/components/ThemeToggle.vue";
 import SearchButton from "@/components/SearchButton.vue";
 import NotificationsButton from "@/components/NotificationsButton.vue";
 import JamigosLogo from "@/components/JamigosLogo.vue";
-import { LayoutGrid, CheckSquare, Info, UserCircle, MessageCircle, Compass, X } from 'lucide-vue-next';
+import { LayoutGrid, UserCircle, MessageCircle, Compass, X } from 'lucide-vue-next';
 import { useUserStore } from "@/store/user.js";
 import { useNotifications } from '@/composables/useNotifications.js';
 import { useSearch } from '@/composables/useSearch.js';

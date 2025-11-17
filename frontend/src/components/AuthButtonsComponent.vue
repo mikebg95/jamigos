@@ -17,10 +17,6 @@ const login = () => {
   const redirectUri = `${window.location.origin}${window.location.pathname}?theme=${theme}`;
   keycloak.login({ redirectUri });
 }
-const logout = () => {
-  ui.startLoading();
-  keycloak.logout({ redirectUri: window.location.origin });
-}
 const signup = () => {
   ui.startLoading();
   const theme = getTheme();
