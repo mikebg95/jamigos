@@ -2,13 +2,11 @@
 import { useUserStore } from "../store/user.js";
 import { useUiStore } from "../store/ui.js";
 import keycloak from "../auth/keycloak";
-import { useRouter } from 'vue-router';
 import { LogOut } from "lucide-vue-next";
 import { UI } from '@/config/constants';
 
 const userStore = useUserStore();
 const uiStore = useUiStore();
-const router = useRouter();
 
 const logout = async () => {
   uiStore.startLoading();
