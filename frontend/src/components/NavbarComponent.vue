@@ -50,8 +50,8 @@ const handleNavClick = () => {
 
       <!-- Theme Toggle & Auth Buttons -->
       <div class="navbar-actions">
-        <ThemeToggle />
         <div @click="handleNavClick"><SearchButton v-if="store.isAuthenticated" /></div>
+        <ThemeToggle />
         <NotificationsButton v-if="store.isAuthenticated" />
         <AuthButtons @nav-click="handleNavClick" />
       </div>
