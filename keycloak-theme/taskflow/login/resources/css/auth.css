@@ -204,17 +204,31 @@ html, body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 64px;
-  height: 64px;
+  gap: 12px;
   margin: 0 auto var(--ds-spacing-base);
-  background: linear-gradient(135deg, var(--ds-color-primary), var(--ds-color-secondary));
-  border-radius: var(--ds-radius-xl);
-  box-shadow: 0 1px 2px var(--ds-color-shadow-light), 0 1px 3px var(--ds-color-shadow-light);
 }
-.ds-auth-logo svg, .ds-auth-logo img {
-  width: 36px;
+.ds-auth-logo .logo-icon {
+  display: block;
   height: 36px;
-  color: var(--ds-color-inverse-text);
+  width: auto;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+:root[data-theme=dark] .ds-auth-logo .logo-icon {
+  filter: invert(1) brightness(1.2);
+}
+.ds-auth-logo .logo-text {
+  font-family: "Montserrat", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 24px;
+  font-weight: 500;
+  color: #000000;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+:root[data-theme=dark] .ds-auth-logo .logo-text {
+  color: #ffffff;
+}
+.ds-auth-logo:hover .logo-icon {
+  transform: rotate(5deg);
 }
 
 .ds-auth-title {

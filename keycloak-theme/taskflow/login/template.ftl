@@ -62,7 +62,11 @@
             <meta name="${meta?split('==')[0]}" content="${meta?split('==')[1]}"/>
         </#list>
     </#if>
-    <title>${msg("loginTitle",(realm.displayName!''))}</title>
+    <title>
+        <#if register??>${msg("registerTitle")}
+        <#else>${msg("loginTitle")}
+        </#if>
+    </title>
     <link rel="icon" href="${url.resourcesPath}/img/favicon.ico" />
 
     <!-- Custom theme styles -->
@@ -98,10 +102,8 @@
         <div class="ds-auth-card">
             <div class="ds-auth-header">
                 <div class="ds-auth-logo">
-                    <svg width="36" height="36" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <rect x="4" y="4" width="24" height="24" rx="6" fill="white" fill-opacity="0.9"/>
-                        <path d="M10 16L14 20L22 12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
+                    <img src="${url.resourcesPath}/img/jamigos-logo-minimal.svg" alt="Jamigos" height="36" class="logo-icon" />
+                    <span class="logo-text">JAMIGOS</span>
                 </div>
 
                 <h1 class="ds-auth-title">
