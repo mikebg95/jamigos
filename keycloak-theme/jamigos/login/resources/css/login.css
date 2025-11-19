@@ -6,7 +6,10 @@
 /* ============================================
    CSS VARIABLES - DESIGN TOKENS
    ============================================ */
-:root {
+
+/* LIGHT MODE (Default) */
+:root,
+:root[data-theme='light'] {
   /* Colors - Primary */
   --color-primary: #F9A548;
   --color-primary-dark: #B2531D;
@@ -25,6 +28,7 @@
   --color-background: #F8E8CD;
   --color-surface: #FFFFFF;
   --color-surface-subtle: #F3F0E8;
+  --color-surface-hover: #FAF8F3;
 
   /* Colors - Text */
   --color-text-primary: #010100;
@@ -34,6 +38,7 @@
 
   /* Colors - Border */
   --color-divider: #E2D9C8;
+  --color-border: #E2D9C8;
   --color-border-subtle: #EFE8DC;
 
   /* Colors - Status */
@@ -42,7 +47,72 @@
   --color-warning: #FFBF4D;
   --color-info: #0EB3A7;
 
-  /* Typography */
+  /* Shadows */
+  --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.06);
+  --shadow-medium: 0 2px 4px rgba(0, 0, 0, 0.06), 0 4px 8px rgba(0, 0, 0, 0.08);
+  --shadow-elevated: 0 4px 6px rgba(0, 0, 0, 0.08), 0 10px 20px rgba(0, 0, 0, 0.12);
+  --shadow-focus-primary: 0 0 0 3px rgba(249, 165, 72, 0.15);
+  --shadow-focus-error: 0 0 0 3px rgba(217, 83, 79, 0.15);
+  --shadow-glow-primary: 0 4px 20px rgba(249, 165, 72, 0.3);
+
+  /* Color scheme */
+  color-scheme: light;
+}
+
+/* DARK MODE */
+:root[data-theme='dark'] {
+  /* Colors - Primary */
+  --color-primary: #F9A548;
+  --color-primary-dark: #C06A1F;
+  --color-primary-light: #FFBB6A;
+
+  /* Colors - Secondary */
+  --color-secondary: #0EB3A7;
+  --color-secondary-dark: #0A857C;
+  --color-secondary-light: #4FD9CF;
+
+  /* Colors - Accent */
+  --color-purple: #9A72CA;
+  --color-purple-light: #C9ADEF;
+
+  /* Colors - Background */
+  --color-background: #121110;
+  --color-background-elevated: #1A1917;
+  --color-surface: #1F1E1C;
+  --color-surface-hover: #2A2826;
+  --color-surface-subtle: #2F2D2B;
+
+  /* Colors - Text */
+  --color-text-primary: #FFFFFF;
+  --color-text-secondary: #D4D0C9;
+  --color-text-tertiary: #8D8A84;
+  --color-inverse-text: #010100;
+
+  /* Colors - Border */
+  --color-border: #393733;
+  --color-border-subtle: #2A2826;
+  --color-divider: #2C2A27;
+
+  /* Colors - Status */
+  --color-error: #F1695F;
+  --color-success: #57D06E;
+  --color-warning: #FFBF66;
+  --color-info: #19C9BD;
+
+  /* Shadows (deeper in dark mode) */
+  --shadow-soft: 0 2px 4px rgba(0, 0, 0, 0.25), 0 2px 6px rgba(0, 0, 0, 0.3);
+  --shadow-medium: 0 4px 8px rgba(0, 0, 0, 0.3), 0 6px 12px rgba(0, 0, 0, 0.35);
+  --shadow-elevated: 0 8px 16px rgba(0, 0, 0, 0.35), 0 12px 24px rgba(0, 0, 0, 0.4);
+  --shadow-focus-primary: 0 0 0 3px rgba(249, 165, 72, 0.25);
+  --shadow-focus-error: 0 0 0 3px rgba(241, 105, 95, 0.25);
+  --shadow-glow-primary: 0 8px 32px rgba(249, 165, 72, 0.35);
+
+  /* Color scheme */
+  color-scheme: dark;
+}
+
+/* Typography (same for both themes) */
+:root {
   --font-family-base: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   --font-size-xs: 0.75rem;
   --font-size-sm: 0.875rem;
@@ -79,14 +149,6 @@
   --radius-lg: 0.75rem;
   --radius-xl: 1rem;
   --radius-2xl: 1.25rem;
-
-  /* Shadows */
-  --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.06);
-  --shadow-medium: 0 2px 4px rgba(0, 0, 0, 0.06), 0 4px 8px rgba(0, 0, 0, 0.08);
-  --shadow-elevated: 0 4px 6px rgba(0, 0, 0, 0.08), 0 10px 20px rgba(0, 0, 0, 0.12);
-  --shadow-focus-primary: 0 0 0 3px rgba(249, 165, 72, 0.15);
-  --shadow-focus-error: 0 0 0 3px rgba(217, 83, 79, 0.15);
-  --shadow-glow-primary: 0 4px 20px rgba(249, 165, 72, 0.3);
 
   /* Transitions */
   --transition-fast: 150ms ease;
