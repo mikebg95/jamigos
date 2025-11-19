@@ -43,8 +43,10 @@
     <div id="kc-container" class="${properties.kcContainerClass!}">
         <div id="kc-container-wrapper" class="${properties.kcContainerWrapperClass!}">
 
+            <#-- Header with Logo and Page Title -->
             <div id="kc-header" class="${properties.kcHeaderClass!}">
                 <div id="kc-header-wrapper" class="${properties.kcHeaderWrapperClass!}">
+
                     <#-- Logo -->
                     <div id="kc-logo">
                         <div id="kc-logo-wrapper">
@@ -52,27 +54,20 @@
                         </div>
                     </div>
 
-                    <#-- Page Title -->
-                    <#if !(auth?has_content && auth.showUsername() && !auth.showResetCredentials())>
-                        <#if displayRequiredFields>
-                            <div class="${properties.kcContentWrapperClass!}">
-                                <div class="${properties.kcLabelWrapperClass!} subtitle">
-                                    <span class="subtitle"><span class="required">*</span> ${msg("requiredFields")}</span>
-                                </div>
-                            </div>
-                        </#if>
-                    <#else>
-                        <#if displayRequiredFields>
-                            <div class="${properties.kcContentWrapperClass!}">
-                                <div class="${properties.kcLabelWrapperClass!} subtitle">
-                                    <span class="subtitle"><span class="required">*</span> ${msg("requiredFields")}</span>
-                                </div>
-                            </div>
-                        </#if>
+                    <#-- Page Title from specific pages -->
+                    <#nested "header">
+
+                    <#-- Required Fields Indicator -->
+                    <#if displayRequiredFields>
+                        <div class="subtitle">
+                            <span class="required">*</span> ${msg("requiredFields")}
+                        </div>
                     </#if>
+
                 </div>
             </div>
 
+            <#-- Main Content Card -->
             <div id="kc-content">
                 <div id="kc-content-wrapper">
 
@@ -84,13 +79,9 @@
                     </#if>
 
                     <#-- Main Form Content -->
-                    <div id="kc-form">
-                        <div id="kc-form-wrapper">
-                            <#nested "form">
-                        </div>
-                    </div>
+                    <#nested "form">
 
-                    <#-- Additional Info -->
+                    <#-- Additional Info Section -->
                     <#if displayInfo>
                         <div id="kc-info">
                             <div id="kc-info-wrapper">
