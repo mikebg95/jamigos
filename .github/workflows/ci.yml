@@ -210,3 +210,23 @@ jobs:
           api-key: ${{ secrets.RENDER_API_KEY }}
           wait-for-success: true
 
+  deploy-keycloak-to-render:
+    name: Deploy Keycloak to Render
+    needs: [changes, build-push-keycloak-docker-image]
+    if: |
+      github.event_name == 'push' &&
+      github.ref == 'refs/heads/main' &&
+      needs.changes.outputs.keycloak_changed == 'true'
+    runs-on: ubuntu-latest
+    concurrency:
+      group: deploy-production
+      cancel-in-progress: true
+    steps:
+      - name: Deploy Keycloak to Render
+        if: ${{ needs.changes.outputs.keycloak_changed == 'true' }}
+        uses: johnbeynon/render-deploy-action@v0.0.8
+        with:
+          service-id: ${{ secrets.RENDER_KEYCLOAK_SERVICE_ID }}
+          api-key: ${{ secrets.RENDER_API_KEY }}
+          wait-for-success: true
+
