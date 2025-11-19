@@ -49,10 +49,11 @@
             <div id="kc-header" class="${properties.kcHeaderClass!}">
                 <div id="kc-header-wrapper" class="${properties.kcHeaderWrapperClass!}">
 
-                    <#-- Logo -->
+                    <#-- Logo with Icon and Text -->
                     <div id="kc-logo">
                         <div id="kc-logo-wrapper">
-                            <h1>Jamigos</h1>
+                            <img id="kc-logo-icon" src="${url.resourcesPath}/img/jamigos-logo-minimal.svg" alt="Jamigos icon" />
+                            <h1 id="kc-logo-text">Jamigos</h1>
                         </div>
                     </div>
 
