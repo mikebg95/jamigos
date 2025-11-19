@@ -90,8 +90,7 @@ keycloak
         onLoad: isCapacitor ? "login-required" : "check-sso",
         pkceMethod: "S256",
         checkLoginIframe: false,
-        // Only use silent check-sso for web, not mobile
-        ...(isCapacitor ? {} : { silentCheckSsoRedirectUri: `${window.location.origin}/silent-check-sso.html` }),
+        // Disabled silentCheckSsoRedirectUri to avoid CSP issues with cross-origin iframe
     })
     .then(async () => {
         const userStore = useUserStore();

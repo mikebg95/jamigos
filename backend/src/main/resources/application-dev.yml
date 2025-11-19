@@ -6,7 +6,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: https://keycloak.michaelgoldman.dev/realms/jamigos-realm
+          issuer-uri: https://keycloak.jamigos.app/realms/jamigos-realm
 actuator:
   username: ${ACTUATOR_USERNAME}
   password: ${ACTUATOR_PASSWORD}

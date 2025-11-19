@@ -20,6 +20,8 @@ services:
         value: "true"
       - key: KC_PROXY
         value: edge
+      - key: KC_HEALTH_ENABLED
+        value: "true"
     healthCheckPath: /health/ready
 
   # BACKEND (Spring Boot)
