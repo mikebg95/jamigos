@@ -41,7 +41,7 @@ public class RequireOwnerAspect {
         }
 
         // if user is admin and admin is allowed, break out of this aspect
-        if (roles.contains("ROLE_ADMIN_ROLE") && allowAdmin) {
+        if (roles.contains("ROLE_ADMIN") && allowAdmin) {
             return;
         }
 

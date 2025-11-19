@@ -34,7 +34,7 @@ public class ItemService {
         itemRepository.deleteById(id);
     }
 
-    @PreAuthorize("hasRole('ADMIN_ROLE')")
+    @PreAuthorize("hasRole('ADMIN')")
     public List<Item> getAllItemsForAdmin() {
         return itemRepository.findAll();
     }
