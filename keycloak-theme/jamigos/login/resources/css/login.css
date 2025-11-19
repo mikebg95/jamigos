@@ -218,7 +218,26 @@ body {
   width: 48px;
   height: 48px;
   flex-shrink: 0;
+}
+
+/* Light mode - black logo and text */
+:root[data-theme='light'] #kc-logo-icon,
+:root:not([data-theme]) #kc-logo-icon {
+  filter: none;
+}
+
+:root[data-theme='light'] #kc-logo-text,
+:root:not([data-theme]) #kc-logo-text {
+  color: #010100 !important;
+}
+
+/* Dark mode - white logo and text */
+:root[data-theme='dark'] #kc-logo-icon {
   filter: invert(1) brightness(2);
+}
+
+:root[data-theme='dark'] #kc-logo-text {
+  color: #FFFFFF !important;
 }
 
 #kc-logo-text {
@@ -226,7 +245,6 @@ body {
   padding: 0;
   font-size: var(--font-size-4xl);
   font-weight: var(--font-weight-bold);
-  color: #FFFFFF !important;
   letter-spacing: -0.025em;
   text-transform: uppercase;
   line-height: 1;
@@ -830,6 +848,15 @@ a:hover {
   gap: var(--spacing-2xl);
   min-height: 50vh;
   padding: var(--spacing-3xl);
+}
+
+/* Remove card styling on logout pages - make content blend with background */
+.spinner-center ~ * #kc-content,
+#kc-content:has(.spinner-center) {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0;
 }
 
 .logout-message {
