@@ -34,7 +34,6 @@ services:
     command: ["start-dev"]
     volumes:
       - keycloak-data:/opt/keycloak/data
-      - ./keycloak-theme/taskflow:/opt/keycloak/themes/taskflow
   
   postgres:
     image: postgres:16
