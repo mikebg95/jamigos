@@ -34,6 +34,7 @@ services:
     command: ["start-dev"]
     volumes:
       - keycloak-data:/opt/keycloak/data
+      - ./keycloak-theme/jamigos:/opt/keycloak/themes/jamigos
   
   postgres:
     image: postgres:16
