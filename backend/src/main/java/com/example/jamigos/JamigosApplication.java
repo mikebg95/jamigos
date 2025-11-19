@@ -9,5 +9,4 @@ public class JamigosApplication {
     public static void main(String[] args) {
         SpringApplication.run(JamigosApplication.class, args);
     }
-
 }
