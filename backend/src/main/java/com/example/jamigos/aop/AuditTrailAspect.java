@@ -68,3 +68,4 @@ public class AuditTrailAspect {
     @FunctionalInterface
     private interface SupplierEx<T> { T get() throws Exception; }
 }
+
