@@ -14,7 +14,7 @@ export const useUserStore = defineStore('user', {
 
     actions: {
         setUser(authenticated, roles, tokenParsed) {
-            const allowed = ["USER_ROLE", "ADMIN_ROLE"];
+            const allowed = ["USER", "ADMIN"];
             this.isAuthenticated = authenticated;
 
             this.user = {

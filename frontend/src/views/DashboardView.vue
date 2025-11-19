@@ -6,7 +6,7 @@ import DashboardUserView from "@/views/DashboardUserView.vue";
 
 const user = useUserStore();
 
-const isAdmin = computed(() => user.hasRole("ADMIN_ROLE"));
+const isAdmin = computed(() => user.hasRole("ADMIN"));
 </script>
 
 <template>
