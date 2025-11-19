@@ -48,9 +48,7 @@
                     <#-- Logo -->
                     <div id="kc-logo">
                         <div id="kc-logo-wrapper">
-                            <h1 style="background: linear-gradient(135deg, #F9A548, #0EB3A7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-size: 2.5rem; font-weight: 800; margin: 0;">
-                                Jamigos
-                            </h1>
+                            <h1>Jamigos</h1>
                         </div>
                     </div>
 
@@ -80,11 +78,7 @@
 
                     <#-- Alert Messages -->
                     <#if displayMessage && message?has_content && (message.type != 'warning' || !isAppInitiatedAction??)>
-                        <div id="kc-feedback" class="alert alert-${message.type}">
-                            <#if message.type = 'success'><span>✓</span></#if>
-                            <#if message.type = 'warning'><span>⚠</span></#if>
-                            <#if message.type = 'error'><span>✕</span></#if>
-                            <#if message.type = 'info'><span>ℹ</span></#if>
+                        <div class="alert alert-${message.type}">
                             <span class="kc-feedback-text">${kcSanitize(message.summary)?no_esc}</span>
                         </div>
                     </#if>
