@@ -4,13 +4,17 @@ import { useUiStore } from "../store/ui.js";
 import keycloak from "../auth/keycloak";
 import { LogOut } from "lucide-vue-next";
 import { UI } from '@/config/constants';
+import { getTheme } from '@/utils/theme.js';
 
 const userStore = useUserStore();
 const uiStore = useUiStore();
 
 const logout = () => {
   uiStore.startLoading();
-  keycloak.logout({ redirectUri: window.location.origin });
+  const theme = getTheme();
+  // Add theme to redirect URI as query parameter
+  const redirectUri = `${window.location.origin}?theme=${theme}`;
+  keycloak.logout({ redirectUri });
 };
 </script>
 
