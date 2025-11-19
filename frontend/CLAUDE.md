@@ -643,8 +643,8 @@ const apiUrl = import.meta.env.VITE_API_BASE_URL
 **Required variables** (`.env.local`):
 ```env
 VITE_KEYCLOAK_URL=http://localhost:8180
-VITE_KEYCLOAK_REALM=todo-app
-VITE_KEYCLOAK_CLIENT_ID=todo-project-client
+VITE_KEYCLOAK_REALM=jamigos-realm
+VITE_KEYCLOAK_CLIENT_ID=jamigos-client
 ```
 
 **Note:** All Vite environment variables must be prefixed with `VITE_`.

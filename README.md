@@ -1,4 +1,4 @@
-# Todo Project
+# Jamigos
 
 A full-stack todo application with enterprise-grade authentication and authorization. Built with Vue.js frontend, Spring Boot backend, and Keycloak for OAuth2/OIDC authentication.
 
@@ -79,7 +79,7 @@ A full-stack todo application with enterprise-grade authentication and authoriza
 1. **Clone the repository**
    ```bash
    git clone <repository-url>
-   cd todo-project
+   cd jamigos
    ```
 
 2. **Start infrastructure services**
@@ -90,8 +90,8 @@ A full-stack todo application with enterprise-grade authentication and authoriza
 3. **Configure Keycloak** (First time setup)
    - Access Keycloak: http://localhost:8180
    - Login with admin credentials (see `.env.local`)
-   - Create realm: `todo-project-realm`
-   - Create client: `todo-project-client`
+   - Create realm: `jamigos-realm`
+   - Create client: `jamigos-client`
      - Client authentication: OFF (public client)
      - Valid redirect URIs: `http://localhost:5173/*`, `http://localhost:8082/*`
      - Web origins: `http://localhost:5173`, `http://localhost:8082`
@@ -166,11 +166,11 @@ Or set in IDE run configuration:
 ## Project Structure
 
 ```
-todo-project/
+jamigos/
 ├── backend/                  # Spring Boot backend
 │   ├── src/
 │   │   ├── main/
-│   │   │   ├── java/com/example/todoapp/
+│   │   │   ├── java/com/example/jamigos/
 │   │   │   │   ├── aop/               # AOP aspects
 │   │   │   │   ├── config/            # Configuration classes
 │   │   │   │   ├── controller/        # REST controllers
@@ -297,8 +297,8 @@ All API endpoints (except Swagger and health) require JWT authentication:
 
 ```bash
 # Get token from Keycloak
-curl -X POST http://localhost:8180/realms/todo-project-realm/protocol/openid-connect/token \
-  -d "client_id=todo-project-client" \
+curl -X POST http://localhost:8180/realms/jamigos-realm/protocol/openid-connect/token \
+  -d "client_id=jamigos-client" \
   -d "grant_type=password" \
   -d "username=<user>" \
   -d "password=<password>"
@@ -316,7 +316,7 @@ Key configuration properties in `application-local.yml`:
 ```yaml
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/todoapp
+    url: jdbc:postgresql://localhost:5432/jamigos
   data:
     mongodb:
       uri: mongodb://admin:admin@localhost:27017/todosdb
@@ -324,7 +324,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://localhost:8180/realms/todo-project-realm
+          issuer-uri: http://localhost:8180/realms/jamigos-realm
 ```
 
 ### Frontend Configuration
@@ -333,8 +333,8 @@ Frontend configuration in `frontend/.env.local`:
 
 ```env
 VITE_KEYCLOAK_URL=http://localhost:8180
-VITE_KEYCLOAK_REALM=todo-project-realm
-VITE_KEYCLOAK_CLIENT_ID=todo-project-client
+VITE_KEYCLOAK_REALM=jamigos-realm
+VITE_KEYCLOAK_CLIENT_ID=jamigos-client
 VITE_API_BASE_URL=http://localhost:8082
 ```
 
@@ -381,13 +381,13 @@ npm run test:watch    # Interactive watch mode
 **Backend:**
 ```bash
 cd backend
-docker build -t todo-app-backend .
+docker build -t jamigos-backend .
 ```
 
 **Frontend:**
 ```bash
 cd frontend
-docker build -t todo-app-frontend .
+docker build -t jamigos-frontend .
 ```
 
 ### Environment-Specific Deployment
@@ -419,7 +419,7 @@ export SPRING_PROFILES_ACTIVE=prod
 
 3. **Check Keycloak configuration**: Verify issuer URI is reachable
    ```bash
-   curl http://localhost:8180/realms/todo-project-realm/.well-known/openid-configuration
+   curl http://localhost:8180/realms/jamigos-realm/.well-known/openid-configuration
    ```
 
 ### Frontend authentication fails

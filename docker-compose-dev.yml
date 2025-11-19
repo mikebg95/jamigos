@@ -1,12 +1,12 @@
 services:
   backend:
-    image: ghcr.io/mikebg95/todo-project/todo-backend:${BACKEND_VERSION}
+    image: ghcr.io/mikebg95/jamigos/jamigos-backend:${BACKEND_VERSION}
     environment:
       SPRING_PROFILES_ACTIVE: dev
       SPRING_DATA_MONGODB_URI: ${SPRING_DATA_MONGODB_URI}
 
   frontend:
-    image: ghcr.io/mikebg95/todo-project/todo-frontend:${FRONTEND_VERSION}
+    image: ghcr.io/mikebg95/jamigos/jamigos-frontend:${FRONTEND_VERSION}
     depends_on:
       - backend
     # Optional: uncomment if your Vue app needs to know backend URL

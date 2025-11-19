@@ -615,7 +615,7 @@ For questions or issues with the design system:
 1. Check this documentation
 2. Review example components (ThemeToggle.vue, ErrorAlertComponent.vue)
 3. Inspect CSS variables in browser DevTools
-4. Check `/Users/michaelgoldman/Projects/todo-project/frontend/src/scss/design-system/` for implementation details
+4. Check `/Users/michaelgoldman/Projects/jamigos/frontend/src/scss/design-system/` for implementation details
 
 ---
 

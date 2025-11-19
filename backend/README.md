@@ -84,13 +84,13 @@ Access Swagger UI: http://localhost:8082/swagger-ui.html
 
 ```bash
 ./mvnw clean package
-# Output: target/todo-app-0.0.1-SNAPSHOT.jar
+# Output: target/jamigos-0.0.1-SNAPSHOT.jar
 ```
 
 ### Run the JAR
 
 ```bash
-java -jar target/todo-app-0.0.1-SNAPSHOT.jar --spring.profiles.active=local
+java -jar target/jamigos-0.0.1-SNAPSHOT.jar --spring.profiles.active=local
 ```
 
 ## Running
@@ -118,7 +118,7 @@ With Maven (hot reload with spring-boot-devtools):
 ### Direct JAR Execution
 
 ```bash
-java -jar target/todo-app-0.0.1-SNAPSHOT.jar
+java -jar target/jamigos-0.0.1-SNAPSHOT.jar
 ```
 
 ## Configuration
@@ -151,7 +151,7 @@ The application supports multiple Spring profiles:
 ```yaml
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/todoapp
+    url: jdbc:postgresql://localhost:5432/jamigos
     username: admin
     password: admin
   data:
@@ -166,7 +166,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://localhost:8180/realms/todo-project-realm
+          issuer-uri: http://localhost:8180/realms/jamigos-realm
 ```
 
 **Actuator Security:**
@@ -199,7 +199,7 @@ export SERVER_PORT=8082
 backend/
 ├── src/
 │   ├── main/
-│   │   ├── java/com/example/todoapp/
+│   │   ├── java/com/example/jamigos/
 │   │   │   ├── aop/                      # AOP aspects
 │   │   │   │   ├── AuditTrailAspect.java       # Audit logging
 │   │   │   │   ├── RequireOwnerAspect.java     # Ownership verification
@@ -241,7 +241,7 @@ backend/
 │   │       ├── application-test.yml             # Test profile
 │   │       └── logback-spring.xml               # Logging config
 │   └── test/
-│       └── java/com/example/todoapp/
+│       └── java/com/example/jamigos/
 │           ├── AbstractIntegrationTest.java     # Base integration test
 │           ├── controller/                       # Controller tests
 │           ├── repository/                       # Repository tests
@@ -323,7 +323,7 @@ Creates `AuditLog` entries in MongoDB with:
 ### Dual Database Architecture
 
 **PostgreSQL (JPA):**
-- **Entity**: `User` (in `com.example.todoapp.model`)
+- **Entity**: `User` (in `com.example.jamigos.model`)
 - **Repository**: `UserRepository` (extends `JpaRepository`)
 - **Purpose**: Store user accounts synced from Keycloak
 - **Fields**: UUID id, keycloakId, username, displayName, email, timestamps
@@ -553,7 +553,7 @@ public class MyTest extends AbstractIntegrationTest {
 ### Build Image
 
 ```bash
-docker build -t todo-app-backend .
+docker build -t jamigos-backend .
 ```
 
 ### Run Container
@@ -561,9 +561,9 @@ docker build -t todo-app-backend .
 ```bash
 docker run -p 8082:8082 \
   -e SPRING_PROFILES_ACTIVE=local \
-  -e SPRING_DATASOURCE_URL=jdbc:postgresql://host.docker.internal:5432/todoapp \
+  -e SPRING_DATASOURCE_URL=jdbc:postgresql://host.docker.internal:5432/jamigos \
   -e SPRING_DATA_MONGODB_URI=mongodb://admin:admin@host.docker.internal:27017/todosdb \
-  todo-app-backend
+  jamigos-backend
 ```
 
 ### Multi-Stage Build
@@ -584,8 +584,8 @@ logging:
   level:
     org.springframework.security: DEBUG
     org.springframework.security.oauth2: DEBUG
-    com.example.todoapp.aop: INFO
-    com.example.todoapp: DEBUG
+    com.example.jamigos.aop: INFO
+    com.example.jamigos: DEBUG
 ```
 
 ### View Logs
@@ -618,7 +618,7 @@ docker exec -it local-mongo mongosh --eval "db.adminCommand('ping')"
 
 **Check Keycloak:**
 ```bash
-curl http://localhost:8180/realms/todo-project-realm/.well-known/openid-configuration
+curl http://localhost:8180/realms/jamigos-realm/.well-known/openid-configuration
 ```
 
 ### Tests Failing
@@ -657,7 +657,7 @@ lsof -i :8180  # Keycloak
 
 **PostgreSQL:**
 - Check credentials in `application-local.yml`
-- Verify database exists: `docker exec -it local-postgres psql -U admin -d todoapp`
+- Verify database exists: `docker exec -it local-postgres psql -U admin -d jamigos`
 
 **MongoDB:**
 - Check authentication source: `?authSource=admin`

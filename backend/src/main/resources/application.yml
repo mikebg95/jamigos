@@ -1,6 +1,6 @@
 spring:
   application:
-    name: todo-app
+    name: jamigos
 
   jpa:
     hibernate:
@@ -14,7 +14,7 @@ logging:
   level:
     org.springframework.security: DEBUG
     org.springframework.security.oauth2: DEBUG
-    com.example.todoapp.aop: INFO
+    com.example.jamigos.aop: INFO
 management:
   endpoints:
     web:

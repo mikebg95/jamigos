@@ -6,7 +6,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: https://keycloak.michaelgoldman.dev/realms/todo-project-realm
+          issuer-uri: https://keycloak.michaelgoldman.dev/realms/jamigos-realm
 actuator:
   username: ${ACTUATOR_USERNAME}
   password: ${ACTUATOR_PASSWORD}
@@ -14,6 +14,6 @@ actuator:
 springdoc:
   swagger-ui:
     oauth:
-      client-id: "todo-project-client"
+      client-id: "jamigos-client"
       use-pkce-with-authorization-code-grant: true
-    oauth2-redirect-url: "https://todo-backend-w132.onrender.com/swagger-ui/oauth2-redirect.html"
+    oauth2-redirect-url: "https://jamigos-backend.onrender.com/swagger-ui/oauth2-redirect.html"

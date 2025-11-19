@@ -1,13 +1,13 @@
 spring:
   application:
-    name: todo-app-test
+    name: jamigos-test
 
 logging:
   level:
     root: WARN
     org.springframework.security: WARN
     org.springframework.security.oauth2: WARN
-    com.example.todoapp: INFO
+    com.example.jamigos: INFO
 
 management:
   endpoints:

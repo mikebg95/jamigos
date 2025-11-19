@@ -133,8 +133,8 @@ Create a `.env.local` file in the frontend directory:
 ```env
 # Keycloak Configuration
 VITE_KEYCLOAK_URL=http://localhost:8180
-VITE_KEYCLOAK_REALM=todo-app
-VITE_KEYCLOAK_CLIENT_ID=todo-project-client
+VITE_KEYCLOAK_REALM=jamigos-realm
+VITE_KEYCLOAK_CLIENT_ID=jamigos-client
 ```
 
 ### Vite Proxy Configuration
@@ -393,8 +393,8 @@ npm run dev -- --port 3000
 2. **Verify environment variables** in `.env.local`:
    ```env
    VITE_KEYCLOAK_URL=http://localhost:8180
-   VITE_KEYCLOAK_REALM=todo-app
-   VITE_KEYCLOAK_CLIENT_ID=todo-project-client
+   VITE_KEYCLOAK_REALM=jamigos-realm
+   VITE_KEYCLOAK_CLIENT_ID=jamigos-client
    ```
 3. **Check Keycloak client configuration**:
    - Valid redirect URIs include `http://localhost:5173/*`

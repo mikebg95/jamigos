@@ -1,10 +1,10 @@
 services:
   # BACKEND (Spring Boot)
-  - name: todo-backend
+  - name: jamigos-backend
     type: web
     runtime: image
     image:
-      url: ghcr.io/mikebg95/todo-project/todo-backend:dev
+      url: ghcr.io/mikebg95/jamigos/jamigos-backend:dev
     plan: free
     region: frankfurt
     envVars:
@@ -14,15 +14,15 @@ services:
     # healthCheckPath: /actuator/health
 
   # FRONTEND (Nginx serving built files)
-  - name: todo-frontend
+  - name: jamigos-frontend
     type: web
     runtime: image
     image:
-      url: ghcr.io/mikebg95/todo-project/todo-frontend:dev
+      url: ghcr.io/mikebg95/jamigos/jamigos-frontend:dev
     plan: free
     region: frankfurt
     envVars:
       # Use the backend's PUBLIC URL (works regardless of private DNS)
       - key: BACKEND_URL
-        value: https://todo-backend-w132.onrender.com/
+        value: https://jamigos-backend.onrender.com/
     healthCheckPath: /

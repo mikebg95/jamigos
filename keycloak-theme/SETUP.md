@@ -7,7 +7,7 @@
 The theme is already mounted in your docker-compose file. Just restart Keycloak:
 
 ```bash
-cd /Users/michaelgoldman/Projects/todo-project
+cd /Users/michaelgoldman/Projects/jamigos
 
 # Stop Keycloak
 docker-compose -f docker-compose-local.yml stop keycloak
@@ -44,7 +44,7 @@ docker logs -f local-keycloak
 
 Visit the login page directly:
 ```
-http://localhost:8180/realms/todo-app/protocol/openid-connect/auth?client_id=todo-project-client&redirect_uri=http://localhost:5173&response_type=code&scope=openid
+http://localhost:8180/realms/todo-app/protocol/openid-connect/auth?client_id=jamigos-client&redirect_uri=http://localhost:5173&response_type=code&scope=openid
 ```
 
 You should see:
