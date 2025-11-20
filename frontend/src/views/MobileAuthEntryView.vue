@@ -5,10 +5,27 @@ import { useRouter } from 'vue-router'
 import { useUserStore } from '@/store/user.js'
 import { LogIn, UserPlus } from 'lucide-vue-next'
 import { UI } from '@/config/constants'
+import { onMounted, onBeforeUnmount } from 'vue'
+import { Capacitor } from '@capacitor/core'
 
 const router = useRouter()
 const ui = useUiStore()
 const userStore = useUserStore()
+
+// Disable scrolling on mobile only
+const isNative = Capacitor.isNativePlatform()
+
+onMounted(() => {
+  if (isNative) {
+    document.body.classList.add('no-scroll-mobile-auth')
+  }
+})
+
+onBeforeUnmount(() => {
+  if (isNative) {
+    document.body.classList.remove('no-scroll-mobile-auth')
+  }
+})
 
 const login = async () => {
   ui.startLoading()

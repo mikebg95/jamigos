@@ -3,11 +3,20 @@ import NavbarComponent from "@/components/NavbarComponent.vue";
 import ToastContainer from "@/components/ToastContainer.vue";
 import { useUiStore } from "@/store/ui.js";
 import { DotLoader } from "vue3-spinner";
-import { watch, onBeforeUnmount, onErrorCaptured, ref } from "vue";
+import { watch, onBeforeUnmount, onErrorCaptured, ref, computed } from "vue";
 import { setInteractionLocked, unlockUI } from "@/utils/interactionsLock.js";
 import * as Sentry from "@sentry/vue";
+import { useRoute } from 'vue-router';
+import { Capacitor } from '@capacitor/core';
 
 const ui = useUiStore();
+const route = useRoute();
+const isNative = Capacitor.isNativePlatform();
+
+// Hide top bar on mobile auth entry screen only
+const hideTopBar = computed(() => {
+  return isNative && (route.path === '/mobile-auth' || route.name === 'MobileAuthEntry');
+});
 
 // Global error boundary
 const error = ref(null);
@@ -90,7 +99,7 @@ onBeforeUnmount(() => unlockUI());
     <ToastContainer />
 
     <div class="app-container">
-      <NavbarComponent />
+      <NavbarComponent v-if="!hideTopBar" />
       <main id="main-content">
         <router-view class="container" />
       </main>

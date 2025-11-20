@@ -30,3 +30,11 @@
     padding-bottom: 80px; // Add space for bottom navigation on mobile
   }
 }
+
+// 6. Mobile auth entry - disable scrolling
+body.no-scroll-mobile-auth {
+  overflow: hidden !important;
+  height: 100vh;
+  position: fixed;
+  width: 100%;
+}
