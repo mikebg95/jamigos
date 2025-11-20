@@ -230,6 +230,9 @@ class MobileAuthProvider {
             pkceStorage.verifier = null;
             pkceStorage.state = null;
 
+            // Clean up browser listener
+            this._cleanupBrowserListener();
+
             throw error;
         } finally {
             // Always close browser after redirect
@@ -318,6 +321,9 @@ class MobileAuthProvider {
             pkceStorage.verifier = null;
             pkceStorage.state = null;
 
+            // Clean up browser listener
+            this._cleanupBrowserListener();
+
             throw error;
         } finally {
             // Always close browser after redirect
@@ -391,7 +397,7 @@ class MobileAuthProvider {
      * Wait for authorization code from deep link callback
      * Registers a one-time listener that resolves when deep link fires
      * @returns {Promise<{code: string, state: string}>} Authorization code and state
-     * @throws {Error} If callback contains error or timeout occurs
+     * @throws {Error} If callback contains error, timeout occurs, or browser is cancelled
      */
     waitForAuthCode() {
         console.log('[MobileAuth] waitForAuthCode() - setting up promise...');
@@ -402,6 +408,7 @@ class MobileAuthProvider {
 
             // Set timeout (2 minutes)
             const timeout = setTimeout(() => {
+                this._cleanupBrowserListener();
                 this._authCodePromise = null;
                 reject(new Error('Authentication timeout - no response received'));
             }, 120000);
@@ -409,7 +416,26 @@ class MobileAuthProvider {
             // Store timeout ID so we can clear it
             this._authCodePromise.timeout = timeout;
 
-            console.log('[MobileAuth] Promise registered, waiting for deep link...');
+            // Listen for browser cancellation
+            const browserFinishedListener = Browser.addListener('browserFinished', () => {
+                console.log('[MobileAuth] Browser closed/cancelled by user');
+
+                // Only reject if we're still waiting for auth code
+                if (this._authCodePromise) {
+                    clearTimeout(this._authCodePromise.timeout);
+                    this._authCodePromise = null;
+
+                    // Create specific cancellation error
+                    const cancelError = new Error('Authentication cancelled');
+                    cancelError.code = 'AUTH_CANCELLED';
+                    reject(cancelError);
+                }
+            });
+
+            // Store listener reference so we can clean it up
+            this._browserListener = browserFinishedListener;
+
+            console.log('[MobileAuth] Promise registered, waiting for deep link or browser closure...');
         });
     }
 
@@ -547,6 +573,9 @@ class MobileAuthProvider {
             clearTimeout(this._authCodePromise.timeout);
         }
 
+        // Clean up browser listener
+        this._cleanupBrowserListener();
+
         // Check for errors
         if (result.error) {
             console.error('[MobileAuth] Auth callback error:', result.error);
@@ -671,6 +700,19 @@ class MobileAuthProvider {
         const array = new Uint8Array(16);
         crypto.getRandomValues(array);
         return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
+    }
+
+    /**
+     * Clean up browser event listener
+     * Removes the 'browserFinished' listener if it exists
+     * @private
+     */
+    _cleanupBrowserListener() {
+        if (this._browserListener) {
+            console.log('[MobileAuth] Removing browser event listener');
+            this._browserListener.remove();
+            this._browserListener = null;
+        }
     }
 }
 

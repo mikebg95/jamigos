@@ -43,7 +43,11 @@ const login = async () => {
     }
   } catch (error) {
     console.error('[AuthButtons] Login failed:', error);
-    alert(`Login failed: ${error.message}`);
+
+    // Don't show alert for cancellation - user intentionally closed browser
+    if (error.code !== 'AUTH_CANCELLED') {
+      alert(`Login failed: ${error.message}`);
+    }
   } finally {
     // Clear loading spinner (only matters for mobile, web has redirected)
     ui.stopLoading();
@@ -81,7 +85,11 @@ const signup = async () => {
     }
   } catch (error) {
     console.error('[AuthButtons] Signup failed:', error);
-    alert(`Signup failed: ${error.message}`);
+
+    // Don't show alert for cancellation - user intentionally closed browser
+    if (error.code !== 'AUTH_CANCELLED') {
+      alert(`Signup failed: ${error.message}`);
+    }
   } finally {
     // Clear loading spinner (only matters for mobile, web has redirected)
     ui.stopLoading();
