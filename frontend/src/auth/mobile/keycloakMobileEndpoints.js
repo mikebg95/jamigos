@@ -65,6 +65,22 @@ export function getTokenEndpoint() {
 }
 
 /**
+ * Get the Keycloak registration endpoint URL
+ *
+ * This is the URL where users are redirected to register/signup.
+ *
+ * @returns {string} Full registration endpoint URL
+ *
+ * @example
+ * const registerEndpoint = getRegisterEndpoint();
+ * // => "https://keycloak.jamigos.app/realms/jamigos-realm/protocol/openid-connect/registrations"
+ */
+export function getRegisterEndpoint() {
+    const { keycloakBaseUrl, realm } = KEYCLOAK_MOBILE_CONFIG;
+    return `${keycloakBaseUrl}/realms/${realm}/protocol/openid-connect/registrations`;
+}
+
+/**
  * Get the Keycloak end session (logout) endpoint URL
  *
  * @returns {string} Full logout endpoint URL
@@ -118,7 +134,7 @@ export function getLogoutEndpoint() {
  * //     code_challenge_method=S256&
  * //     state=abc123"
  */
-export function buildAuthUrl({ codeChallenge, state, kcAction }) {
+export function buildAuthUrl({ codeChallenge, state }) {
     const { clientId, redirectUri, scope, codeChallengeMethod } = KEYCLOAK_MOBILE_CONFIG;
     const authEndpoint = getAuthEndpoint();
 
@@ -137,12 +153,45 @@ export function buildAuthUrl({ codeChallenge, state, kcAction }) {
         params.append('state', state);
     }
 
-    // Add optional Keycloak action (e.g., 'REGISTER' for registration page)
-    if (kcAction) {
-        params.append('kc_action', kcAction);
+    return `${authEndpoint}?${params.toString()}`;
+}
+
+/**
+ * Build the registration URL with PKCE parameters
+ * Uses the dedicated /registrations endpoint (not /auth with kc_action)
+ *
+ * @param {Object} params - Registration parameters
+ * @param {string} params.codeChallenge - PKCE code challenge (Base64URL-encoded SHA-256 hash)
+ * @param {string} [params.state] - Optional state parameter for CSRF protection
+ * @returns {string} Complete registration URL ready to open in browser
+ *
+ * @example
+ * const registerUrl = buildRegisterUrl({
+ *   codeChallenge: challenge,
+ *   state: state
+ * });
+ * // => "https://keycloak.jamigos.app/realms/jamigos-realm/protocol/openid-connect/registrations?..."
+ */
+export function buildRegisterUrl({ codeChallenge, state }) {
+    const { clientId, redirectUri, scope, codeChallengeMethod } = KEYCLOAK_MOBILE_CONFIG;
+    const registerEndpoint = getRegisterEndpoint();
+
+    // Build query parameters (same as auth, but different endpoint)
+    const params = new URLSearchParams({
+        client_id: clientId,
+        redirect_uri: redirectUri,
+        response_type: 'code', // Authorization Code Flow
+        scope: scope,
+        code_challenge: codeChallenge,
+        code_challenge_method: codeChallengeMethod,
+    });
+
+    // Add optional state parameter
+    if (state) {
+        params.append('state', state);
     }
 
-    return `${authEndpoint}?${params.toString()}`;
+    return `${registerEndpoint}?${params.toString()}`;
 }
 
 /**

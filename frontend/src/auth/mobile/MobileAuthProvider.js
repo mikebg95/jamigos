@@ -19,6 +19,7 @@ import { Browser } from '@capacitor/browser';
 import { generateCodeVerifier, generateCodeChallenge } from './pkce.js';
 import {
     buildAuthUrl,
+    buildRegisterUrl,
     buildTokenExchangeParams,
     buildTokenRefreshParams,
     getTokenEndpoint,
@@ -267,12 +268,11 @@ class MobileAuthProvider {
             pkceStorage.verifier = verifier;
             pkceStorage.state = state;
 
-            // Step 2: Build authorization URL with REGISTER action
+            // Step 2: Build registration URL (uses /registrations endpoint)
             console.log('[MobileAuth] Step 2: Building registration URL...');
-            const authUrl = buildAuthUrl({
+            const authUrl = buildRegisterUrl({
                 codeChallenge: challenge,
                 state: state,
-                kcAction: 'REGISTER', // This tells Keycloak to show registration page
             });
 
             console.log('[MobileAuth] Registration URL:', authUrl);
