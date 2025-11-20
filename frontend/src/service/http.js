@@ -1,4 +1,4 @@
-import keycloak from '@/auth/keycloak';
+import authFacade from '@/auth/authFacade.js';
 import router from '@/router';
 import { useUiStore } from '@/store/ui.js';
 import { TIMING } from '@/config/constants';
@@ -18,15 +18,15 @@ function buildUrl(path) {
 }
 
 async function getValidToken() {
-    await keycloak.updateToken(TIMING.TOKEN_REFRESH_BUFFER_SEC).catch((err) => {
+    try {
+        return await authFacade.getAccessToken();
+    } catch (err) {
         // Log token refresh failures for debugging
         if (import.meta.env.DEV) {
             console.warn('Token refresh failed:', err);
         }
-        // Sentry could track this if needed
-    });
-    if (!keycloak.authenticated) throw new Error('Not authenticated');
-    return keycloak.token;
+        throw err;
+    }
 }
 
 export async function apiFetch(path, options = {}) {
@@ -56,8 +56,8 @@ export async function apiFetch(path, options = {}) {
             if (res.status === 401) {
                 const theme = getTheme();
                 sessionStorage.setItem('pending-auth-theme', theme);
-                const redirectUri = `${window.location.origin}${window.location.pathname}?theme=${theme}`;
-                keycloak.login({ redirectUri });
+                const redirectPath = `${window.location.pathname}?theme=${theme}`;
+                authFacade.login(redirectPath);
                 return;
             }
 

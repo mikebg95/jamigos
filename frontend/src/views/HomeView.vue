@@ -1,16 +1,18 @@
 <script setup>
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
-import keycloak from '@/auth/keycloak.js'
+import authFacade from '@/auth/authFacade.js'
+import { useUserStore } from '@/store/user.js'
 import { useUiStore } from '@/store/ui.js'
 import { UI } from '@/config/constants'
 import { FEATURES } from '@/config/features.js'
 import { getTheme } from '@/utils/theme.js'
 
 const router = useRouter()
+const userStore = useUserStore()
 const ui = useUiStore()
 
-const isAuthenticated = computed(() => keycloak.authenticated)
+const isAuthenticated = computed(() => userStore.isAuthenticated)
 
 const login = () => {
   ui.startLoading()
@@ -18,8 +20,8 @@ const login = () => {
   // Store theme in sessionStorage so it persists across redirect
   sessionStorage.setItem('pending-auth-theme', theme)
   // Add theme to redirect URI as query parameter
-  const redirectUri = `${window.location.origin}${window.location.pathname}?theme=${theme}`
-  keycloak.login({ redirectUri })
+  const redirectPath = `${window.location.pathname}?theme=${theme}`
+  authFacade.login(redirectPath)
 }
 
 const signup = () => {
@@ -28,8 +30,8 @@ const signup = () => {
   // Store theme in sessionStorage so it persists across redirect
   sessionStorage.setItem('pending-auth-theme', theme)
   // Add theme to redirect URI as query parameter
-  const redirectUri = `${window.location.origin}${window.location.pathname}?theme=${theme}`
-  keycloak.register({ redirectUri })
+  const redirectPath = `${window.location.pathname}?theme=${theme}`
+  authFacade.register(redirectPath)
 }
 
 const goToDashboard = () => {

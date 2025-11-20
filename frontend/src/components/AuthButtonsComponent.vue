@@ -1,10 +1,12 @@
 <script setup>
-import keycloak from "../auth/keycloak";
+import authFacade from "@/auth/authFacade.js";
+import { useUserStore } from "@/store/user.js";
 import { useUiStore } from "@/store/ui.js";
 import { UI } from '@/config/constants';
 import { getTheme } from '@/utils/theme.js';
 import { UserCircle } from 'lucide-vue-next';
 
+const userStore = useUserStore();
 const ui = useUiStore();
 const emit = defineEmits(['nav-click']);
 
@@ -14,8 +16,8 @@ const login = () => {
   // Store theme in sessionStorage so it persists across redirect
   sessionStorage.setItem('pending-auth-theme', theme);
   // Add theme to redirect URI as query parameter
-  const redirectUri = `${window.location.origin}${window.location.pathname}?theme=${theme}`;
-  keycloak.login({ redirectUri });
+  const redirectPath = `${window.location.pathname}?theme=${theme}`;
+  authFacade.login(redirectPath);
 }
 const signup = () => {
   ui.startLoading();
@@ -23,8 +25,8 @@ const signup = () => {
   // Store theme in sessionStorage so it persists across redirect
   sessionStorage.setItem('pending-auth-theme', theme);
   // Add theme to redirect URI as query parameter
-  const redirectUri = `${window.location.origin}${window.location.pathname}?theme=${theme}`;
-  keycloak.register({ redirectUri });
+  const redirectPath = `${window.location.pathname}?theme=${theme}`;
+  authFacade.register(redirectPath);
 }
 </script>
 
@@ -32,16 +34,16 @@ const signup = () => {
   <div class="auth-buttons">
     <router-link
       to="/profile"
-      v-if="keycloak.authenticated"
+      v-if="userStore.isAuthenticated"
       class="profile-link"
-      :aria-label="`View profile for ${keycloak.tokenParsed?.preferred_username}`"
+      :aria-label="`View profile for ${userStore.user.username}`"
       @click="emit('nav-click')"
     >
       <UserCircle :size="UI.ICON_SIZE_SM" :stroke-width="UI.ICON_STROKE_WIDTH" aria-hidden="true" />
-      <span class="username">{{ keycloak.tokenParsed?.preferred_username }}</span>
+      <span class="username">{{ userStore.user.username }}</span>
     </router-link>
     <button
-      v-if="!keycloak.authenticated"
+      v-if="!userStore.isAuthenticated"
       @click="login"
       class="ds-btn ds-btn-secondary"
       aria-label="Log in to your account"
@@ -49,7 +51,7 @@ const signup = () => {
       Log in
     </button>
     <button
-      v-if="!keycloak.authenticated"
+      v-if="!userStore.isAuthenticated"
       @click="signup"
       class="ds-btn ds-btn-primary"
       aria-label="Sign up for a new account"

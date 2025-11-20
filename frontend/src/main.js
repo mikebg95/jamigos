@@ -2,7 +2,7 @@ import { createApp } from "vue";
 import { createPinia } from "pinia";
 import App from "./App.vue";
 import router from "./router";
-import keycloak from "./auth/keycloak";
+import authFacade from "./auth/authFacade.js";
 import { useUserStore } from "@/store/user.js";
 import { useUiStore } from "@/store/ui.js";
 import { initTheme } from "@/utils/theme.js";
@@ -82,22 +82,15 @@ Object.entries(icons).forEach(([name, component]) => {
 const uiStore = useUiStore();
 uiStore.startLoading();
 
-// Detect if running in Capacitor (mobile)
-const isCapacitor = window.Capacitor !== undefined;
-
-keycloak
-    .init({
-        onLoad: isCapacitor ? "login-required" : "check-sso",
-        pkceMethod: "S256",
-        checkLoginIframe: false,
-        // Disabled silentCheckSsoRedirectUri to avoid CSP issues with cross-origin iframe
-    })
-    .then(async () => {
+// Initialize auth via facade (automatically uses correct provider based on platform)
+authFacade
+    .initAuth()
+    .then(async (authUser) => {
         const userStore = useUserStore();
         userStore.setUser(
-            keycloak.authenticated,
-            keycloak.tokenParsed?.realm_access?.roles || [],
-            keycloak.tokenParsed
+            authUser.authenticated,
+            authUser.roles,
+            authUser.tokenParsed
         );
 
         if (userStore.isAuthenticated) {
@@ -115,7 +108,7 @@ keycloak
         app.mount("#app");
     })
     .catch((error) => {
-        console.error('Keycloak initialization failed:', error);
+        console.error('Authentication initialization failed:', error);
         // Mount app anyway so user sees something instead of black screen
         alert(`Authentication initialization failed: ${error.message}\n\nThe app will load but you may need to refresh.`);
         app.mount("#app");
