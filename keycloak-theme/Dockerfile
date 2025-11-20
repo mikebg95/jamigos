@@ -1,8 +1,7 @@
 FROM quay.io/keycloak/keycloak:25.0
 
-# Copy custom theme
+# Copy custom themes
 COPY jamigos /opt/keycloak/themes/jamigos
+COPY jamigos-mobile /opt/keycloak/themes/jamigos-mobile
 
-# Use start-dev for simpler deployment (no external DB required)
-# For production, you would use "start" with proper DB configuration
 CMD ["start-dev"]
