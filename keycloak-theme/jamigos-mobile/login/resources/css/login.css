@@ -163,7 +163,7 @@
 }
 
 html {
-  height: 100%;
+  min-height: 100vh;
   font-size: 16px;
   margin: 0;
   padding: 0;
@@ -172,7 +172,7 @@ html {
 body {
   margin: 0;
   padding: 0;
-  height: 100%;
+  min-height: 100vh;
   font-family: var(--font-family-base);
   font-size: var(--font-size-base);
   line-height: var(--line-height-normal);
@@ -180,7 +180,7 @@ body {
   background: var(--color-background);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  overflow: hidden; /* Prevent scroll by default */
+  overflow-y: auto; /* Allow normal page scroll when needed */
 }
 
 /* ============================================
@@ -192,9 +192,7 @@ body {
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  height: 100%;
   padding: var(--spacing-xl);
-  overflow: hidden;
 }
 
 #kc-container-wrapper {
@@ -219,61 +217,55 @@ body {
 }
 
 #kc-content-wrapper {
-  /* Scrollable if content overflows */
-  max-height: 80vh;
-  overflow-y: auto;
-  padding: var(--spacing-sm);
+  /* No inner scroll - let page scroll naturally */
+  width: 100%;
 }
 
 /* ============================================
    HEADER - MOBILE BRANDING
-   "Jamigos" + tagline like /mobile-auth
+   "Jamigos" + tagline - EXACT match to /mobile-auth
    ============================================ */
 #kc-header {
   text-align: center;
-  margin-bottom: var(--spacing-xl);
+  margin-bottom: 0; /* Controlled by logo-wrapper instead */
 }
 
+/* Match /mobile-auth .logo-section exactly */
 #kc-logo-wrapper {
-  margin-bottom: var(--spacing-lg);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: var(--spacing-sm);
+  text-align: center;
+  margin-bottom: 0;
 }
 
-/* Jamigos title with gradient (like /mobile-auth .app-title) */
+/* Match /mobile-auth .app-title exactly */
 #kc-logo-text {
-  margin: 0;
-  padding: 0;
   font-size: var(--font-size-4xl);
   font-weight: var(--font-weight-bold);
-  letter-spacing: -0.025em;
-  line-height: 1;
-
-  /* Gradient text effect matching /mobile-auth */
   background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  text-transform: none;
+  margin-bottom: var(--spacing-md); /* Exact match to /mobile-auth */
+  margin-top: 0;
+  padding: 0;
+  line-height: 1;
 }
 
-/* Tagline (like /mobile-auth .tagline) */
+/* Match /mobile-auth .tagline exactly */
 .mobile-tagline {
   font-size: var(--font-size-base);
   color: var(--color-text-secondary);
   font-weight: var(--font-weight-normal);
-  margin-top: var(--spacing-sm);
+  margin: 0;
+  padding: 0;
+  line-height: 1.5;
 }
 
-/* Page title smaller, less prominent */
+/* Page title - tight spacing to match mobile design */
 #kc-page-title {
   font-size: var(--font-size-xl);
   font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
-  margin: var(--spacing-lg) 0 var(--spacing-base) 0;
+  margin: var(--spacing-lg) 0 var(--spacing-md) 0; /* Reduced bottom margin from base to md */
 }
 
 .subtitle {
@@ -372,3 +364,24 @@ a:hover{color:var(--color-primary-dark);text-decoration:underline}
 .pf-c-form-control{width:100%}
 .pf-c-button{appearance:none;border:none}
 .pf-m-primary{background:var(--color-primary);color:var(--color-inverse-text)}
+
+/* ============================================
+   MOBILE SPACING REFINEMENTS
+   Reduce gaps between titles and forms
+   ============================================ */
+
+/* Reduce spacing between header and form content */
+#kc-header-wrapper {
+  margin-bottom: var(--spacing-base);
+}
+
+/* Tighter spacing for form wrapper - reduce gap between title and first input */
+#kc-form-wrapper {
+  margin-top: 0;
+}
+
+/* Ensure form starts close to the page title */
+#kc-form {
+  margin-top: 0;
+  margin-bottom: var(--spacing-lg);
+}
