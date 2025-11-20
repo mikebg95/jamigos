@@ -244,15 +244,91 @@ class MobileAuthProvider {
 
     /**
      * Trigger registration/signup flow
-     * In Keycloak, this is handled by adding action=register to auth URL
+     * Opens Keycloak registration page instead of login page
      * @param {string} [redirectPath] - Optional path to redirect to after registration
      * @returns {Promise<Object>} Tokens object
      */
     async register(redirectPath) {
-        console.log('[MobileAuth] register() - redirecting to login (Keycloak handles registration)');
-        // For now, just call login - in future we can add action=register parameter
-        // TODO: Modify buildAuthUrl to accept optional action parameter
-        return this.login(redirectPath);
+        console.log('[MobileAuth] ====== REGISTRATION FLOW STARTED ======');
+        console.log('[MobileAuth] Redirect path (unused):', redirectPath);
+
+        try {
+            // Step 1: Generate PKCE values
+            console.log('[MobileAuth] Step 1: Generating PKCE values...');
+            const verifier = generateCodeVerifier();
+            const challenge = await generateCodeChallenge(verifier);
+            const state = this._generateState();
+
+            console.log('[MobileAuth] Verifier generated (first 10 chars):', verifier.substring(0, 10) + '...');
+            console.log('[MobileAuth] Challenge generated (first 10 chars):', challenge.substring(0, 10) + '...');
+            console.log('[MobileAuth] State:', state);
+
+            // Store PKCE values for later verification
+            pkceStorage.verifier = verifier;
+            pkceStorage.state = state;
+
+            // Step 2: Build authorization URL with REGISTER action
+            console.log('[MobileAuth] Step 2: Building registration URL...');
+            const authUrl = buildAuthUrl({
+                codeChallenge: challenge,
+                state: state,
+                kcAction: 'REGISTER', // This tells Keycloak to show registration page
+            });
+
+            console.log('[MobileAuth] Registration URL:', authUrl);
+
+            // Step 3: Open system browser
+            console.log('[MobileAuth] Step 3: Opening system browser with registration page...');
+            await Browser.open({ url: authUrl });
+            console.log('[MobileAuth] Browser opened successfully');
+
+            // Step 4: Wait for auth code from deep link
+            console.log('[MobileAuth] Step 4: Waiting for authorization code...');
+            const { code, state: returnedState } = await this.waitForAuthCode();
+
+            console.log('[MobileAuth] ✅ Authorization code received');
+            console.log('[MobileAuth] Code (first 10 chars):', code.substring(0, 10) + '...');
+
+            // Step 5: Verify state (CSRF protection)
+            if (returnedState !== state) {
+                throw new Error('State mismatch - possible CSRF attack');
+            }
+            console.log('[MobileAuth] ✅ State verified');
+
+            // Step 6: Exchange code for tokens
+            console.log('[MobileAuth] Step 5: Exchanging code for tokens...');
+            const tokens = await this.exchangeCodeForTokens(code, verifier);
+
+            console.log('[MobileAuth] ✅ Tokens received');
+            console.log('[MobileAuth] Access token expires in:', tokens.expires_in, 'seconds');
+
+            // Step 7: Store tokens and parse user info
+            this._storeTokens(tokens);
+            const user = this._parseIdToken(tokens.id_token);
+            currentUser = user;
+
+            console.log('[MobileAuth] ✅ User registered and authenticated:', user.tokenParsed?.preferred_username);
+            console.log('[MobileAuth] ====== REGISTRATION FLOW COMPLETED ======');
+
+            return tokens;
+        } catch (error) {
+            console.error('[MobileAuth] ❌ Registration failed:', error);
+
+            // Clean up PKCE storage on error
+            pkceStorage.verifier = null;
+            pkceStorage.state = null;
+
+            throw error;
+        } finally {
+            // Always close browser after redirect
+            try {
+                await Browser.close();
+                console.log('[MobileAuth] Browser closed');
+            } catch {
+                // Browser may already be closed by redirect
+                console.log('[MobileAuth] Browser close skipped (may already be closed)');
+            }
+        }
     }
 
     /**

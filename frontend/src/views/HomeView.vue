@@ -14,24 +14,80 @@ const ui = useUiStore()
 
 const isAuthenticated = computed(() => userStore.isAuthenticated)
 
-const login = () => {
+const login = async () => {
   ui.startLoading()
   const theme = getTheme()
   // Store theme in sessionStorage so it persists across redirect
   sessionStorage.setItem('pending-auth-theme', theme)
   // Add theme to redirect URI as query parameter
   const redirectPath = `${window.location.pathname}?theme=${theme}`
-  authFacade.login(redirectPath)
+
+  try {
+    // Web: keycloak.login() redirects immediately (returns void, page navigates away)
+    // Mobile: MobileAuthProvider.login() returns Promise with tokens
+    const result = await authFacade.login(redirectPath)
+
+    // If we reach here, we're on mobile (web would have redirected)
+    if (result) {
+      console.log('[HomeView] Mobile login successful, updating state...')
+
+      // Update user store with authenticated state
+      const authUser = authFacade.getCurrentUser()
+      if (authUser) {
+        userStore.setUser(authUser.authenticated, authUser.roles, authUser.tokenParsed)
+      }
+
+      // Navigate to dashboard or home based on auth state
+      if (userStore.isAuthenticated) {
+        console.log('[HomeView] Navigating to dashboard...')
+        await router.push('/dashboard')
+      }
+    }
+  } catch (error) {
+    console.error('[HomeView] Login failed:', error)
+    alert(`Login failed: ${error.message}`)
+  } finally {
+    // Clear loading spinner (only matters for mobile, web has redirected)
+    ui.stopLoading()
+  }
 }
 
-const signup = () => {
+const signup = async () => {
   ui.startLoading()
   const theme = getTheme()
   // Store theme in sessionStorage so it persists across redirect
   sessionStorage.setItem('pending-auth-theme', theme)
   // Add theme to redirect URI as query parameter
   const redirectPath = `${window.location.pathname}?theme=${theme}`
-  authFacade.register(redirectPath)
+
+  try {
+    // Web: keycloak.register() redirects immediately (returns void, page navigates away)
+    // Mobile: MobileAuthProvider.register() returns Promise with tokens
+    const result = await authFacade.register(redirectPath)
+
+    // If we reach here, we're on mobile (web would have redirected)
+    if (result) {
+      console.log('[HomeView] Mobile signup successful, updating state...')
+
+      // Update user store with authenticated state
+      const authUser = authFacade.getCurrentUser()
+      if (authUser) {
+        userStore.setUser(authUser.authenticated, authUser.roles, authUser.tokenParsed)
+      }
+
+      // Navigate to dashboard or home based on auth state
+      if (userStore.isAuthenticated) {
+        console.log('[HomeView] Navigating to dashboard...')
+        await router.push('/dashboard')
+      }
+    }
+  } catch (error) {
+    console.error('[HomeView] Signup failed:', error)
+    alert(`Signup failed: ${error.message}`)
+  } finally {
+    // Clear loading spinner (only matters for mobile, web has redirected)
+    ui.stopLoading()
+  }
 }
 
 const goToDashboard = () => {

@@ -84,6 +84,7 @@ export function getLogoutEndpoint() {
  * @param {Object} params - Authorization parameters
  * @param {string} params.codeChallenge - PKCE code challenge (Base64URL-encoded SHA-256 hash)
  * @param {string} [params.state] - Optional state parameter for CSRF protection
+ * @param {string} [params.kcAction] - Optional Keycloak action ('REGISTER' to show registration page)
  * @returns {string} Complete authorization URL ready to open in browser
  *
  * @example
@@ -94,9 +95,17 @@ export function getLogoutEndpoint() {
  * const challenge = await generateCodeChallenge(verifier);
  * const state = Math.random().toString(36).substring(2); // Simple random state
  *
+ * // Login
  * const authUrl = buildAuthUrl({
  *   codeChallenge: challenge,
  *   state: state
+ * });
+ *
+ * // Registration
+ * const registerUrl = buildAuthUrl({
+ *   codeChallenge: challenge,
+ *   state: state,
+ *   kcAction: 'REGISTER'
  * });
  *
  * console.log(authUrl);
@@ -109,7 +118,7 @@ export function getLogoutEndpoint() {
  * //     code_challenge_method=S256&
  * //     state=abc123"
  */
-export function buildAuthUrl({ codeChallenge, state }) {
+export function buildAuthUrl({ codeChallenge, state, kcAction }) {
     const { clientId, redirectUri, scope, codeChallengeMethod } = KEYCLOAK_MOBILE_CONFIG;
     const authEndpoint = getAuthEndpoint();
 
@@ -126,6 +135,11 @@ export function buildAuthUrl({ codeChallenge, state }) {
     // Add optional state parameter
     if (state) {
         params.append('state', state);
+    }
+
+    // Add optional Keycloak action (e.g., 'REGISTER' for registration page)
+    if (kcAction) {
+        params.append('kc_action', kcAction);
     }
 
     return `${authEndpoint}?${params.toString()}`;

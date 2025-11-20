@@ -31,9 +31,11 @@
  */
 
 import WebAuthProvider from './webAuthProvider.js';
+import MobileAuthProvider from './mobile/MobileAuthProvider.js';
+import { Capacitor } from '@capacitor/core';
 
 // Detect platform: web vs mobile (Capacitor)
-const isCapacitor = typeof window !== 'undefined' && window.Capacitor !== undefined;
+const isCapacitor = Capacitor.isNativePlatform();
 
 /**
  * Auth facade instance - automatically uses correct provider based on platform
@@ -42,12 +44,12 @@ const isCapacitor = typeof window !== 'undefined' && window.Capacitor !== undefi
 let authProvider;
 
 if (isCapacitor) {
-    // Mobile: Will use native PKCE flow (to be implemented in later step)
-    // TEMPORARY: Use web provider for testing deep links (Step 3)
-    console.warn('[Auth] Mobile auth not implemented yet, using web provider for testing');
-    authProvider = new WebAuthProvider();
+    // Mobile: Use native PKCE flow with MobileAuthProvider
+    console.log('[Auth] Capacitor native platform detected - using MobileAuthProvider');
+    authProvider = new MobileAuthProvider();
 } else {
     // Web: Use existing Keycloak implementation
+    console.log('[Auth] Web platform detected - using WebAuthProvider');
     authProvider = new WebAuthProvider();
 }
 

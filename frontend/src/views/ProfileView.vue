@@ -1,4 +1,5 @@
 <script setup>
+import { useRouter } from 'vue-router';
 import { useUserStore } from "../store/user.js";
 import { useUiStore } from "../store/ui.js";
 import authFacade from "@/auth/authFacade.js";
@@ -6,15 +7,37 @@ import { LogOut } from "lucide-vue-next";
 import { UI } from '@/config/constants';
 import { getTheme } from '@/utils/theme.js';
 
+const router = useRouter();
 const userStore = useUserStore();
 const uiStore = useUiStore();
 
-const logout = () => {
+const logout = async () => {
   uiStore.startLoading();
   const theme = getTheme();
   // Add theme to redirect URI as query parameter
   const redirectPath = `/?theme=${theme}`;
-  authFacade.logout(redirectPath);
+
+  try {
+    // Web: keycloak.logout() redirects immediately (returns void, page navigates away)
+    // Mobile: MobileAuthProvider.logout() returns Promise
+    await authFacade.logout(redirectPath);
+
+    // If we reach here, we're on mobile (web would have redirected)
+    console.log('[ProfileView] Mobile logout completed, clearing state...');
+
+    // Clear user store
+    userStore.setUser(false, [], {});
+
+    // Navigate to home page
+    console.log('[ProfileView] Navigating to home page...');
+    await router.push('/');
+  } catch (error) {
+    console.error('[ProfileView] Logout failed:', error);
+    alert(`Logout failed: ${error.message}`);
+  } finally {
+    // Clear loading spinner (only matters for mobile, web has redirected)
+    uiStore.stopLoading();
+  }
 };
 </script>
 

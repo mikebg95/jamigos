@@ -1,4 +1,5 @@
 <script setup>
+import { useRouter } from 'vue-router';
 import authFacade from "@/auth/authFacade.js";
 import { useUserStore } from "@/store/user.js";
 import { useUiStore } from "@/store/ui.js";
@@ -6,27 +7,85 @@ import { UI } from '@/config/constants';
 import { getTheme } from '@/utils/theme.js';
 import { UserCircle } from 'lucide-vue-next';
 
+const router = useRouter();
 const userStore = useUserStore();
 const ui = useUiStore();
 const emit = defineEmits(['nav-click']);
 
-const login = () => {
+const login = async () => {
   ui.startLoading();
   const theme = getTheme();
   // Store theme in sessionStorage so it persists across redirect
   sessionStorage.setItem('pending-auth-theme', theme);
   // Add theme to redirect URI as query parameter
   const redirectPath = `${window.location.pathname}?theme=${theme}`;
-  authFacade.login(redirectPath);
+
+  try {
+    // Web: keycloak.login() redirects immediately (returns void, page navigates away)
+    // Mobile: MobileAuthProvider.login() returns Promise with tokens
+    const result = await authFacade.login(redirectPath);
+
+    // If we reach here, we're on mobile (web would have redirected)
+    if (result) {
+      console.log('[AuthButtons] Mobile login successful, updating state...');
+
+      // Update user store with authenticated state
+      const authUser = authFacade.getCurrentUser();
+      if (authUser) {
+        userStore.setUser(authUser.authenticated, authUser.roles, authUser.tokenParsed);
+      }
+
+      // Navigate to dashboard or home based on auth state
+      if (userStore.isAuthenticated) {
+        console.log('[AuthButtons] Navigating to dashboard...');
+        await router.push('/dashboard');
+      }
+    }
+  } catch (error) {
+    console.error('[AuthButtons] Login failed:', error);
+    alert(`Login failed: ${error.message}`);
+  } finally {
+    // Clear loading spinner (only matters for mobile, web has redirected)
+    ui.stopLoading();
+  }
 }
-const signup = () => {
+
+const signup = async () => {
   ui.startLoading();
   const theme = getTheme();
   // Store theme in sessionStorage so it persists across redirect
   sessionStorage.setItem('pending-auth-theme', theme);
   // Add theme to redirect URI as query parameter
   const redirectPath = `${window.location.pathname}?theme=${theme}`;
-  authFacade.register(redirectPath);
+
+  try {
+    // Web: keycloak.register() redirects immediately (returns void, page navigates away)
+    // Mobile: MobileAuthProvider.register() returns Promise with tokens
+    const result = await authFacade.register(redirectPath);
+
+    // If we reach here, we're on mobile (web would have redirected)
+    if (result) {
+      console.log('[AuthButtons] Mobile signup successful, updating state...');
+
+      // Update user store with authenticated state
+      const authUser = authFacade.getCurrentUser();
+      if (authUser) {
+        userStore.setUser(authUser.authenticated, authUser.roles, authUser.tokenParsed);
+      }
+
+      // Navigate to dashboard or home based on auth state
+      if (userStore.isAuthenticated) {
+        console.log('[AuthButtons] Navigating to dashboard...');
+        await router.push('/dashboard');
+      }
+    }
+  } catch (error) {
+    console.error('[AuthButtons] Signup failed:', error);
+    alert(`Signup failed: ${error.message}`);
+  } finally {
+    // Clear loading spinner (only matters for mobile, web has redirected)
+    ui.stopLoading();
+  }
 }
 </script>
 
