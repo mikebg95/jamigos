@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { Capacitor } from '@capacitor/core'
 import Home from '../views/HomeView.vue'
 import Information from '../views/InformationView.vue'
 import Dashboard from '../views/DashboardView.vue'
@@ -8,12 +9,22 @@ import Todo from "@/views/TodoView.vue";
 import Profile from "@/views/ProfileView.vue"
 import Messages from "@/views/MessagesView.vue"
 import Explore from "@/views/ExploreView.vue"
+import MobileAuthEntry from "@/views/MobileAuthEntryView.vue"
 import {useUserStore} from "@/store/user.js";
+
+// Detect if running on native mobile (Capacitor)
+const isNative = Capacitor.isNativePlatform();
 
 const routes = [
     {
         path: '/',
         component: Home,
+        meta: { requiresAuth: false }
+    },
+    {
+        path: '/mobile-auth',
+        name: 'MobileAuthEntry',
+        component: MobileAuthEntry,
         meta: { requiresAuth: false }
     },
     {
@@ -66,18 +77,38 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
     const userStore = useUserStore();
 
-    // If user is logged in, homepage redirects to dashboard
-    if (to.path === "/" && userStore.isAuthenticated) {
+    // MOBILE ONLY: Redirect away from HomeView (marketing landing page)
+    // HomeView is web-only; mobile app should never show it
+    if (isNative && to.path === "/") {
+        if (userStore.isAuthenticated) {
+            // Authenticated mobile users go to main app
+            console.log('[Router] Mobile: Authenticated user accessing /, redirecting to /dashboard');
+            return next("/dashboard");
+        } else {
+            // Logged-out mobile users go to mobile auth entry
+            console.log('[Router] Mobile: Unauthenticated user accessing /, redirecting to /mobile-auth');
+            return next("/mobile-auth");
+        }
+    }
+
+    // WEB: If user is logged in, homepage redirects to dashboard (existing behavior)
+    if (!isNative && to.path === "/" && userStore.isAuthenticated) {
         return next("/dashboard");
     }
 
-    if (!to.meta?.requiresAuth) return next();
+    // Standard auth guard: routes requiring auth redirect to appropriate entry point
+    if (to.meta?.requiresAuth && !userStore.isAuthenticated) {
+        if (isNative) {
+            // Mobile: redirect to mobile auth entry
+            console.log('[Router] Mobile: Auth required, redirecting to /mobile-auth');
+            return next("/mobile-auth");
+        } else {
+            // Web: redirect to home/landing page
+            return next("/");
+        }
+    }
 
-    if (!userStore.isAuthenticated) return next("/");
-
-    // Role-based routing can be enabled here if needed:
-    // if (to.meta.role && !userStore.hasRole(to.meta.role)) return next("/forbidden");
-
+    // Allow navigation
     return next();
 });
 
