@@ -3,6 +3,10 @@
 **Last Updated:** 2025-11-20
 **Purpose:** Document how authentication currently works in the web build (Vue 3 + Keycloak) as a baseline for mobile refactoring.
 
+**Related Documentation:**
+- [Step 2: Auth Facade Implementation](./step2-auth-facade-summary.md) - Auth abstraction layer
+- [Step 3: Mobile Redirect URI Setup](./step3-mobile-redirect-setup.md) - Deep link configuration
+
 ---
 
 ## Table of Contents
