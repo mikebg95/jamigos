@@ -43,7 +43,9 @@ let authProvider;
 
 if (isCapacitor) {
     // Mobile: Will use native PKCE flow (to be implemented in later step)
-    throw new Error('Mobile auth provider not yet implemented. Use web build for now.');
+    // TEMPORARY: Use web provider for testing deep links (Step 3)
+    console.warn('[Auth] Mobile auth not implemented yet, using web provider for testing');
+    authProvider = new WebAuthProvider();
 } else {
     // Web: Use existing Keycloak implementation
     authProvider = new WebAuthProvider();

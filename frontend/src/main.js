@@ -6,10 +6,14 @@ import authFacade from "./auth/authFacade.js";
 import { useUserStore } from "@/store/user.js";
 import { useUiStore } from "@/store/ui.js";
 import { initTheme } from "@/utils/theme.js";
+import { initializeDeepLinkHandler } from "@/utils/deepLinkHandler.js";
 import "@/scss/main.scss";
 
 // Initialize theme before app mounts
 initTheme();
+
+// Initialize deep link handler for mobile (no-op on web)
+initializeDeepLinkHandler();
 import {
   AlertCircle,
   X,
