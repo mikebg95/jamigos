@@ -81,7 +81,7 @@ class MobileAuthProvider {
             // If token is still valid (with 30s buffer)
             if (tokenStorage.expiresAt - 30000 > now) {
                 console.log('[MobileAuth] Found valid stored tokens');
-                const user = this._parseIdToken(tokenStorage.idToken);
+                const user = this._parseIdToken(tokenStorage.idToken, tokenStorage.accessToken);
                 currentUser = user;
 
                 return {
@@ -96,7 +96,7 @@ class MobileAuthProvider {
                 console.log('[MobileAuth] Access token expired, attempting refresh');
                 try {
                     await this.refreshAccessToken();
-                    const user = this._parseIdToken(tokenStorage.idToken);
+                    const user = this._parseIdToken(tokenStorage.idToken, tokenStorage.accessToken);
                     currentUser = user;
 
                     return {
@@ -222,7 +222,7 @@ class MobileAuthProvider {
 
             // Step 7: Store tokens and parse user info
             this._storeTokens(tokens);
-            const user = this._parseIdToken(tokens.id_token);
+            const user = this._parseIdToken(tokens.id_token, tokens.access_token);
             currentUser = user;
 
             console.log('[MobileAuth] ✅ User authenticated:', user.tokenParsed?.preferred_username);
@@ -318,7 +318,7 @@ class MobileAuthProvider {
 
             // Step 7: Store tokens and parse user info
             this._storeTokens(tokens);
-            const user = this._parseIdToken(tokens.id_token);
+            const user = this._parseIdToken(tokens.id_token, tokens.access_token);
             currentUser = user;
 
             console.log('[MobileAuth] ✅ User registered and authenticated:', user.tokenParsed?.preferred_username);
@@ -549,8 +549,8 @@ class MobileAuthProvider {
             // Store new tokens
             this._storeTokens(tokens);
 
-            // Update current user from new ID token
-            const user = this._parseIdToken(tokens.id_token);
+            // Update current user from new ID token and access token
+            const user = this._parseIdToken(tokens.id_token, tokens.access_token);
             currentUser = user;
 
             return tokens;
@@ -648,12 +648,62 @@ class MobileAuthProvider {
     }
 
     /**
-     * Parse user info from ID token
+     * Parse JWT token (works for both ID token and access token)
+     * @param {string} token - JWT token
+     * @returns {Object|null} Decoded token or null if invalid
+     * @private
+     */
+    _decodeJwt(token) {
+        if (!token) {
+            return null;
+        }
+
+        try {
+            const parts = token.split('.');
+            if (parts.length !== 3) {
+                throw new Error('Invalid JWT format');
+            }
+
+            const payload = parts[1];
+            return JSON.parse(atob(payload.replace(/-/g, '+').replace(/_/g, '/')));
+        } catch (error) {
+            console.error('[MobileAuth] Failed to decode JWT:', error);
+            return null;
+        }
+    }
+
+    /**
+     * Extract roles from decoded token
+     * Roles can be in realm_access or resource_access sections
+     * @param {Object} decoded - Decoded JWT payload
+     * @returns {string[]} Array of roles
+     * @private
+     */
+    _extractRoles(decoded) {
+        if (!decoded) {
+            return [];
+        }
+
+        // Extract roles from realm_access
+        const realmRoles = decoded.realm_access?.roles || [];
+
+        // Extract roles from resource_access for mobile client
+        const resourceRoles = decoded.resource_access?.['jamigos-mobile-client']?.roles || [];
+
+        // Combine and deduplicate
+        const roles = [...new Set([...realmRoles, ...resourceRoles])];
+
+        return roles;
+    }
+
+    /**
+     * Parse user info from ID token and access token
      * @param {string} idToken - JWT ID token
+     * @param {string} accessToken - JWT access token (optional, used for roles)
      * @returns {Object} User object with roles and parsed token
      * @private
      */
-    _parseIdToken(idToken) {
+    _parseIdToken(idToken, accessToken = null) {
         if (!idToken) {
             return {
                 authenticated: false,
@@ -663,28 +713,48 @@ class MobileAuthProvider {
         }
 
         try {
-            // Decode JWT (format: header.payload.signature)
-            const parts = idToken.split('.');
-            if (parts.length !== 3) {
-                throw new Error('Invalid JWT format');
+            // Decode ID token for user info
+            const decodedId = this._decodeJwt(idToken);
+            if (!decodedId) {
+                throw new Error('Failed to decode ID token');
             }
 
-            // Decode base64url payload
-            const payload = parts[1];
-            const decoded = JSON.parse(atob(payload.replace(/-/g, '+').replace(/_/g, '/')));
+            // Decode access token for roles (if available)
+            const decodedAccess = accessToken ? this._decodeJwt(accessToken) : null;
 
-            // Extract roles from realm_access and resource_access
-            const realmRoles = decoded.realm_access?.roles || [];
-            const resourceRoles = decoded.resource_access?.['jamigos-mobile-client']?.roles || [];
-            const roles = [...new Set([...realmRoles, ...resourceRoles])]; // Deduplicate
+            // DEBUG: Log full token structure to diagnose role issues
+            console.log('[MobileAuth DEBUG] ========== TOKEN DEBUG ==========');
+            console.log('[MobileAuth DEBUG] User:', decodedId.preferred_username);
+            console.log('[MobileAuth DEBUG] ID token decoded:', decodedId);
+            console.log('[MobileAuth DEBUG] Access token decoded:', decodedAccess);
 
-            console.log('[MobileAuth] Parsed ID token for user:', decoded.preferred_username);
+            // Extract roles from access token (preferred) or fallback to ID token
+            // Keycloak typically puts roles in the ACCESS token, not the ID token
+            let roles = [];
+            if (decodedAccess) {
+                console.log('[MobileAuth DEBUG] Extracting roles from ACCESS token...');
+                console.log('[MobileAuth DEBUG] Access token realm_access:', decodedAccess.realm_access);
+                console.log('[MobileAuth DEBUG] Access token resource_access:', decodedAccess.resource_access);
+                roles = this._extractRoles(decodedAccess);
+                console.log('[MobileAuth DEBUG] Roles from ACCESS token:', roles);
+            } else {
+                console.log('[MobileAuth DEBUG] No access token, trying ID token for roles...');
+                console.log('[MobileAuth DEBUG] ID token realm_access:', decodedId.realm_access);
+                console.log('[MobileAuth DEBUG] ID token resource_access:', decodedId.resource_access);
+                roles = this._extractRoles(decodedId);
+                console.log('[MobileAuth DEBUG] Roles from ID token:', roles);
+            }
+
+            console.log('[MobileAuth DEBUG] Final roles:', roles);
+            console.log('[MobileAuth DEBUG] ========== END TOKEN DEBUG ==========');
+
+            console.log('[MobileAuth] Parsed ID token for user:', decodedId.preferred_username);
             console.log('[MobileAuth] Roles:', roles);
 
             return {
                 authenticated: true,
                 roles: roles,
-                tokenParsed: decoded,
+                tokenParsed: decodedId,
             };
         } catch (error) {
             console.error('[MobileAuth] Failed to parse ID token:', error);

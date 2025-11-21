@@ -19,6 +19,19 @@ class WebAuthProvider {
                 checkLoginIframe: false,
             });
 
+            // DEBUG: Log token structure to compare with mobile
+            if (keycloak.authenticated) {
+                console.log('[WebAuth DEBUG] ========== TOKEN DEBUG ==========');
+                console.log('[WebAuth DEBUG] User:', keycloak.tokenParsed?.preferred_username);
+                console.log('[WebAuth DEBUG] Full tokenParsed:', keycloak.tokenParsed);
+                console.log('[WebAuth DEBUG] realm_access:', keycloak.tokenParsed?.realm_access);
+                console.log('[WebAuth DEBUG] resource_access:', keycloak.tokenParsed?.resource_access);
+
+                const roles = keycloak.tokenParsed?.realm_access?.roles || [];
+                console.log('[WebAuth DEBUG] Roles extracted:', roles);
+                console.log('[WebAuth DEBUG] ========== END TOKEN DEBUG ==========');
+            }
+
             return {
                 authenticated: keycloak.authenticated || false,
                 roles: keycloak.tokenParsed?.realm_access?.roles || [],
