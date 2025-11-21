@@ -7,10 +7,24 @@ import { useUserStore } from "@/store/user.js";
 import { useUiStore } from "@/store/ui.js";
 import { initTheme } from "@/utils/theme.js";
 import { initializeDeepLinkHandler } from "@/utils/deepLinkHandler.js";
+import { Capacitor } from "@capacitor/core";
 import "@/scss/main.scss";
 
 // Initialize theme before app mounts
 initTheme();
+
+// Disable zoom in Capacitor mobile app ONLY (not web)
+if (Capacitor.isNativePlatform()) {
+  const viewport = document.querySelector('meta[name="viewport"]');
+  if (viewport) {
+    viewport.setAttribute(
+      'content',
+      'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover'
+    );
+  }
+  // Add native-app class for additional touch-action styling
+  document.body.classList.add('native-app');
+}
 
 // Initialize deep link handler for mobile (no-op on web)
 initializeDeepLinkHandler();

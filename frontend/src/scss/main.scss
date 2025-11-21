@@ -38,3 +38,8 @@ body.no-scroll-mobile-auth {
   position: fixed;
   width: 100%;
 }
+
+// 7. Capacitor native app - disable zoom gestures (ONLY applies to mobile app, not web)
+body.native-app {
+  touch-action: manipulation;
+}
