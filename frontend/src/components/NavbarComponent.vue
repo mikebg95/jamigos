@@ -126,7 +126,10 @@ const handleNavClick = () => {
   padding: var(--ds-spacing-md) 0;
 
   @media (max-width: $breakpoint-md) {
-    padding: var(--ds-spacing-sm) 0;
+    // On mobile, add safe-area-inset-top to prevent status bar overlap
+    padding-top: calc(var(--ds-spacing-sm) + constant(safe-area-inset-top)); /* iOS 11.0-11.2 */
+    padding-top: calc(var(--ds-spacing-sm) + env(safe-area-inset-top)); /* iOS 11.2+ and Android */
+    padding-bottom: var(--ds-spacing-sm);
   }
 }
 

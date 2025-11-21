@@ -100,7 +100,7 @@ onBeforeUnmount(() => unlockUI());
 
     <div class="app-container">
       <NavbarComponent v-if="!hideTopBar" />
-      <main id="main-content">
+      <main id="main-content" :class="{ 'no-topbar': hideTopBar }">
         <router-view class="container" />
       </main>
     </div>
@@ -113,6 +113,14 @@ onBeforeUnmount(() => unlockUI());
 
 .container {
   padding: var(--ds-spacing-base);
+}
+
+// Pages without topbar need safe-area padding on mobile
+#main-content.no-topbar {
+  @media (max-width: $breakpoint-md) {
+    padding-top: constant(safe-area-inset-top); /* iOS 11.0-11.2 */
+    padding-top: env(safe-area-inset-top); /* iOS 11.2+ and Android */
+  }
 }
 
 .spinner-overlay {
