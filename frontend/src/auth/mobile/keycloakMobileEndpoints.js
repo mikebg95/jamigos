@@ -100,6 +100,7 @@ export function getLogoutEndpoint() {
  * @param {Object} params - Authorization parameters
  * @param {string} params.codeChallenge - PKCE code challenge (Base64URL-encoded SHA-256 hash)
  * @param {string} [params.state] - Optional state parameter for CSRF protection
+ * @param {string} [params.theme] - Optional theme ('light' or 'dark') for Keycloak login page
  * @param {string} [params.kcAction] - Optional Keycloak action ('REGISTER' to show registration page)
  * @returns {string} Complete authorization URL ready to open in browser
  *
@@ -111,10 +112,11 @@ export function getLogoutEndpoint() {
  * const challenge = await generateCodeChallenge(verifier);
  * const state = Math.random().toString(36).substring(2); // Simple random state
  *
- * // Login
+ * // Login with theme
  * const authUrl = buildAuthUrl({
  *   codeChallenge: challenge,
- *   state: state
+ *   state: state,
+ *   theme: 'dark'
  * });
  *
  * // Registration
@@ -132,9 +134,10 @@ export function getLogoutEndpoint() {
  * //     scope=openid+profile+email&
  * //     code_challenge=E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM&
  * //     code_challenge_method=S256&
- * //     state=abc123"
+ * //     state=abc123&
+ * //     theme=dark"
  */
-export function buildAuthUrl({ codeChallenge, state }) {
+export function buildAuthUrl({ codeChallenge, state, theme }) {
     const { clientId, redirectUri, scope, codeChallengeMethod } = KEYCLOAK_MOBILE_CONFIG;
     const authEndpoint = getAuthEndpoint();
 
@@ -153,6 +156,11 @@ export function buildAuthUrl({ codeChallenge, state }) {
         params.append('state', state);
     }
 
+    // Add optional theme parameter (for Keycloak theme.js to detect)
+    if (theme && (theme === 'light' || theme === 'dark')) {
+        params.append('theme', theme);
+    }
+
     return `${authEndpoint}?${params.toString()}`;
 }
 
@@ -163,16 +171,18 @@ export function buildAuthUrl({ codeChallenge, state }) {
  * @param {Object} params - Registration parameters
  * @param {string} params.codeChallenge - PKCE code challenge (Base64URL-encoded SHA-256 hash)
  * @param {string} [params.state] - Optional state parameter for CSRF protection
+ * @param {string} [params.theme] - Optional theme ('light' or 'dark') for Keycloak registration page
  * @returns {string} Complete registration URL ready to open in browser
  *
  * @example
  * const registerUrl = buildRegisterUrl({
  *   codeChallenge: challenge,
- *   state: state
+ *   state: state,
+ *   theme: 'light'
  * });
- * // => "https://keycloak.jamigos.app/realms/jamigos-realm/protocol/openid-connect/registrations?..."
+ * // => "https://keycloak.jamigos.app/realms/jamigos-realm/protocol/openid-connect/registrations?...&theme=light"
  */
-export function buildRegisterUrl({ codeChallenge, state }) {
+export function buildRegisterUrl({ codeChallenge, state, theme }) {
     const { clientId, redirectUri, scope, codeChallengeMethod } = KEYCLOAK_MOBILE_CONFIG;
     const registerEndpoint = getRegisterEndpoint();
 
@@ -189,6 +199,11 @@ export function buildRegisterUrl({ codeChallenge, state }) {
     // Add optional state parameter
     if (state) {
         params.append('state', state);
+    }
+
+    // Add optional theme parameter (for Keycloak theme.js to detect)
+    if (theme && (theme === 'light' || theme === 'dark')) {
+        params.append('theme', theme);
     }
 
     return `${registerEndpoint}?${params.toString()}`;

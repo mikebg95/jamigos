@@ -26,6 +26,7 @@ import {
     getLogoutEndpoint,
 } from './keycloakMobileEndpoints.js';
 import { setAuthCallbackHandler } from '@/utils/deepLinkHandler.js';
+import { getTheme } from '@/utils/theme.js';
 
 /**
  * Token storage (in-memory for now, will be moved to secure storage in later step)
@@ -180,11 +181,16 @@ class MobileAuthProvider {
             pkceStorage.verifier = verifier;
             pkceStorage.state = state;
 
+            // Get current theme (light or dark) for Keycloak login page
+            const theme = getTheme();
+            console.log('[MobileAuth] Current theme:', theme);
+
             // Step 2: Build authorization URL
             console.log('[MobileAuth] Step 2: Building authorization URL...');
             const authUrl = buildAuthUrl({
                 codeChallenge: challenge,
                 state: state,
+                theme: theme, // Pass theme to Keycloak
             });
 
             console.log('[MobileAuth] Auth URL:', authUrl);
@@ -271,11 +277,16 @@ class MobileAuthProvider {
             pkceStorage.verifier = verifier;
             pkceStorage.state = state;
 
+            // Get current theme (light or dark) for Keycloak registration page
+            const theme = getTheme();
+            console.log('[MobileAuth] Current theme:', theme);
+
             // Step 2: Build registration URL (uses /registrations endpoint)
             console.log('[MobileAuth] Step 2: Building registration URL...');
             const authUrl = buildRegisterUrl({
                 codeChallenge: challenge,
                 state: state,
+                theme: theme, // Pass theme to Keycloak
             });
 
             console.log('[MobileAuth] Registration URL:', authUrl);
