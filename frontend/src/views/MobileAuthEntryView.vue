@@ -194,7 +194,7 @@ const signup = async () => {
   color: var(--ds-color-inverse-text);
 
   &:hover {
-    background: var(--ds-color-primary-dark);
+    //background: var(--ds-color-primary-dark);
   }
 }
 
@@ -203,7 +203,7 @@ const signup = async () => {
   color: var(--ds-color-inverse-text);
 
   &:hover {
-    background: var(--ds-color-secondary-dark);
+    //background: var(--ds-color-secondary-dark);
   }
 }
 
