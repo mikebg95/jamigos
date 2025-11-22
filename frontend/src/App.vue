@@ -20,13 +20,19 @@ const showSplashIntro = ref(isNative);
 const hasSeenSplashIntro = ref(false);
 
 const handleSplashComplete = async () => {
+  console.log('[App] ===== handleSplashComplete CALLED =====');
+  console.log('[App] Setting showSplashIntro = false');
+
   hasSeenSplashIntro.value = true;
   showSplashIntro.value = false;
 
   // Hide native splash screen after animated intro
   if (isNative) {
+    console.log('[App] Hiding native SplashScreen');
     await SplashScreen.hide();
   }
+
+  console.log('[App] Splash sequence complete');
 };
 
 // Hide top bar on mobile auth entry screen only

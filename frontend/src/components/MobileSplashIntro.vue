@@ -13,29 +13,55 @@ const logoVisible = ref(false)
 const textVisible = ref(false)
 
 onMounted(() => {
+  console.log('[MobileSplash] Component mounted')
+  console.log('[MobileSplash] ===== FADE-IN STARTED =====')
+
   // Sequence: Logo fades in → Text fades in → Fade out everything
   setTimeout(() => {
     logoVisible.value = true
+    console.log('[MobileSplash] Logo visible')
   }, 100)
 
   setTimeout(() => {
     textVisible.value = true
+    console.log('[MobileSplash] Text visible')
   }, 400)
 
-  // Start fade out after 1.5s
+  // Start fade-out after showing content
+  // This is the only setTimeout we keep - it just triggers the fade-out to start
+  // The actual completion is handled by @after-leave hook
   setTimeout(() => {
+    console.log('[MobileSplash] ===== FADE-OUT STARTED =====')
     isVisible.value = false
   }, 2000)
-
-  // Call completion callback after fade out animation (300ms)
-  setTimeout(() => {
-    props.onComplete()
-  }, 1800)
 })
+
+/**
+ * Called by Vue when the fade-in (appear) animation completes
+ */
+const handleAfterEnter = () => {
+  console.log('[MobileSplash] Fade-in complete')
+}
+
+/**
+ * Called by Vue's <Transition> AFTER the fade-out animation completes
+ * This is the ONLY place where onComplete() is called
+ * No setTimeout guessing - this fires when the actual CSS animation ends
+ */
+const handleAfterLeave = () => {
+  console.log('[MobileSplash] ===== TRANSITION @after-leave FIRED =====')
+  console.log('[MobileSplash] Calling onComplete() to notify parent')
+  props.onComplete()
+}
 </script>
 
 <template>
-  <Transition name="splash-fade">
+  <Transition
+    name="splash-fade"
+    appear
+    @after-enter="handleAfterEnter"
+    @after-leave="handleAfterLeave"
+  >
     <div v-if="isVisible" class="mobile-splash-intro">
       <div class="splash-content">
         <!-- Logo with fade + scale animation (always in DOM, visibility controlled by class) -->
