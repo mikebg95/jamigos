@@ -52,7 +52,7 @@
                     <#-- Logo with Icon and Text -->
                     <div id="kc-logo">
                         <div id="kc-logo-wrapper">
-                            <img id="kc-logo-icon" src="${url.resourcesPath}/img/jamigos-logo-minimal.svg" alt="Jamigos icon" />
+                            <img id="kc-logo-icon" src="${url.resourcesPath}/img/jamigos-logo.svg" alt="Jamigos icon" />
                             <h1 id="kc-logo-text">Jamigos</h1>
                         </div>
                     </div>

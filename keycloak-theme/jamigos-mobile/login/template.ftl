@@ -52,6 +52,7 @@
                     <#-- Logo with Icon and Text (Mobile Theme - matches /mobile-auth) -->
                     <div id="kc-logo">
                         <div id="kc-logo-wrapper">
+                            <img id="kc-logo-icon" src="${url.resourcesPath}/img/jamigos-logo.svg" alt="Jamigos icon" />
                             <h1 id="kc-logo-text">Jamigos</h1>
                             <p class="mobile-tagline">Where Musicians Connect & Create</p>
                         </div>

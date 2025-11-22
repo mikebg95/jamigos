@@ -238,6 +238,26 @@ body {
   margin-bottom: 0;
 }
 
+/* Logo icon with dark/light mode support */
+#kc-logo-icon {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto var(--spacing-md) auto;
+  display: block;
+  flex-shrink: 0;
+}
+
+/* Light mode - black logo */
+:root[data-theme='light'] #kc-logo-icon,
+:root:not([data-theme]) #kc-logo-icon {
+  filter: none;
+}
+
+/* Dark mode - white logo */
+:root[data-theme='dark'] #kc-logo-icon {
+  filter: invert(1) brightness(2);
+}
+
 /* Match /mobile-auth .app-title exactly */
 #kc-logo-text {
   font-size: var(--font-size-4xl);

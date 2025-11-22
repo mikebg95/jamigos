@@ -1,7 +1,7 @@
 <template>
   <img
-    :src="logoSrc"
-    :alt="altText"
+    src="/jamigos-logo.svg"
+    alt="Jamigos logo"
     :width="width"
     :height="height"
     class="jamigos-logo"
@@ -9,14 +9,7 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
-
 const props = defineProps({
-  variant: {
-    type: String,
-    default: 'full',
-    validator: (value) => ['full', 'minimal'].includes(value)
-  },
   width: {
     type: [Number, String],
     default: 'auto'
@@ -25,18 +18,6 @@ const props = defineProps({
     type: [Number, String],
     default: 32
   }
-})
-
-const logoSrc = computed(() => {
-  return props.variant === 'minimal'
-    ? '/jamigos-logo-minimal.svg'
-    : '/jamigos-logo.svg'
-})
-
-const altText = computed(() => {
-  return props.variant === 'minimal'
-    ? 'Jamigos icon'
-    : 'Jamigos logo'
 })
 </script>
 

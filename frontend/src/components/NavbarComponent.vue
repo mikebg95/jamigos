@@ -36,7 +36,7 @@ const handleNavClick = () => {
       <!-- Logo -->
       <router-link to="/" class="navbar-logo" aria-label="Jamigos home" @click="handleNavClick">
         <div class="logo-icon" aria-hidden="true">
-          <JamigosLogo variant="minimal" height="32" />
+          <JamigosLogo height="48" />
         </div>
         <span class="logo-text">JAMIGOS</span>
       </router-link>
@@ -171,8 +171,8 @@ const handleNavClick = () => {
 
   @media (max-width: $breakpoint-sm) {
     :deep(img) {
-      width: 28px;
-      height: 28px;
+      width: 40px;
+      height: 40px;
     }
   }
 }
