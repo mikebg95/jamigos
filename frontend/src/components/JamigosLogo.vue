@@ -9,7 +9,7 @@
 </template>
 
 <script setup>
-const props = defineProps({
+defineProps({
   width: {
     type: [Number, String],
     default: 'auto'
