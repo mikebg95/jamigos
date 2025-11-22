@@ -1,6 +1,7 @@
 <script setup>
 import NavbarComponent from "@/components/NavbarComponent.vue";
 import ToastContainer from "@/components/ToastContainer.vue";
+import MobileSplashIntro from "@/components/MobileSplashIntro.vue";
 import { useUiStore } from "@/store/ui.js";
 import { DotLoader } from "vue3-spinner";
 import { watch, onBeforeUnmount, onErrorCaptured, ref, computed } from "vue";
@@ -8,10 +9,25 @@ import { setInteractionLocked, unlockUI } from "@/utils/interactionsLock.js";
 import * as Sentry from "@sentry/vue";
 import { useRoute } from 'vue-router';
 import { Capacitor } from '@capacitor/core';
+import { SplashScreen } from '@capacitor/splash-screen';
 
 const ui = useUiStore();
 const route = useRoute();
 const isNative = Capacitor.isNativePlatform();
+
+// Mobile splash intro state (only shown once per app session)
+const showSplashIntro = ref(isNative);
+const hasSeenSplashIntro = ref(false);
+
+const handleSplashComplete = async () => {
+  hasSeenSplashIntro.value = true;
+  showSplashIntro.value = false;
+
+  // Hide native splash screen after animated intro
+  if (isNative) {
+    await SplashScreen.hide();
+  }
+};
 
 // Hide top bar on mobile auth entry screen only
 const hideTopBar = computed(() => {
@@ -81,29 +97,38 @@ onBeforeUnmount(() => unlockUI());
 
   <!-- Normal app content -->
   <template v-else>
-    <!-- spinner overlay with 200ms delay; app stays mounted underneath -->
-    <Transition name="fade">
-      <div
-        v-if="ui.showSpinner"
-        class="spinner-overlay"
-        role="alert"
-        aria-live="polite"
-        aria-label="Loading content"
-      >
-        <DotLoader size="50px" color="#667eea" />
-        <span class="sr-only">Loading, please wait...</span>
+    <!-- Mobile Splash Intro (only on native, only once per session) -->
+    <MobileSplashIntro
+      v-if="showSplashIntro"
+      :on-complete="handleSplashComplete"
+    />
+
+    <!-- Main app (hidden behind splash intro initially on mobile) -->
+    <template v-if="!showSplashIntro || !isNative">
+      <!-- spinner overlay with 200ms delay; app stays mounted underneath -->
+      <Transition name="fade">
+        <div
+          v-if="ui.showSpinner"
+          class="spinner-overlay"
+          role="alert"
+          aria-live="polite"
+          aria-label="Loading content"
+        >
+          <DotLoader size="50px" color="#667eea" />
+          <span class="sr-only">Loading, please wait...</span>
+        </div>
+      </Transition>
+
+      <!-- Global toast notifications -->
+      <ToastContainer />
+
+      <div class="app-container">
+        <NavbarComponent v-if="!hideTopBar" />
+        <main id="main-content" :class="{ 'no-topbar': hideTopBar }">
+          <router-view class="container" />
+        </main>
       </div>
-    </Transition>
-
-    <!-- Global toast notifications -->
-    <ToastContainer />
-
-    <div class="app-container">
-      <NavbarComponent v-if="!hideTopBar" />
-      <main id="main-content" :class="{ 'no-topbar': hideTopBar }">
-        <router-view class="container" />
-      </main>
-    </div>
+    </template>
   </template>
 </template>
 
