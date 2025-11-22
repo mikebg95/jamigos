@@ -9,16 +9,16 @@
 </template>
 
 <script setup>
-// const props = defineProps({
-//   width: {
-//     type: [Number, String],
-//     default: 'auto'
-//   },
-//   height: {
-//     type: [Number, String],
-//     default: 32
-//   }
-// })
+const props = defineProps({
+  width: {
+    type: [Number, String],
+    default: 'auto'
+  },
+  height: {
+    type: [Number, String],
+    default: 32
+  }
+})
 </script>
 
 <style scoped>
