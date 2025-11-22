@@ -3,6 +3,13 @@
     <#if section = "header">
         <h2 id="kc-page-title">${msg("loginAccountTitle")}</h2>
     <#elseif section = "form">
+        <#-- Quick Register Link (above form) -->
+        <#if realm.password && realm.registrationAllowed && !registrationDisabled??>
+            <div class="text-center" style="margin-bottom: 1.5rem;">
+                <span>${msg("noAccount")} <a href="${url.registrationUrl}" class="link-primary">${msg("doRegister")}</a></span>
+            </div>
+        </#if>
+
         <div id="kc-form">
             <div id="kc-form-wrapper">
                 <#if realm.password>
