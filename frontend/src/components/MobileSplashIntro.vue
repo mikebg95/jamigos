@@ -66,11 +66,11 @@ const handleAfterLeave = () => {
       <div class="splash-content">
         <!-- Logo with fade + scale animation (always in DOM, visibility controlled by class) -->
         <div class="logo-container" :class="{ 'is-visible': logoVisible }">
-          <img
-            src="/jamigos-logo.svg"
-            alt="Jamigos"
+          <div
             class="splash-logo"
-          />
+            role="img"
+            aria-label="Jamigos"
+          ></div>
         </div>
 
         <!-- Text with fade animation (always in DOM, visibility controlled by class) -->
@@ -124,21 +124,21 @@ const handleAfterLeave = () => {
 }
 
 .splash-logo {
-  width: 120px;
-  height: 120px;
-  object-fit: contain;
+  width: 160px;
+  height: 160px;
 
-  // Logo color based on theme (matching design system)
-  // Light mode: black logo
-  :root[data-theme='light'] &,
-  :root:not([data-theme]) & {
-    filter: none;
-  }
+  // Apply gradient using mask-image technique (same gradient as splash-title)
+  background: linear-gradient(135deg, var(--ds-color-primary), var(--ds-color-secondary));
 
-  // Dark mode: white logo
-  :root[data-theme='dark'] & {
-    filter: invert(1) brightness(1.2);
-  }
+  // Use the SVG as a mask to shape the gradient
+  mask-image: url(/jamigos-logo.svg);
+  mask-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  -webkit-mask-image: url(/jamigos-logo.svg);
+  -webkit-mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
 }
 
 .text-container {
