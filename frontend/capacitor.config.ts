@@ -14,6 +14,21 @@ const config: CapacitorConfig = {
     App: {
       // Deep link handling is enabled by default
     },
+    // Splash Screen configuration
+    SplashScreen: {
+      launchShowDuration: 1000,
+      launchAutoHide: true,
+      launchFadeOutDuration: 300,
+      backgroundColor: '#F8E8CD',
+      androidSplashResourceName: 'splash',
+      androidScaleType: 'CENTER_CROP',
+      showSpinner: false,
+      androidSpinnerStyle: 'large',
+      iosSpinnerStyle: 'small',
+      spinnerColor: '#F9A548',
+      splashFullScreen: true,
+      splashImmersive: true,
+    },
   },
 };
 

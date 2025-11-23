@@ -18,6 +18,7 @@
     "@capacitor/app": "^7.1.0",
     "@capacitor/browser": "^7.0.2",
     "@capacitor/core": "^7.4.4",
+    "@capacitor/splash-screen": "^7.0.3",
     "@sentry/vue": "^10.25.0",
     "@vue/test-utils": "^2.4.6",
     "keycloak-js": "^26.2.1",
