@@ -102,6 +102,7 @@ const signup = async () => {
   <div class="mobile-auth-entry">
     <div class="auth-container">
       <div class="logo-section">
+        <div class="logo-icon" role="img" aria-label="Jamigos"></div>
         <h1 class="app-title">Jamigos</h1>
         <p class="tagline">Where Musicians Connect & Create</p>
       </div>
@@ -148,6 +149,26 @@ const signup = async () => {
 
 .logo-section {
   text-align: center;
+}
+
+.logo-icon {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto var(--ds-spacing-md) auto;
+  display: block;
+
+  // Apply gradient using mask-image technique (same as Keycloak mobile theme)
+  background: linear-gradient(135deg, var(--ds-color-primary), var(--ds-color-secondary));
+
+  // Use the SVG as a mask to shape the gradient
+  mask-image: url(/jamigos-logo.svg);
+  mask-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  -webkit-mask-image: url(/jamigos-logo.svg);
+  -webkit-mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
 }
 
 .app-title {

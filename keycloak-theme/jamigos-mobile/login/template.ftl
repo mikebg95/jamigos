@@ -49,12 +49,11 @@
             <div id="kc-header" class="${properties.kcHeaderClass!}">
                 <div id="kc-header-wrapper" class="${properties.kcHeaderWrapperClass!}">
 
-                    <#-- Logo with Icon and Text (Mobile Theme - matches /mobile-auth) -->
+                    <#-- Logo with Icon and Text (Mobile Theme) -->
                     <div id="kc-logo">
                         <div id="kc-logo-wrapper">
-                            <img id="kc-logo-icon" src="${url.resourcesPath}/img/jamigos-logo.svg" alt="Jamigos icon" />
+                            <div id="kc-logo-icon"></div>
                             <h1 id="kc-logo-text">Jamigos</h1>
-                            <p class="mobile-tagline">Where Musicians Connect & Create</p>
                         </div>
                     </div>
 

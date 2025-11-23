@@ -238,24 +238,26 @@ body {
   margin-bottom: 0;
 }
 
-/* Logo icon with dark/light mode support */
+/* Logo icon with gradient (matches "Jamigos" text gradient) */
 #kc-logo-icon {
-  width: 64px;
-  height: 64px;
+  width: 80px;
+  height: 80px;
   margin: 0 auto var(--spacing-md) auto;
   display: block;
   flex-shrink: 0;
-}
 
-/* Light mode - black logo */
-:root[data-theme='light'] #kc-logo-icon,
-:root:not([data-theme]) #kc-logo-icon {
-  filter: none;
-}
+  /* Apply gradient using mask-image technique */
+  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
 
-/* Dark mode - white logo */
-:root[data-theme='dark'] #kc-logo-icon {
-  filter: invert(1) brightness(2);
+  /* Use the SVG as a mask to shape the gradient */
+  mask-image: url(../img/jamigos-logo.svg);
+  mask-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  -webkit-mask-image: url(../img/jamigos-logo.svg);
+  -webkit-mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
 }
 
 /* Match /mobile-auth .app-title exactly */
@@ -272,22 +274,12 @@ body {
   line-height: 1;
 }
 
-/* Match /mobile-auth .tagline exactly */
-.mobile-tagline {
-  font-size: var(--font-size-base);
-  color: var(--color-text-secondary);
-  font-weight: var(--font-weight-normal);
-  margin: 0;
-  padding: 0;
-  line-height: 1.5;
-}
-
-/* Page title - tight spacing to match mobile design */
+/* Page title - very tight spacing for mobile */
 #kc-page-title {
   font-size: var(--font-size-xl);
   font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
-  margin: var(--spacing-lg) 0 var(--spacing-md) 0; /* Reduced bottom margin from base to md */
+  margin: var(--spacing-md) 0 var(--spacing-sm) 0; /* Tight spacing: md top, sm bottom */
 }
 
 .subtitle {
