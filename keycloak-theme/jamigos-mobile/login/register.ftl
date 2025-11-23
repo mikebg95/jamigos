@@ -4,8 +4,8 @@
         <h2 id="kc-page-title">Register a new account</h2>
     <#elseif section = "form">
         <#-- Quick Login Link (above form) -->
-        <div class="text-center" style="margin-bottom: 1.5rem;">
-            <span>${msg("alreadyHaveAccount")} <a href="${url.loginUrl}" class="link-primary">${msg("doLogIn")}</a></span>
+        <div class="quick-link">
+            <span>${msg("alreadyHaveAccount")} <a href="${url.loginUrl}">${msg("doLogIn")}</a></span>
         </div>
 
         <form id="kc-register-form" action="${url.registrationAction}" method="post">
@@ -142,8 +142,8 @@
             </div>
 
             <#-- Quick Login Link (below button) -->
-            <div class="text-center" style="margin-top: 1rem;">
-                <span>${msg("alreadyHaveAccount")} <a href="${url.loginUrl}" class="link-secondary">${msg("doLogIn")}</a></span>
+            <div class="quick-link-secondary">
+                <span>${msg("alreadyHaveAccount")} <a href="${url.loginUrl}">${msg("doLogIn")}</a></span>
             </div>
 
         </form>

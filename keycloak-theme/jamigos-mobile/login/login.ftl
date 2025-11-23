@@ -5,8 +5,8 @@
     <#elseif section = "form">
         <#-- Quick Register Link (above form) -->
         <#if realm.password && realm.registrationAllowed && !registrationDisabled??>
-            <div class="text-center" style="margin-bottom: 1.5rem;">
-                <span>${msg("noAccount")} <a href="${url.registrationUrl}" class="link-primary">${msg("doRegister")}</a></span>
+            <div class="quick-link">
+                <span>${msg("noAccount")} <a href="${url.registrationUrl}">${msg("doRegister")}</a></span>
             </div>
         </#if>
 
