@@ -158,6 +158,7 @@ const handleAfterLeave = () => {
 }
 
 .splash-title {
+  font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: var(--ds-font-size-4xl);
   font-weight: var(--ds-font-weight-bold);
   background: linear-gradient(135deg, var(--ds-color-primary), var(--ds-color-secondary));

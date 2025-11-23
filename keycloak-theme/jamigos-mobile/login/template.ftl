@@ -26,6 +26,11 @@
         </#list>
     </#if>
 
+    <#-- Google Fonts: Montserrat for branding (matches mobile app landing page) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
     <#-- Load theme script early to prevent flash -->
     <#if properties.scripts?has_content>
         <#list properties.scripts?split(' ') as script>
