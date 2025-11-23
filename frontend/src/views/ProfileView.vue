@@ -6,37 +6,52 @@ import authFacade from "@/auth/authFacade.js";
 import { LogOut } from "lucide-vue-next";
 import { UI } from '@/config/constants';
 import { getTheme } from '@/utils/theme.js';
+import { Capacitor } from '@capacitor/core';
 
 const router = useRouter();
 const userStore = useUserStore();
 const uiStore = useUiStore();
+const isNative = Capacitor.isNativePlatform();
 
 const logout = async () => {
-  uiStore.startLoading();
   const theme = getTheme();
-  // Add theme to redirect URI as query parameter
   const redirectPath = `/?theme=${theme}`;
 
   try {
-    // Web: keycloak.logout() redirects immediately (returns void, page navigates away)
-    // Mobile: MobileAuthProvider.logout() returns Promise
-    await authFacade.logout(redirectPath);
+    if (isNative) {
+      // MOBILE: Show splash, logout, navigate to /mobile-auth
+      console.log('[ProfileView] Mobile logout - showing splash...');
+      uiStore.startLogoutSplash();
 
-    // If we reach here, we're on mobile (web would have redirected)
-    console.log('[ProfileView] Mobile logout completed, clearing state...');
+      await authFacade.logout(redirectPath);
+      console.log('[ProfileView] Mobile logout completed, clearing state...');
 
-    // Clear user store
-    userStore.setUser(false, [], {});
+      // Clear user store
+      userStore.setUser(false, [], {});
 
-    // Navigate to home page
-    console.log('[ProfileView] Navigating to home page...');
-    await router.push('/');
+      // Navigate to mobile auth entry screen
+      console.log('[ProfileView] Navigating to /mobile-auth...');
+      await router.push('/mobile-auth');
+      // Splash auto-hides via handleLogoutSplashComplete in App.vue
+    } else {
+      // WEB: Traditional flow - unchanged
+      console.log('[ProfileView] Web logout - using traditional flow...');
+      uiStore.startLoading();
+
+      // Web: keycloak.logout() redirects immediately (page navigates away)
+      await authFacade.logout(redirectPath);
+      // Should never reach here on web (page redirects)
+    }
   } catch (error) {
     console.error('[ProfileView] Logout failed:', error);
     alert(`Logout failed: ${error.message}`);
-  } finally {
-    // Clear loading spinner (only matters for mobile, web has redirected)
-    uiStore.stopLoading();
+
+    // Clean up on error
+    if (isNative) {
+      uiStore.stopLogoutSplash();
+    } else {
+      uiStore.stopLoading();
+    }
   }
 };
 </script>

@@ -35,6 +35,12 @@ const handleSplashComplete = async () => {
   console.log('[App] Splash sequence complete');
 };
 
+// Logout splash handler (mobile only)
+const handleLogoutSplashComplete = () => {
+  console.log('[App] ===== Logout splash complete =====');
+  ui.stopLogoutSplash();
+};
+
 // Hide top bar on mobile auth entry screen only
 const hideTopBar = computed(() => {
   return isNative && (route.path === '/mobile-auth' || route.name === 'MobileAuthEntry');
@@ -103,10 +109,16 @@ onBeforeUnmount(() => unlockUI());
 
   <!-- Normal app content -->
   <template v-else>
-    <!-- Mobile Splash Intro (only on native, only once per session) -->
+    <!-- Mobile Startup Splash (only on native, only once per session) -->
     <MobileSplashIntro
       v-if="showSplashIntro"
       :on-complete="handleSplashComplete"
+    />
+
+    <!-- Mobile Logout Splash (only on native during logout) -->
+    <MobileSplashIntro
+      v-if="ui.showLogoutSplash && isNative"
+      :on-complete="handleLogoutSplashComplete"
     />
 
     <!-- Main app (hidden behind splash intro initially on mobile) -->

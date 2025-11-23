@@ -361,31 +361,40 @@ class MobileAuthProvider {
             const logoutUrl = getLogoutEndpoint();
             const idToken = tokenStorage.idToken;
 
-            // Add id_token_hint for proper logout
-            const logoutUrlWithHint = idToken
-                ? `${logoutUrl}?id_token_hint=${idToken}`
-                : logoutUrl;
+            console.log('[MobileAuth] Clearing tokens locally...');
 
-            console.log('[MobileAuth] Opening logout URL...');
-
-            // Clear tokens BEFORE opening browser (in case of errors)
+            // Clear tokens locally FIRST
             this._clearTokens();
             currentUser = null;
 
-            // Open logout URL in browser
-            await Browser.open({ url: logoutUrlWithHint });
+            // Call Keycloak logout endpoint in background (don't open browser)
+            if (idToken) {
+                console.log('[MobileAuth] Calling Keycloak logout endpoint in background...');
+                try {
+                    // Call logout endpoint via HTTP (background, no UI)
+                    const logoutUrlWithHint = `${logoutUrl}?id_token_hint=${idToken}`;
+
+                    const response = await fetch(logoutUrlWithHint, {
+                        method: 'GET', // Keycloak logout endpoint accepts GET
+                        headers: {
+                            'Accept': 'application/json',
+                        },
+                        // Don't follow redirects - we just want to notify Keycloak
+                        redirect: 'manual'
+                    });
+
+                    console.log('[MobileAuth] Keycloak logout endpoint called, status:', response.status);
+                    // Note: Response might be 302/303 redirect, but we don't care - tokens are cleared
+                } catch (fetchError) {
+                    // Non-critical: If logout endpoint fails, we still cleared local tokens
+                    console.warn('[MobileAuth] ⚠️ Keycloak logout endpoint failed (non-critical):', fetchError);
+                }
+            } else {
+                console.log('[MobileAuth] No id_token available, skipping Keycloak logout call');
+            }
 
             console.log('[MobileAuth] ✅ Logout completed');
             console.log('[MobileAuth] ====== LOGOUT FLOW COMPLETED ======');
-
-            // Close browser after short delay
-            setTimeout(async () => {
-                try {
-                    await Browser.close();
-                } catch {
-                    console.log('[MobileAuth] Browser close skipped');
-                }
-            }, 1000);
         } catch (error) {
             console.error('[MobileAuth] ❌ Logout failed:', error);
             throw error;

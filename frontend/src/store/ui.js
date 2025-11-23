@@ -9,6 +9,7 @@ export const useUiStore = defineStore('ui', {
     state: () => ({
         loadingCount: 0,
         showSpinner: false,
+        showLogoutSplash: false, // Mobile-only: show splash during logout
     }),
     getters: {
         isLoading: (s) => s.loadingCount > 0,
@@ -54,6 +55,17 @@ export const useUiStore = defineStore('ui', {
             }
             this.loadingCount = 0;
             this.showSpinner = false;
+        },
+
+        // Mobile logout splash actions
+        startLogoutSplash() {
+            console.log('[UI Store] Starting logout splash');
+            this.showLogoutSplash = true;
+        },
+
+        stopLogoutSplash() {
+            console.log('[UI Store] Stopping logout splash');
+            this.showLogoutSplash = false;
         },
     },
 });
