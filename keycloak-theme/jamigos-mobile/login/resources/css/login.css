@@ -238,11 +238,11 @@ body {
   margin-bottom: 0;
 }
 
-/* Logo icon with gradient (matches "Jamigos" text gradient) */
+/* Logo icon with gradient (matches mobile landing page exactly) */
 #kc-logo-icon {
   width: 80px;
   height: 80px;
-  margin: 0 auto var(--spacing-md) auto;
+  margin: 0 auto var(--spacing-md) auto; /* Small gap below icon */
   display: block;
   flex-shrink: 0;
 
@@ -260,16 +260,17 @@ body {
   -webkit-mask-position: center;
 }
 
-/* Match /mobile-auth .app-title exactly */
+/* "Jamigos" title - match mobile landing page exactly */
 #kc-logo-text {
   font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: var(--font-size-4xl);
   font-weight: var(--font-weight-bold);
+  letter-spacing: -0.025em; /* Match landing page letter-spacing */
   background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  margin-bottom: var(--spacing-md); /* Exact match to /mobile-auth */
+  margin-bottom: var(--spacing-xs); /* Much smaller gap to page title */
   margin-top: 0;
   padding: 0;
   line-height: 1;
@@ -280,7 +281,7 @@ body {
   font-size: var(--font-size-xl);
   font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
-  margin: var(--spacing-md) 0 var(--spacing-sm) 0; /* Tight spacing: md top, sm bottom */
+  margin: var(--spacing-sm) 0 var(--spacing-sm) 0; /* Reduced top margin for tighter spacing */
 }
 
 .subtitle {
