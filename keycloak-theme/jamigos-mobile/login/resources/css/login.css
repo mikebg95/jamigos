@@ -262,6 +262,7 @@ body {
 
 /* Match /mobile-auth .app-title exactly */
 #kc-logo-text {
+  font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: var(--font-size-4xl);
   font-weight: var(--font-weight-bold);
   background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));

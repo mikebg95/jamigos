@@ -214,32 +214,27 @@ body {
   gap: var(--spacing-base);
 }
 
+/* Logo icon with gradient (both light and dark mode) */
 #kc-logo-icon {
   width: 48px;
   height: 48px;
   flex-shrink: 0;
+
+  /* Apply gradient using mask-image technique */
+  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+
+  /* Use the SVG as a mask to shape the gradient */
+  mask-image: url(../img/jamigos-logo.svg);
+  mask-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  -webkit-mask-image: url(../img/jamigos-logo.svg);
+  -webkit-mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
 }
 
-/* Light mode - black logo and text */
-:root[data-theme='light'] #kc-logo-icon,
-:root:not([data-theme]) #kc-logo-icon {
-  filter: none;
-}
-
-:root[data-theme='light'] #kc-logo-text,
-:root:not([data-theme]) #kc-logo-text {
-  color: #010100 !important;
-}
-
-/* Dark mode - white logo and text */
-:root[data-theme='dark'] #kc-logo-icon {
-  filter: invert(1) brightness(2);
-}
-
-:root[data-theme='dark'] #kc-logo-text {
-  color: #FFFFFF !important;
-}
-
+/* Logo text with gradient (both light and dark mode) */
 #kc-logo-text {
   margin: 0;
   padding: 0;
@@ -248,6 +243,12 @@ body {
   letter-spacing: -0.025em;
   text-transform: uppercase;
   line-height: 1;
+
+  /* Apply gradient to text */
+  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 #kc-page-title {
