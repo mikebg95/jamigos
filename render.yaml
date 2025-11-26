@@ -49,5 +49,5 @@ services:
     envVars:
       # Use the backend's PUBLIC URL (works regardless of private DNS)
       - key: BACKEND_URL
-        value: https://jamigos-backend.onrender.com/
+        value: https://todo-backend-w132.onrender.com/
     healthCheckPath: /
