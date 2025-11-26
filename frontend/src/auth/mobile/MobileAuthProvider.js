@@ -623,9 +623,20 @@ class MobileAuthProvider {
         // Check for errors
         if (result.error) {
             console.error('[MobileAuth] Auth callback error:', result.error);
-            this._authCodePromise.reject(
-                new Error(`Authentication failed: ${result.error} - ${result.errorDescription || 'Unknown error'}`)
-            );
+
+            // Treat 'cancelled' error as user cancellation (same as browserFinished)
+            if (result.error === 'cancelled') {
+                console.log('[MobileAuth] User cancelled authentication (tapped ✕)');
+                const cancelError = new Error('Authentication cancelled');
+                cancelError.code = 'AUTH_CANCELLED';
+                this._authCodePromise.reject(cancelError);
+            } else {
+                // Other errors are hard failures
+                this._authCodePromise.reject(
+                    new Error(`Authentication failed: ${result.error} - ${result.errorDescription || 'Unknown error'}`)
+                );
+            }
+
             this._authCodePromise = null;
             return;
         }
