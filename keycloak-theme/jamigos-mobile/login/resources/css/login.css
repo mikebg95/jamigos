@@ -400,9 +400,11 @@ a:hover{color:var(--color-primary-dark);text-decoration:underline}
    Reduce gaps between titles and forms
    ============================================ */
 
-/* Reduce spacing between header and form content */
+/* Reduce spacing between header and form content
+   Set to 0 to make gap between page-title and quick-link
+   equal to gap between logo-text and page-title (both 0.75rem) */
 #kc-header-wrapper {
-  margin-bottom: var(--spacing-base);
+  margin-bottom: 0;
 }
 
 /* Tighter spacing for form wrapper - reduce gap between title and first input */
