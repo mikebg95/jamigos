@@ -3,6 +3,7 @@ import NavbarComponent from "@/components/NavbarComponent.vue";
 import ToastContainer from "@/components/ToastContainer.vue";
 import MobileSplashIntro from "@/components/MobileSplashIntro.vue";
 import { useUiStore } from "@/store/ui.js";
+import { useNavbarOffsets } from "@/composables/useNavbarOffsets.js";
 import { DotLoader } from "vue3-spinner";
 import { watch, onBeforeUnmount, onErrorCaptured, ref, computed } from "vue";
 import { setInteractionLocked, unlockUI } from "@/utils/interactionsLock.js";
@@ -14,6 +15,9 @@ import { SplashScreen } from '@capacitor/splash-screen';
 const ui = useUiStore();
 const route = useRoute();
 const isNative = Capacitor.isNativePlatform();
+
+// Initialize navbar offset measurements for overlay positioning
+useNavbarOffsets();
 
 // Mobile splash intro state (only shown once per app session)
 const showSplashIntro = ref(isNative);

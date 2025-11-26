@@ -30,7 +30,7 @@ const handleNavClick = () => {
   </a>
 
   <!-- Top Navbar -->
-  <nav class="navbar" role="navigation" aria-label="Main navigation">
+  <nav id="top-navbar" class="navbar" role="navigation" aria-label="Main navigation">
     <div class="navbar-container" :class="{ 'search-active': isSearchOpen }">
       <!-- Logo -->
       <router-link to="/" class="navbar-logo" aria-label="Jamigos home" @click="handleNavClick">
@@ -90,7 +90,7 @@ const handleNavClick = () => {
   <MenuPanel v-if="store.isAuthenticated" :is-open="isMenuOpen" />
 
   <!-- Mobile Bottom Navigation -->
-  <nav class="bottom-nav" v-if="store.isAuthenticated" role="navigation" aria-label="Mobile navigation">
+  <nav id="bottom-navbar" class="bottom-nav" v-if="store.isAuthenticated" role="navigation" aria-label="Mobile navigation">
     <router-link to="/dashboard" class="bottom-nav-item" aria-label="Go to dashboard" @click="handleNavClick">
       <LayoutGrid :size="UI.ICON_SIZE_MD" :stroke-width="UI.ICON_STROKE_WIDTH" aria-hidden="true" />
       <span class="bottom-nav-label">Dashboard</span>
