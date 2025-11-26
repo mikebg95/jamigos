@@ -1,4 +1,5 @@
 <script setup>
+import { onMounted } from 'vue';
 import AuthButtons from "@/components/AuthButtonsComponent.vue";
 import SearchButton from "@/components/SearchButton.vue";
 import NotificationsButton from "@/components/NotificationsButton.vue";
@@ -10,17 +11,27 @@ import { useUserStore } from "@/store/user.js";
 import { useNotifications } from '@/composables/useNotifications.js';
 import { useSearch } from '@/composables/useSearch.js';
 import { useMenu } from '@/composables/useMenu.js';
+import { useNavbarOffsets } from '@/composables/useNavbarOffsets.js';
 import { UI } from '@/config/constants';
 
 const store = useUserStore();
 const { closeNotifications } = useNotifications();
 const { isSearchOpen, searchQuery, closeSearch } = useSearch();
 const { isMenuOpen } = useMenu();
+const { measureAndUpdate } = useNavbarOffsets();
 
 // Close notifications when any navbar item is clicked
 const handleNavClick = () => {
   closeNotifications();
 };
+
+// Trigger measurement when navbar mounts (after navbars are in DOM)
+onMounted(() => {
+  console.log('[NavbarComponent] Mounted - triggering navbar offset measurement');
+  // Small delay to ensure both navbars are rendered
+  setTimeout(() => measureAndUpdate(), 100);
+  setTimeout(() => measureAndUpdate(), 300);
+});
 </script>
 
 <template>
