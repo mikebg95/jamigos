@@ -321,10 +321,6 @@ const handleNavClick = () => {
   animation: button-pop-in 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-.search-button-appear-leave-active {
-  animation: button-pop-out 0.2s cubic-bezier(0.32, 0, 0.67, 0);
-}
-
 @keyframes button-pop-in {
   from {
     opacity: 0;
@@ -333,17 +329,6 @@ const handleNavClick = () => {
   to {
     opacity: 1;
     transform: scale(1) rotate(0deg);
-  }
-}
-
-@keyframes button-pop-out {
-  from {
-    opacity: 1;
-    transform: scale(1) rotate(0deg);
-  }
-  to {
-    opacity: 0;
-    transform: scale(0.9) rotate(5deg);
   }
 }
 
