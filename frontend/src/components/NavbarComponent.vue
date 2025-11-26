@@ -1,6 +1,5 @@
 <script setup>
 import AuthButtons from "@/components/AuthButtonsComponent.vue";
-import ThemeToggle from "@/components/ThemeToggle.vue";
 import SearchButton from "@/components/SearchButton.vue";
 import NotificationsButton from "@/components/NotificationsButton.vue";
 import MenuButton from "@/components/MenuButton.vue";
@@ -12,15 +11,11 @@ import { useNotifications } from '@/composables/useNotifications.js';
 import { useSearch } from '@/composables/useSearch.js';
 import { useMenu } from '@/composables/useMenu.js';
 import { UI } from '@/config/constants';
-import { isNativeApp } from '@/utils/platform.js';
 
 const store = useUserStore();
 const { closeNotifications } = useNotifications();
 const { isSearchOpen, searchQuery, closeSearch } = useSearch();
 const { isMenuOpen } = useMenu();
-
-// Show theme toggle only on web (not on native mobile apps)
-const showThemeToggle = !isNativeApp();
 
 // Close notifications when any navbar item is clicked
 const handleNavClick = () => {
@@ -81,11 +76,12 @@ const handleNavClick = () => {
             <SearchButton />
           </div>
         </Transition>
-        <MenuButton v-if="store.isAuthenticated" class="hide-on-mobile-search" />
-        <!-- Theme toggle: only shown on web, hidden on native mobile apps -->
-        <ThemeToggle v-if="showThemeToggle" />
         <NotificationsButton v-if="store.isAuthenticated" class="hide-on-mobile-search" />
         <AuthButtons @nav-click="handleNavClick" class="hide-on-mobile-search" />
+        <!-- Hamburger menu button - always rightmost -->
+        <div v-if="store.isAuthenticated" class="menu-button-wrapper">
+          <MenuButton class="hide-on-mobile-search" />
+        </div>
       </div>
     </div>
   </nav>
@@ -431,6 +427,13 @@ const handleNavClick = () => {
   display: flex;
   align-items: center;
   gap: var(--ds-spacing-md);
+}
+
+/* Menu button wrapper - creates positioning context for dropdown */
+.menu-button-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
 }
 
 /* Mobile Bottom Navigation */
