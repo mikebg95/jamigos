@@ -5,6 +5,8 @@ services:
     runtime: image
     image:
       url: ghcr.io/mikebg95/jamigos/jamigos-keycloak:dev
+      creds:
+      - github
     plan: free
     region: frankfurt
     envVars:
@@ -30,6 +32,8 @@ services:
     runtime: image
     image:
       url: ghcr.io/mikebg95/jamigos/jamigos-backend:dev
+      creds:
+      - github
     plan: free
     region: frankfurt
     envVars:
@@ -44,6 +48,8 @@ services:
     runtime: image
     image:
       url: ghcr.io/mikebg95/jamigos/jamigos-frontend:dev
+      creds:
+      - github
     plan: free
     region: frankfurt
     envVars:
