@@ -20,6 +20,7 @@ public class CorsConfig {
 
         config.setAllowedOrigins(Arrays.asList(
                 "https://jamigos.app",
+                "https://www.jamigos.app",
                 "https://todo-frontend-8y4v.onrender.com",
                 "http://localhost:5173",
                 "http://127.0.0.1:5173",
