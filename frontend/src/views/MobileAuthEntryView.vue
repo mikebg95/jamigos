@@ -7,6 +7,7 @@ import { LogIn, UserPlus } from 'lucide-vue-next'
 import { UI } from '@/config/constants'
 import { onMounted, onBeforeUnmount } from 'vue'
 import { Capacitor } from '@capacitor/core'
+import { openAuth } from '@/plugins/jamigosInAppAuth'
 
 const router = useRouter()
 const ui = useUiStore()
@@ -96,6 +97,23 @@ const signup = async () => {
     ui.stopLoading()
   }
 }
+
+// TEMPORARY: Test in-app auth plugin (iOS only)
+const testInAppAuth = async () => {
+  const platform = Capacitor.getPlatform()
+
+  if (platform === 'ios') {
+    console.log('[InAppAuth] Opening test URL in WKWebView modal...')
+    try {
+      await openAuth('https://example.com')
+      console.log('[InAppAuth] Modal closed by user')
+    } catch (error) {
+      console.error('[InAppAuth] Error:', error)
+    }
+  } else {
+    console.log('[InAppAuth] Test button clicked on non-iOS platform – skipping native call. Platform:', platform)
+  }
+}
 </script>
 
 <template>
@@ -116,6 +134,13 @@ const signup = async () => {
         <button @click="signup" class="auth-btn auth-btn-secondary">
           <UserPlus :size="UI.ICON_SIZE_MD" :stroke-width="UI.ICON_STROKE_WIDTH" />
           <span>Create Account</span>
+        </button>
+      </div>
+
+      <!-- TEMPORARY: Test in-app auth plugin (dev only) -->
+      <div class="dev-section">
+        <button @click="testInAppAuth" type="button" class="test-btn">
+          Test in-app auth (iOS only)
         </button>
       </div>
 
@@ -234,5 +259,34 @@ const signup = async () => {
   font-size: var(--ds-font-size-sm);
   color: var(--ds-color-text-tertiary);
   line-height: 1.5;
+}
+
+/* TEMPORARY: Dev test section */
+.dev-section {
+  display: flex;
+  justify-content: center;
+  padding: var(--ds-spacing-md) 0;
+  border-top: 1px dashed var(--ds-color-border-subtle);
+  border-bottom: 1px dashed var(--ds-color-border-subtle);
+}
+
+.test-btn {
+  padding: var(--ds-spacing-sm) var(--ds-spacing-md);
+  background: var(--ds-color-surface-subtle);
+  border: 1px solid var(--ds-color-border-subtle);
+  border-radius: var(--ds-radius-md);
+  font-size: var(--ds-font-size-sm);
+  color: var(--ds-color-text-secondary);
+  cursor: pointer;
+  transition: all var(--ds-duration-fast) var(--ds-ease-standard);
+
+  &:hover {
+    background: var(--ds-color-surface);
+    border-color: var(--ds-color-border);
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
 }
 </style>
