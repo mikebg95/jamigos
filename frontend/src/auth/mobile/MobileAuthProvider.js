@@ -60,6 +60,9 @@ class MobileAuthProvider {
     constructor() {
         console.log('[MobileAuth] MobileAuthProvider initialized');
 
+        // Track whether deep link callback was received (for in-app auth cancellation detection)
+        this._callbackReceived = false;
+
         // Register deep link handler on construction
         setAuthCallbackHandler(this._handleDeepLinkCallback.bind(this));
         console.log('[MobileAuth] Deep link callback handler registered');
@@ -201,11 +204,30 @@ class MobileAuthProvider {
             console.log('[MobileAuth] Step 3: Opening auth URL...');
             const platform = Capacitor.getPlatform();
 
+            // Reset callback flag before opening auth
+            this._callbackReceived = false;
+
             if (platform === 'ios') {
                 // iOS: Use in-app WKWebView modal
                 console.log('[MobileAuth] Platform: iOS - using in-app auth modal');
                 await openAuth(authUrl);
-                console.log('[MobileAuth] In-app auth modal opened successfully');
+                console.log('[MobileAuth] In-app auth modal closed');
+
+                // Check if user closed modal without completing auth
+                if (!this._callbackReceived) {
+                    console.log('[MobileAuth] User closed modal without completing auth - cancelling');
+
+                    // Clean up PKCE storage
+                    pkceStorage.verifier = null;
+                    pkceStorage.state = null;
+
+                    // Throw cancellation error (same as browserFinished event)
+                    const cancelError = new Error('Authentication cancelled');
+                    cancelError.code = 'AUTH_CANCELLED';
+                    throw cancelError;
+                }
+
+                console.log('[MobileAuth] Auth callback received, continuing flow...');
             } else {
                 // Android/other: Use system browser (existing behavior)
                 console.log('[MobileAuth] Platform:', platform, '- using system browser');
@@ -308,11 +330,30 @@ class MobileAuthProvider {
             console.log('[MobileAuth] Step 3: Opening registration URL...');
             const platform = Capacitor.getPlatform();
 
+            // Reset callback flag before opening auth
+            this._callbackReceived = false;
+
             if (platform === 'ios') {
                 // iOS: Use in-app WKWebView modal
                 console.log('[MobileAuth] Platform: iOS - using in-app auth modal');
                 await openAuth(authUrl);
-                console.log('[MobileAuth] In-app auth modal opened successfully');
+                console.log('[MobileAuth] In-app auth modal closed');
+
+                // Check if user closed modal without completing auth
+                if (!this._callbackReceived) {
+                    console.log('[MobileAuth] User closed modal without completing registration - cancelling');
+
+                    // Clean up PKCE storage
+                    pkceStorage.verifier = null;
+                    pkceStorage.state = null;
+
+                    // Throw cancellation error (same as browserFinished event)
+                    const cancelError = new Error('Authentication cancelled');
+                    cancelError.code = 'AUTH_CANCELLED';
+                    throw cancelError;
+                }
+
+                console.log('[MobileAuth] Auth callback received, continuing flow...');
             } else {
                 // Android/other: Use system browser (existing behavior)
                 console.log('[MobileAuth] Platform:', platform, '- using system browser');
@@ -606,6 +647,9 @@ class MobileAuthProvider {
     _handleDeepLinkCallback(result) {
         console.log('[MobileAuth] _handleDeepLinkCallback() called');
         console.log('[MobileAuth] Callback result:', result);
+
+        // Mark that we received a callback (for in-app auth cancellation detection)
+        this._callbackReceived = true;
 
         if (!this._authCodePromise) {
             console.warn('[MobileAuth] No pending auth promise - callback ignored');
