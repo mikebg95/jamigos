@@ -33,6 +33,7 @@ public class SecurityConfig {
     public SecurityFilterChain swaggerChain(HttpSecurity http) throws Exception {
         http
                 .securityMatcher("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**")
+                .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(a -> a.anyRequest().permitAll())
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
@@ -45,6 +46,7 @@ public class SecurityConfig {
     public SecurityFilterChain actuatorChain(HttpSecurity http) throws Exception {
         http
                 .securityMatcher("/actuator/**")
+                .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/actuator/health").permitAll()
                         .anyRequest().hasRole("ACTUATOR")
@@ -60,6 +62,7 @@ public class SecurityConfig {
     @Order(2)
     public SecurityFilterChain apiChain(HttpSecurity http) throws Exception {
         http
+                .cors(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(reg -> reg.anyRequest().authenticated())

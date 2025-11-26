@@ -1,22 +1,23 @@
 package com.example.jamigos.config;
 
-import java.util.Arrays;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.filter.CorsFilter;
+
+import java.util.Arrays;
 
 @Configuration
 public class CorsConfig {
 
     @Bean
-    public CorsFilter corsFilter() {
+    public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        // If you don't use cookies/auth, you can set this to false.
+
+        // If you send cookies / Authorization header across origins, keep this true
         config.setAllowCredentials(true);
 
-        // Allow your Vite dev server origins
         config.setAllowedOrigins(Arrays.asList(
                 "https://jamigos.app",
                 "https://todo-frontend-8y4v.onrender.com",
@@ -29,14 +30,15 @@ public class CorsConfig {
                 "http://51.21.192.54"
         ));
 
-        // Methods & headers your frontend might use
-        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
-        config.setAllowedHeaders(Arrays.asList("*"));         // or specify: "Content-Type", "Authorization", ...
-        config.setExposedHeaders(Arrays.asList("*"));         // expose if you read custom headers client-side
-        config.setMaxAge(3600L);                              // cache preflight for 1 hour
+        config.setAllowedMethods(Arrays.asList(
+                "GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"
+        ));
+        config.setAllowedHeaders(Arrays.asList("*"));
+        config.setExposedHeaders(Arrays.asList("*"));
+        config.setMaxAge(3600L); // cache preflight for 1h
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
-        return new CorsFilter(source);
+        return source;
     }
 }
