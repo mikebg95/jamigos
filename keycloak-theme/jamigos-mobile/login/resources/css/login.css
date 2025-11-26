@@ -281,7 +281,7 @@ body {
   font-size: var(--font-size-xl);
   font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
-  margin: var(--spacing-sm) 0 var(--spacing-sm) 0; /* Reduced top margin for tighter spacing */
+  margin: var(--spacing-sm) 0 0 0;
 }
 
 .subtitle {
