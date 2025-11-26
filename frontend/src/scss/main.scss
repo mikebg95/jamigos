@@ -17,7 +17,15 @@
 @use "components/buttons";
 @use "components/cards";
 
-// 5. App-specific styles
+// 5. Navbar offset CSS variables for overlays
+// These are measured dynamically by useNavbarOffsets composable (src/composables/useNavbarOffsets.js)
+// Initial defaults prevent flicker on first render, then JavaScript updates with real measurements
+:root {
+  --navbar-top-offset: 80px;  // Reasonable default, updated by JS after measurement
+  --navbar-bottom-offset: 0px; // Default for desktop (no bottom nav), updated on mobile
+}
+
+// 6. App-specific styles
 #app {
   min-height: 100vh;
   display: flex;
@@ -31,7 +39,7 @@
   }
 }
 
-// 6. Mobile auth entry - disable scrolling
+// 7. Mobile auth entry - disable scrolling
 body.no-scroll-mobile-auth {
   overflow: hidden !important;
   height: 100vh;
@@ -39,12 +47,12 @@ body.no-scroll-mobile-auth {
   width: 100%;
 }
 
-// 7. Capacitor native app - disable zoom gestures (ONLY applies to mobile app, not web)
+// 8. Capacitor native app - disable zoom gestures (ONLY applies to mobile app, not web)
 body.native-app {
   touch-action: manipulation;
 }
 
-// 8. Safe area utilities for mobile devices (iOS notch, Android status bar, etc.)
+// 9. Safe area utilities for mobile devices (iOS notch, Android status bar, etc.)
 // Supports both modern env() and legacy constant() syntax
 .safe-top {
   padding-top: constant(safe-area-inset-top); /* iOS 11.0-11.2 */

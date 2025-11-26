@@ -228,19 +228,15 @@ const closePanel = () => {
 
 .notifications-backdrop {
   position: fixed;
-  top: 80px; // Start below top navbar
+  top: var(--navbar-top-offset); // Start below top navbar (adapts to safe-area-inset-top)
   left: 0;
   right: 0;
-  bottom: 0; // Go to bottom on desktop
+  bottom: var(--navbar-bottom-offset); // Stop above bottom navbar on mobile, 0 on desktop
   background: rgba(0, 0, 0, 0.2); // Semi-transparent dark overlay
   backdrop-filter: blur(3px); // Very subtle blur
   -webkit-backdrop-filter: blur(3px); // Safari support
   z-index: 1000;
   cursor: pointer;
-
-  @media (max-width: $breakpoint-md) {
-    bottom: 72px; // Stop above bottom navbar on mobile
-  }
 }
 
 // Slide down/up animation

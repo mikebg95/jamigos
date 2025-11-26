@@ -1,6 +1,5 @@
 <script setup>
 import AuthButtons from "@/components/AuthButtonsComponent.vue";
-import ThemeToggle from "@/components/ThemeToggle.vue";
 import SearchButton from "@/components/SearchButton.vue";
 import NotificationsButton from "@/components/NotificationsButton.vue";
 import MenuButton from "@/components/MenuButton.vue";
@@ -12,15 +11,11 @@ import { useNotifications } from '@/composables/useNotifications.js';
 import { useSearch } from '@/composables/useSearch.js';
 import { useMenu } from '@/composables/useMenu.js';
 import { UI } from '@/config/constants';
-import { isNativeApp } from '@/utils/platform.js';
 
 const store = useUserStore();
 const { closeNotifications } = useNotifications();
 const { isSearchOpen, searchQuery, closeSearch } = useSearch();
 const { isMenuOpen } = useMenu();
-
-// Show theme toggle only on web (not on native mobile apps)
-const showThemeToggle = !isNativeApp();
 
 // Close notifications when any navbar item is clicked
 const handleNavClick = () => {
@@ -35,7 +30,7 @@ const handleNavClick = () => {
   </a>
 
   <!-- Top Navbar -->
-  <nav class="navbar" role="navigation" aria-label="Main navigation">
+  <nav id="top-navbar" class="navbar" role="navigation" aria-label="Main navigation">
     <div class="navbar-container" :class="{ 'search-active': isSearchOpen }">
       <!-- Logo -->
       <router-link to="/" class="navbar-logo" aria-label="Jamigos home" @click="handleNavClick">
@@ -81,11 +76,12 @@ const handleNavClick = () => {
             <SearchButton />
           </div>
         </Transition>
-        <MenuButton v-if="store.isAuthenticated" class="hide-on-mobile-search" />
-        <!-- Theme toggle: only shown on web, hidden on native mobile apps -->
-        <ThemeToggle v-if="showThemeToggle" />
         <NotificationsButton v-if="store.isAuthenticated" class="hide-on-mobile-search" />
         <AuthButtons @nav-click="handleNavClick" class="hide-on-mobile-search" />
+        <!-- Hamburger menu button - always rightmost -->
+        <div v-if="store.isAuthenticated" class="menu-button-wrapper">
+          <MenuButton class="hide-on-mobile-search" />
+        </div>
       </div>
     </div>
   </nav>
@@ -94,7 +90,7 @@ const handleNavClick = () => {
   <MenuPanel v-if="store.isAuthenticated" :is-open="isMenuOpen" />
 
   <!-- Mobile Bottom Navigation -->
-  <nav class="bottom-nav" v-if="store.isAuthenticated" role="navigation" aria-label="Mobile navigation">
+  <nav id="bottom-navbar" class="bottom-nav" v-if="store.isAuthenticated" role="navigation" aria-label="Mobile navigation">
     <router-link to="/dashboard" class="bottom-nav-item" aria-label="Go to dashboard" @click="handleNavClick">
       <LayoutGrid :size="UI.ICON_SIZE_MD" :stroke-width="UI.ICON_STROKE_WIDTH" aria-hidden="true" />
       <span class="bottom-nav-label">Dashboard</span>
@@ -325,10 +321,6 @@ const handleNavClick = () => {
   animation: button-pop-in 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-.search-button-appear-leave-active {
-  animation: button-pop-out 0.2s cubic-bezier(0.32, 0, 0.67, 0);
-}
-
 @keyframes button-pop-in {
   from {
     opacity: 0;
@@ -337,17 +329,6 @@ const handleNavClick = () => {
   to {
     opacity: 1;
     transform: scale(1) rotate(0deg);
-  }
-}
-
-@keyframes button-pop-out {
-  from {
-    opacity: 1;
-    transform: scale(1) rotate(0deg);
-  }
-  to {
-    opacity: 0;
-    transform: scale(0.9) rotate(5deg);
   }
 }
 
@@ -431,6 +412,18 @@ const handleNavClick = () => {
   display: flex;
   align-items: center;
   gap: var(--ds-spacing-md);
+}
+
+/* Menu button wrapper - creates positioning context for dropdown */
+.menu-button-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  // Only show on mobile (768px and under)
+  @media (min-width: 769px) {
+    display: none;
+  }
 }
 
 /* Mobile Bottom Navigation */
