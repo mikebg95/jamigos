@@ -16,6 +16,7 @@
  */
 
 import { Browser } from '@capacitor/browser';
+import { Capacitor } from '@capacitor/core';
 import { generateCodeVerifier, generateCodeChallenge } from './pkce.js';
 import {
     buildAuthUrl,
@@ -27,6 +28,7 @@ import {
 } from './keycloakMobileEndpoints.js';
 import { setAuthCallbackHandler } from '@/utils/deepLinkHandler.js';
 import { getTheme } from '@/utils/theme.js';
+import { openAuth } from '@/plugins/jamigosInAppAuth';
 
 /**
  * Token storage (in-memory for now, will be moved to secure storage in later step)
@@ -195,10 +197,21 @@ class MobileAuthProvider {
 
             console.log('[MobileAuth] Auth URL:', authUrl);
 
-            // Step 3: Open system browser
-            console.log('[MobileAuth] Step 3: Opening system browser...');
-            await Browser.open({ url: authUrl });
-            console.log('[MobileAuth] Browser opened successfully');
+            // Step 3: Open auth URL (in-app on iOS, system browser on other platforms)
+            console.log('[MobileAuth] Step 3: Opening auth URL...');
+            const platform = Capacitor.getPlatform();
+
+            if (platform === 'ios') {
+                // iOS: Use in-app WKWebView modal
+                console.log('[MobileAuth] Platform: iOS - using in-app auth modal');
+                await openAuth(authUrl);
+                console.log('[MobileAuth] In-app auth modal opened successfully');
+            } else {
+                // Android/other: Use system browser (existing behavior)
+                console.log('[MobileAuth] Platform:', platform, '- using system browser');
+                await Browser.open({ url: authUrl });
+                console.log('[MobileAuth] System browser opened successfully');
+            }
 
             // Step 4: Wait for auth code from deep link
             console.log('[MobileAuth] Step 4: Waiting for authorization code...');
@@ -291,10 +304,21 @@ class MobileAuthProvider {
 
             console.log('[MobileAuth] Registration URL:', authUrl);
 
-            // Step 3: Open system browser
-            console.log('[MobileAuth] Step 3: Opening system browser with registration page...');
-            await Browser.open({ url: authUrl });
-            console.log('[MobileAuth] Browser opened successfully');
+            // Step 3: Open auth URL (in-app on iOS, system browser on other platforms)
+            console.log('[MobileAuth] Step 3: Opening registration URL...');
+            const platform = Capacitor.getPlatform();
+
+            if (platform === 'ios') {
+                // iOS: Use in-app WKWebView modal
+                console.log('[MobileAuth] Platform: iOS - using in-app auth modal');
+                await openAuth(authUrl);
+                console.log('[MobileAuth] In-app auth modal opened successfully');
+            } else {
+                // Android/other: Use system browser (existing behavior)
+                console.log('[MobileAuth] Platform:', platform, '- using system browser');
+                await Browser.open({ url: authUrl });
+                console.log('[MobileAuth] System browser opened successfully');
+            }
 
             // Step 4: Wait for auth code from deep link
             console.log('[MobileAuth] Step 4: Waiting for authorization code...');
