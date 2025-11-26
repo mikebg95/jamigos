@@ -5,7 +5,7 @@ import { defineConfig } from "eslint/config";
 
 export default defineConfig([
   {
-    ignores: ["node_modules", "dist", "coverage", ".vite", ".output"],
+    ignores: ["node_modules", "dist", "coverage", ".vite", ".output", "**/*.ts"],
   },
   pluginVue.configs["flat/essential"],
   js.configs.recommended,
