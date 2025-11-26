@@ -419,6 +419,11 @@ const handleNavClick = () => {
   position: relative;
   display: flex;
   align-items: center;
+
+  // Only show on mobile (768px and under)
+  @media (min-width: 769px) {
+    display: none;
+  }
 }
 
 /* Mobile Bottom Navigation */
