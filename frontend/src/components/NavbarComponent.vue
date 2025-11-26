@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted } from 'vue';
+import { onMounted, onBeforeUnmount } from 'vue';
 import AuthButtons from "@/components/AuthButtonsComponent.vue";
 import SearchButton from "@/components/SearchButton.vue";
 import NotificationsButton from "@/components/NotificationsButton.vue";
@@ -25,12 +25,22 @@ const handleNavClick = () => {
   closeNotifications();
 };
 
+// Store timeout IDs for cleanup
+let timeout1 = null;
+let timeout2 = null;
+
 // Trigger measurement when navbar mounts (after navbars are in DOM)
 onMounted(() => {
   console.log('[NavbarComponent] Mounted - triggering navbar offset measurement');
   // Small delay to ensure both navbars are rendered
-  setTimeout(() => measureAndUpdate(), 100);
-  setTimeout(() => measureAndUpdate(), 300);
+  timeout1 = setTimeout(() => measureAndUpdate(), 100);
+  timeout2 = setTimeout(() => measureAndUpdate(), 300);
+});
+
+// Clean up timeouts on unmount (prevents errors after tests tear down)
+onBeforeUnmount(() => {
+  if (timeout1) clearTimeout(timeout1);
+  if (timeout2) clearTimeout(timeout2);
 });
 </script>
 
