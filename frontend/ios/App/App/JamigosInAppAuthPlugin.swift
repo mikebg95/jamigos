@@ -33,6 +33,18 @@ public class JamigosInAppAuthPlugin: CAPPlugin, CAPBridgedPlugin {
             // Handle manual close (user taps ✕ button)
             authVC.onClose = { [weak self] in
                 guard let self = self else { return }
+
+                // Send cancellation deep link so JS side can detect cancellation
+                if let cancelUrl = URL(string: "com.jamigos.app://auth/callback?error=cancelled&error_description=User%20cancelled") {
+                    DispatchQueue.main.async {
+                        if UIApplication.shared.canOpenURL(cancelUrl) {
+                            UIApplication.shared.open(cancelUrl, options: [:], completionHandler: nil)
+                        }
+                    }
+                }
+
+                // Dismiss the modal and resolve the plugin call
+                self.bridge?.viewController?.dismiss(animated: true, completion: nil)
                 self.currentCall?.resolve()
                 self.currentCall = nil
             }
