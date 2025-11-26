@@ -1,7 +1,12 @@
 /**
  * Theme Utility
  * Manages light/dark theme switching for the design system
+ *
+ * WEB: User can manually toggle theme, choice is persisted in localStorage
+ * MOBILE: Theme automatically follows device system appearance, no manual toggle
  */
+
+import { isNativeApp } from './platform.js';
 
 const THEME_KEY = 'app-theme';
 const THEMES = {
@@ -10,26 +15,47 @@ const THEMES = {
 };
 
 /**
- * Get the current theme from localStorage or system preference
+ * Get the system theme from prefers-color-scheme
+ * @returns {'light' | 'dark'}
+ */
+function getSystemTheme() {
+  if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+    return THEMES.DARK;
+  }
+  return THEMES.LIGHT;
+}
+
+/**
+ * Get the current theme
+ *
+ * WEB: Returns user's saved preference from localStorage, or system preference as fallback
+ * MOBILE: Always returns system theme (ignores localStorage)
+ *
  * @returns {'light' | 'dark'}
  */
 export function getTheme() {
+  // MOBILE: Always follow system theme
+  if (isNativeApp()) {
+    return getSystemTheme();
+  }
+
+  // WEB: Use saved preference, fallback to system
   const stored = localStorage.getItem(THEME_KEY);
 
   if (stored && (stored === THEMES.LIGHT || stored === THEMES.DARK)) {
     return stored;
   }
 
-  // Check system preference
-  if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-    return THEMES.DARK;
-  }
-
-  return THEMES.LIGHT;
+  // No saved preference, use system
+  return getSystemTheme();
 }
 
 /**
  * Set the theme
+ *
+ * WEB: Saves to localStorage and applies to DOM
+ * MOBILE: Only applies to DOM (does not persist, system is source of truth)
+ *
  * @param {'light' | 'dark'} theme
  */
 export function setTheme(theme) {
@@ -38,7 +64,13 @@ export function setTheme(theme) {
     theme = THEMES.LIGHT;
   }
 
-  localStorage.setItem(THEME_KEY, theme);
+  // WEB: Save user preference to localStorage
+  if (!isNativeApp()) {
+    localStorage.setItem(THEME_KEY, theme);
+  }
+  // MOBILE: Don't save to localStorage, system is source of truth
+
+  // Apply theme to DOM (both web and mobile)
   document.documentElement.setAttribute('data-theme', theme);
 }
 
@@ -55,10 +87,22 @@ export function toggleTheme() {
 
 /**
  * Initialize theme on app load
+ *
+ * WEB: Applies saved theme or system preference
+ * MOBILE: Applies system theme AND sets up listener for system theme changes
  */
 export function initTheme() {
   const theme = getTheme();
   setTheme(theme);
+
+  // MOBILE: Watch for system theme changes and update automatically
+  if (isNativeApp()) {
+    watchSystemTheme((newTheme) => {
+      console.log('[Theme] System theme changed to:', newTheme);
+      setTheme(newTheme);
+    });
+  }
+  // WEB: Don't watch system changes, user preference takes precedence
 }
 
 /**

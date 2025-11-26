@@ -12,11 +12,15 @@ import { useNotifications } from '@/composables/useNotifications.js';
 import { useSearch } from '@/composables/useSearch.js';
 import { useMenu } from '@/composables/useMenu.js';
 import { UI } from '@/config/constants';
+import { isNativeApp } from '@/utils/platform.js';
 
 const store = useUserStore();
 const { closeNotifications } = useNotifications();
 const { isSearchOpen, searchQuery, closeSearch } = useSearch();
 const { isMenuOpen } = useMenu();
+
+// Show theme toggle only on web (not on native mobile apps)
+const showThemeToggle = !isNativeApp();
 
 // Close notifications when any navbar item is clicked
 const handleNavClick = () => {
@@ -78,7 +82,8 @@ const handleNavClick = () => {
           </div>
         </Transition>
         <MenuButton v-if="store.isAuthenticated" class="hide-on-mobile-search" />
-        <ThemeToggle />
+        <!-- Theme toggle: only shown on web, hidden on native mobile apps -->
+        <ThemeToggle v-if="showThemeToggle" />
         <NotificationsButton v-if="store.isAuthenticated" class="hide-on-mobile-search" />
         <AuthButtons @nav-click="handleNavClick" class="hide-on-mobile-search" />
       </div>
