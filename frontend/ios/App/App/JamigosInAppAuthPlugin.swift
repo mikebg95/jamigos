@@ -1,4 +1,5 @@
 import Foundation
+import UIKit
 import Capacitor
 import WebKit
 
@@ -28,8 +29,27 @@ public class JamigosInAppAuthPlugin: CAPPlugin, CAPBridgedPlugin {
             guard let self = self else { return }
 
             let authVC = InAppAuthViewController(url: url)
+
+            // Handle manual close (user taps ✕ button)
             authVC.onClose = { [weak self] in
                 guard let self = self else { return }
+                self.currentCall?.resolve()
+                self.currentCall = nil
+            }
+
+            // Handle callback URL (Keycloak redirects to com.jamigos.app://)
+            authVC.onCallback = { [weak self] callbackUrl in
+                guard let self = self else { return }
+
+                // Ask iOS to open the URL so Capacitor / AppDelegate can handle it
+                DispatchQueue.main.async {
+                    if UIApplication.shared.canOpenURL(callbackUrl) {
+                        UIApplication.shared.open(callbackUrl, options: [:], completionHandler: nil)
+                    }
+                }
+
+                // Dismiss the auth VC and resolve the plugin call
+                self.bridge?.viewController?.dismiss(animated: true, completion: nil)
                 self.currentCall?.resolve()
                 self.currentCall = nil
             }
@@ -50,6 +70,7 @@ class InAppAuthViewController: UIViewController, WKNavigationDelegate {
     private let url: URL
 
     var onClose: (() -> Void)?
+    var onCallback: ((URL) -> Void)?
 
     init(url: URL) {
         self.url = url
@@ -116,5 +137,23 @@ class InAppAuthViewController: UIViewController, WKNavigationDelegate {
         dismiss(animated: true) { [weak self] in
             self?.onClose?()
         }
+    }
+
+    // MARK: - WKNavigationDelegate
+
+    func webView(_ webView: WKWebView,
+                 decidePolicyFor navigationAction: WKNavigationAction,
+                 decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
+        // Intercept custom scheme redirects (e.g., com.jamigos.app://auth/callback)
+        if let url = navigationAction.request.url,
+           url.scheme == "com.jamigos.app" {
+            // Notify plugin and prevent WKWebView from trying to load this URL
+            onCallback?(url)
+            decisionHandler(.cancel)
+            return
+        }
+
+        // Allow all other navigation
+        decisionHandler(.allow)
     }
 }
