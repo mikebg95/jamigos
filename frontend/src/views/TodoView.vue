@@ -7,7 +7,7 @@ import { useToastStore } from '@/store/toast.js';
 import SkeletonLoader from '@/components/SkeletonLoaderComponent.vue';
 
 // Use composable for item operations
-const { items, loading, loadItems, deleteItem } = useItemOperations();
+const { items, loading, error, loadItems, deleteItem } = useItemOperations();
 const toast = useToastStore();
 
 const newItem = ref('');
@@ -59,13 +59,19 @@ onMounted(loadItems);
         <SkeletonLoader type="list" :count="3" />
       </div>
 
-      <!-- Empty state -->
+      <!-- Error state -->
+      <div v-else-if="error" class="error-state">
+        <p class="error-message">{{ error }}</p>
+        <button @click="loadItems" class="retry-btn">Retry</button>
+      </div>
+
+      <!-- Empty state (only shown when successfully loaded but no items) -->
       <div v-else-if="!items.length" class="empty-state">
         <p>No tasks yet. Add one below to get started!</p>
       </div>
 
       <!-- Items list -->
-      <ul v-else-if="items.length" role="list" aria-label="Your tasks">
+      <ul v-else role="list" aria-label="Your tasks">
         <li v-for="item in items" :key="item.id" class="task-item">
           <span class="task-text">{{ item.text }}</span>
           <button
@@ -78,8 +84,8 @@ onMounted(loadItems);
         </li>
       </ul>
 
-      <!-- Add new item form -->
-      <form @submit.prevent="addItem" class="add-form" aria-label="Add new task">
+      <!-- Add new item form (only show when not loading and no error) -->
+      <form v-if="!loading && !error" @submit.prevent="addItem" class="add-form" aria-label="Add new task">
         <label for="new-task" class="sr-only">New task description</label>
         <input
           id="new-task"
@@ -95,5 +101,42 @@ onMounted(loadItems);
   </div>
 </template>
 
+<style scoped lang="scss">
+@use '@/scss/variables' as *;
 
+.error-state {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-spacing-sm);
+  margin-bottom: var(--ds-spacing-lg);
+}
 
+.error-message {
+  color: var(--ds-color-text-secondary);
+  font-size: var(--ds-font-size-base);
+  margin: 0;
+}
+
+.retry-btn {
+  align-self: flex-start;
+  padding: var(--ds-spacing-xs) var(--ds-spacing-md);
+  border: 1px solid var(--ds-color-border);
+  background: transparent;
+  color: var(--ds-color-text-secondary);
+  border-radius: var(--ds-radius-md);
+  font-size: var(--ds-font-size-sm);
+  font-weight: var(--ds-font-weight-medium);
+  cursor: pointer;
+  transition: all var(--ds-duration-fast) var(--ds-ease-standard);
+
+  &:hover {
+    border-color: var(--ds-color-text-primary);
+    color: var(--ds-color-text-primary);
+    background: var(--ds-color-surface-hover);
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+}
+</style>
