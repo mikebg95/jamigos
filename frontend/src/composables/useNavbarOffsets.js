@@ -41,6 +41,9 @@ export function useNavbarOffsets() {
    * Detect if we're in mobile web browser (not native app, small viewport)
    */
   const isMobileWeb = () => {
+    // Guard: only run in browser environment
+    if (typeof window === 'undefined') return false
+
     const isNative = isNativeApp()
     const isMobileViewport = window.innerWidth <= MOBILE_BREAKPOINT
     return !isNative && isMobileViewport
@@ -50,6 +53,12 @@ export function useNavbarOffsets() {
    * Measure the actual DOM heights of navbars and update CSS variables
    */
   const measureAndUpdate = () => {
+    // Guard: only run in browser environment (SSR/test safety)
+    if (typeof window === 'undefined' || typeof document === 'undefined') {
+      console.log('[useNavbarOffsets] Skipping measureAndUpdate (not in browser environment)')
+      return
+    }
+
     console.log('=== [useNavbarOffsets] measureAndUpdate CALLED ===')
     console.log('Capacitor.isNativePlatform():', Capacitor.isNativePlatform())
     console.log('window.innerWidth:', window.innerWidth)
@@ -153,6 +162,12 @@ export function useNavbarOffsets() {
    * Initialize measurements and set up listeners
    */
   onMounted(() => {
+    // Guard: only run in browser environment
+    if (typeof window === 'undefined') {
+      console.log('[useNavbarOffsets] Skipping initialization (not in browser environment)')
+      return
+    }
+
     // Capacitor WebView needs extra time for navbars to fully render
     // Web browsers can use RAF, but native needs a longer delay
     if (isNativeApp()) {
@@ -181,6 +196,11 @@ export function useNavbarOffsets() {
    * Clean up listeners
    */
   onBeforeUnmount(() => {
+    // Guard: only run in browser environment
+    if (typeof window === 'undefined') {
+      return
+    }
+
     window.removeEventListener('resize', handleResize)
     window.removeEventListener('orientationchange', measureAndUpdate)
 
