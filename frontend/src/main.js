@@ -28,6 +28,13 @@ if (Capacitor.isNativePlatform()) {
 
 // Initialize deep link handler for mobile (no-op on web)
 initializeDeepLinkHandler();
+
+// DEV-ONLY: Initialize token storage test helpers (mobile only)
+if (import.meta.env.DEV && Capacitor.isNativePlatform()) {
+  import('./auth/mobile/devTokenStorageTest.js').then((module) => {
+    module.initDevTokenStorageTest();
+  });
+}
 import {
   AlertCircle,
   X,
