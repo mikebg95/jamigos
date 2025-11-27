@@ -1,12 +1,11 @@
 <script setup>
-import { onMounted, onBeforeUnmount } from 'vue';
+import {onMounted, onUnmounted, ref, watch, nextTick, onBeforeUnmount} from 'vue';
 import AuthButtons from "@/components/AuthButtonsComponent.vue";
 import SearchButton from "@/components/SearchButton.vue";
 import NotificationsButton from "@/components/NotificationsButton.vue";
 import MenuButton from "@/components/MenuButton.vue";
 import MenuPanel from "@/components/MenuPanel.vue";
-import JamigosLogo from "@/components/JamigosLogo.vue";
-import { LayoutGrid, UserCircle, MessageCircle, Compass, X } from 'lucide-vue-next';
+import { LayoutGrid, UserCircle, MessageCircle, Compass, X, Mic } from 'lucide-vue-next';
 import { useUserStore } from "@/store/user.js";
 import { useNotifications } from '@/composables/useNotifications.js';
 import { useSearch } from '@/composables/useSearch.js';
@@ -20,6 +19,19 @@ const { isSearchOpen, searchQuery, closeSearch } = useSearch();
 const { isMenuOpen } = useMenu();
 const { measureAndUpdate } = useNavbarOffsets();
 
+// Template refs
+const searchInputRef = ref(null);
+const searchBarRef = ref(null);
+
+// Record button animation state
+const isRecordAnimating = ref(false);
+const handleRecordClick = () => {
+  isRecordAnimating.value = true;
+  setTimeout(() => {
+    isRecordAnimating.value = false;
+  }, 600); // Match animation duration
+};
+
 // Close notifications when any navbar item is clicked
 const handleNavClick = () => {
   closeNotifications();
@@ -28,6 +40,30 @@ const handleNavClick = () => {
 // Store timeout IDs for cleanup
 let timeout1 = null;
 let timeout2 = null;
+
+// Close search bar when clicking outside
+const handleClickOutside = (event) => {
+  if (searchBarRef.value && !searchBarRef.value.contains(event.target)) {
+    closeSearch();
+  }
+};
+
+// Auto-focus search input when it opens and manage click-outside listener
+watch(isSearchOpen, async (newValue) => {
+  if (newValue) {
+    // Focus the input
+    await nextTick();
+    searchInputRef.value?.focus();
+
+    // Add click-outside listener after a small delay to avoid immediate closure
+    setTimeout(() => {
+      document.addEventListener('click', handleClickOutside);
+    }, 100);
+  } else {
+    // Remove click-outside listener when search closes
+    document.removeEventListener('click', handleClickOutside);
+  }
+});
 
 // Trigger measurement when navbar mounts (after navbars are in DOM)
 onMounted(() => {
@@ -42,6 +78,11 @@ onBeforeUnmount(() => {
   if (timeout1) clearTimeout(timeout1);
   if (timeout2) clearTimeout(timeout2);
 });
+
+// Clean up click outside listener on unmount
+onUnmounted(() => {
+  document.removeEventListener('click', handleClickOutside);
+});
 </script>
 
 <template>
@@ -55,10 +96,8 @@ onBeforeUnmount(() => {
     <div class="navbar-container" :class="{ 'search-active': isSearchOpen }">
       <!-- Logo -->
       <router-link to="/" class="navbar-logo" aria-label="Jamigos home" @click="handleNavClick">
-        <div class="logo-icon" aria-hidden="true">
-          <JamigosLogo height="48" />
-        </div>
-        <span class="logo-text">JAMIGOS</span>
+        <div class="logo-icon" aria-hidden="true" role="img" aria-label="Jamigos"></div>
+        <span class="logo-text">Jamigos</span>
       </router-link>
 
       <!-- Desktop Navigation Links -->
@@ -76,13 +115,13 @@ onBeforeUnmount(() => {
 
       <!-- Search Bar - appears when search is active -->
       <Transition name="search-appear">
-        <div v-if="isSearchOpen" class="search-bar">
+        <div v-if="isSearchOpen" ref="searchBarRef" class="search-bar">
           <input
+            ref="searchInputRef"
             v-model="searchQuery"
             type="text"
             placeholder="Search..."
             class="search-input"
-            autofocus
           />
           <button @click="closeSearch" class="search-close-button" aria-label="Close search">
             <X :size="20" :stroke-width="UI.ICON_STROKE_WIDTH" />
@@ -98,6 +137,16 @@ onBeforeUnmount(() => {
           </div>
         </Transition>
         <NotificationsButton v-if="store.isAuthenticated" class="hide-on-mobile-search" />
+        <!-- Record Button (Desktop only - 769px+) -->
+        <button
+            v-if="store.isAuthenticated"
+            class="record-button record-button-desktop hide-on-mobile-search"
+            :class="{ 'animating': isRecordAnimating }"
+            aria-label="Record"
+            @click="handleRecordClick"
+        >
+          <Mic :size="20" :stroke-width="UI.ICON_STROKE_WIDTH" />
+        </button>
         <AuthButtons @nav-click="handleNavClick" class="hide-on-mobile-search" />
         <!-- Hamburger menu button - always rightmost -->
         <div v-if="store.isAuthenticated" class="menu-button-wrapper">
@@ -121,6 +170,14 @@ onBeforeUnmount(() => {
       <Compass :size="UI.ICON_SIZE_MD" :stroke-width="UI.ICON_STROKE_WIDTH" aria-hidden="true" />
       <span class="bottom-nav-label">Explore</span>
     </router-link>
+
+    <!-- Record Button (Mobile - center position, larger) -->
+    <button class="bottom-nav-item record-button-mobile" aria-label="Record" @click="handleRecordClick">
+      <div class="record-button-circle" :class="{ 'animating': isRecordAnimating }">
+        <Mic :size="28" :stroke-width="2" aria-hidden="true" />
+      </div>
+      <span class="bottom-nav-label">Record</span>
+    </button>
 
     <router-link to="/messages" class="bottom-nav-item" aria-label="View messages" @click="handleNavClick">
       <MessageCircle :size="UI.ICON_SIZE_MD" :stroke-width="UI.ICON_STROKE_WIDTH" aria-hidden="true" />
@@ -190,22 +247,39 @@ onBeforeUnmount(() => {
   align-items: center;
   justify-content: center;
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  width: 48px;
+  height: 48px;
+
+  // Apply gradient using mask-image technique (same as mobile)
+  background: linear-gradient(135deg, var(--ds-color-primary), var(--ds-color-secondary));
+
+  // Use the SVG as a mask to shape the gradient
+  mask-image: url(/jamigos-logo.svg);
+  mask-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  -webkit-mask-image: url(/jamigos-logo.svg);
+  -webkit-mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
 
   @media (max-width: $breakpoint-sm) {
-    :deep(img) {
-      width: 40px;
-      height: 40px;
-    }
+    width: 40px;
+    height: 40px;
   }
 }
 
 .logo-text {
   font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: var(--ds-font-size-2xl);
-  font-weight: 500;
-  color: #000000;
+  font-weight: var(--ds-font-weight-bold);
   letter-spacing: 1.5px;
-  text-transform: uppercase;
+
+  // Apply gradient text effect (same as mobile)
+  background: linear-gradient(135deg, var(--ds-color-primary), var(--ds-color-secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 
   @media (max-width: $breakpoint-md) {
     font-size: var(--ds-font-size-xl);
@@ -216,20 +290,19 @@ onBeforeUnmount(() => {
   }
 
   @media (max-width: 480px) {
+    font-size: var(--ds-font-size-xl);
+  }
+
+  @media (max-width: 365px) {
     display: none;
   }
 
-  // Hide text when search is active only on very small screens
+  // Hide text when search is active on small screens
   .navbar-container.search-active & {
     @media (max-width: 480px) {
       display: none;
     }
   }
-}
-
-/* White text in dark mode */
-:root[data-theme='dark'] .logo-text {
-  color: #ffffff;
 }
 
 /* Search bar */
@@ -264,7 +337,7 @@ onBeforeUnmount(() => {
   &:focus {
     outline: none;
     border-color: var(--ds-color-primary);
-    background: var(--ds-color-surface);
+    background: var(--ds-color-surface-subtle);
     box-shadow: 0 0 0 3px rgba(249, 165, 72, 0.1);
   }
 }
@@ -519,5 +592,242 @@ onBeforeUnmount(() => {
   font-size: var(--ds-font-size-xs);
   font-weight: var(--ds-font-weight-medium);
   transition: all var(--ds-duration-normal) var(--ds-ease-emphasized);
+}
+
+/* Record Button Styles */
+
+// Desktop Record Button (769px+) - matches search/notifications style
+.record-button-desktop {
+  display: none;
+
+  @media (min-width: 769px) {
+    // Reset
+    appearance: none;
+    background: none;
+    border: none;
+    padding: 0;
+
+    // Layout
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+
+    // Visual
+    color: var(--ds-color-text-secondary);
+    background: var(--ds-color-surface-subtle);
+    border-radius: var(--ds-radius-lg);
+    cursor: pointer;
+    position: relative;
+    z-index: 2;
+
+    // Transitions
+    transition: all var(--ds-duration-normal) var(--ds-ease-emphasized);
+
+    // Create wave ripple elements using pseudo-elements
+    &::before,
+    &::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 100%;
+      height: 100%;
+      border-radius: var(--ds-radius-lg);
+      border: 2px solid var(--ds-color-text-secondary);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    &:hover {
+      color: var(--ds-color-text-primary);
+      background: var(--ds-color-surface-hover);
+      transform: scale(1.05);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--ds-color-primary);
+      outline-offset: 2px;
+    }
+
+    // Animation on click (same as mobile but no color glow)
+    &.animating {
+      animation: record-thump-desktop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+      &::before {
+        animation: wave-pulse-desktop 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      }
+
+      &::after {
+        animation: wave-pulse-desktop 0.6s 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      }
+
+      svg {
+        animation: icon-bounce 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+    }
+
+    svg {
+      transition: transform var(--ds-duration-normal) var(--ds-ease-emphasized);
+    }
+
+    &:hover svg {
+      transform: scale(1.1);
+    }
+  }
+}
+
+// Mobile Record Button (center of bottom nav)
+.record-button-mobile {
+  background: none;
+  border: none;
+  cursor: pointer;
+  position: relative;
+
+  .record-button-circle {
+    width: 56px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--ds-radius-full);
+    background: linear-gradient(135deg, var(--ds-color-primary), var(--ds-color-secondary));
+    color: var(--ds-color-inverse-text);
+    box-shadow: 0 4px 12px rgba(249, 165, 72, 0.4),
+                0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: all var(--ds-duration-normal) var(--ds-ease-emphasized);
+    margin-bottom: var(--ds-spacing-xs);
+    position: relative;
+    z-index: 2;
+
+    // Create wave ripple elements using pseudo-elements
+    &::before,
+    &::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 100%;
+      height: 100%;
+      border-radius: var(--ds-radius-full);
+      border: 3px solid var(--ds-color-primary);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    // Over-the-top animation on click
+    &.animating {
+      animation: record-thump 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+      &::before {
+        animation: wave-pulse 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      }
+
+      &::after {
+        animation: wave-pulse 0.6s 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      }
+
+      svg {
+        animation: icon-bounce 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+    }
+  }
+
+  .bottom-nav-label {
+    color: var(--ds-color-text-primary);
+    font-weight: var(--ds-font-weight-semibold);
+  }
+}
+
+// Keyframe animations for over-the-top record button effect
+@keyframes record-thump {
+  0% {
+    transform: scale(1) rotate(0deg);
+  }
+  25% {
+    transform: scale(0.85) rotate(-8deg);
+  }
+  50% {
+    transform: scale(1.15) rotate(8deg);
+    box-shadow: 0 6px 20px rgba(249, 165, 72, 0.6),
+                0 0 30px rgba(249, 165, 72, 0.4);
+  }
+  75% {
+    transform: scale(0.95) rotate(-4deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+@keyframes wave-pulse {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.8;
+    border-width: 3px;
+  }
+  50% {
+    opacity: 0.4;
+    border-width: 2px;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(2.5);
+    opacity: 0;
+    border-width: 1px;
+  }
+}
+
+@keyframes icon-bounce {
+  0%, 100% {
+    transform: scale(1) rotate(0deg);
+  }
+  25% {
+    transform: scale(0.8) rotate(-10deg);
+  }
+  50% {
+    transform: scale(1.2) rotate(10deg);
+  }
+  75% {
+    transform: scale(0.9) rotate(-5deg);
+  }
+}
+
+// Desktop animations (no color glow)
+@keyframes record-thump-desktop {
+  0% {
+    transform: scale(1) rotate(0deg);
+  }
+  25% {
+    transform: scale(0.85) rotate(-8deg);
+  }
+  50% {
+    transform: scale(1.15) rotate(8deg);
+  }
+  75% {
+    transform: scale(0.95) rotate(-4deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+@keyframes wave-pulse-desktop {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.6;
+    border-width: 2px;
+  }
+  50% {
+    opacity: 0.3;
+    border-width: 1px;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(2.5);
+    opacity: 0;
+    border-width: 0.5px;
+  }
 }
 </style>

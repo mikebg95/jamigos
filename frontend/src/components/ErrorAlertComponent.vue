@@ -93,40 +93,61 @@ const dismiss = () => {
   border-radius: $radius-lg;
   border: 1px solid;
   animation: slideDown 0.3s ease-out;
+  color: #1f2937; // Dark text for light mode
 
   &--error {
     background: #fee;
     border-color: #fcc;
+    color: #000000;
 
     .error-alert__icon {
       color: #dc2626;
+    }
+
+    .error-alert__message {
+      color: #000000;
     }
   }
 
   &--warning {
     background: #fef3c7;
     border-color: #fde68a;
+    color: #000000;
 
     .error-alert__icon {
       color: #d97706;
+    }
+
+    .error-alert__message {
+      color: #000000;
     }
   }
 
   &--info {
     background: #dbeafe;
     border-color: #bfdbfe;
+    color: #000000;
 
     .error-alert__icon {
       color: #2563eb;
+    }
+
+    .error-alert__message {
+      color: #000000;
     }
   }
 
   &--success {
     background: #dcfce7;
     border-color: #bbf7d0;
+    color: #000000;
 
     .error-alert__icon {
       color: #16a34a;
+    }
+
+    .error-alert__message {
+      color: #000000;
     }
   }
 }
@@ -142,6 +163,10 @@ const dismiss = () => {
       .error-alert__icon {
         color: #fca5a5;
       }
+
+      .error-alert__message {
+        color: #fecaca;
+      }
     }
 
     &--warning {
@@ -151,6 +176,10 @@ const dismiss = () => {
 
       .error-alert__icon {
         color: #fbbf24;
+      }
+
+      .error-alert__message {
+        color: #fde68a;
       }
     }
 
@@ -162,6 +191,10 @@ const dismiss = () => {
       .error-alert__icon {
         color: #93c5fd;
       }
+
+      .error-alert__message {
+        color: #bfdbfe;
+      }
     }
 
     &--success {
@@ -171,6 +204,10 @@ const dismiss = () => {
 
       .error-alert__icon {
         color: #86efac;
+      }
+
+      .error-alert__message {
+        color: #bbf7d0;
       }
     }
   }
