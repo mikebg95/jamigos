@@ -5,7 +5,6 @@ import SearchButton from "@/components/SearchButton.vue";
 import NotificationsButton from "@/components/NotificationsButton.vue";
 import MenuButton from "@/components/MenuButton.vue";
 import MenuPanel from "@/components/MenuPanel.vue";
-import JamigosLogo from "@/components/JamigosLogo.vue";
 import { LayoutGrid, UserCircle, MessageCircle, Compass, X } from 'lucide-vue-next';
 import { useUserStore } from "@/store/user.js";
 import { useNotifications } from '@/composables/useNotifications.js';
@@ -78,10 +77,8 @@ onUnmounted(() => {
     <div class="navbar-container" :class="{ 'search-active': isSearchOpen }">
       <!-- Logo -->
       <router-link to="/" class="navbar-logo" aria-label="Jamigos home" @click="handleNavClick">
-        <div class="logo-icon" aria-hidden="true">
-          <JamigosLogo height="48" />
-        </div>
-        <span class="logo-text">JAMIGOS</span>
+        <div class="logo-icon" aria-hidden="true" role="img" aria-label="Jamigos"></div>
+        <span class="logo-text">Jamigos</span>
       </router-link>
 
       <!-- Desktop Navigation Links -->
@@ -213,22 +210,39 @@ onUnmounted(() => {
   align-items: center;
   justify-content: center;
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  width: 48px;
+  height: 48px;
+
+  // Apply gradient using mask-image technique (same as mobile)
+  background: linear-gradient(135deg, var(--ds-color-primary), var(--ds-color-secondary));
+
+  // Use the SVG as a mask to shape the gradient
+  mask-image: url(/jamigos-logo.svg);
+  mask-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  -webkit-mask-image: url(/jamigos-logo.svg);
+  -webkit-mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
 
   @media (max-width: $breakpoint-sm) {
-    :deep(img) {
-      width: 40px;
-      height: 40px;
-    }
+    width: 40px;
+    height: 40px;
   }
 }
 
 .logo-text {
   font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: var(--ds-font-size-2xl);
-  font-weight: 500;
-  color: #000000;
+  font-weight: var(--ds-font-weight-bold);
   letter-spacing: 1.5px;
-  text-transform: uppercase;
+
+  // Apply gradient text effect (same as mobile)
+  background: linear-gradient(135deg, var(--ds-color-primary), var(--ds-color-secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 
   @media (max-width: $breakpoint-md) {
     font-size: var(--ds-font-size-xl);
@@ -248,11 +262,6 @@ onUnmounted(() => {
       display: none;
     }
   }
-}
-
-/* White text in dark mode */
-:root[data-theme='dark'] .logo-text {
-  color: #ffffff;
 }
 
 /* Search bar */
