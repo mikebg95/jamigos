@@ -131,7 +131,9 @@ onUnmounted(() => {
         <button
             v-if="store.isAuthenticated"
             class="record-button record-button-desktop hide-on-mobile-search"
+            :class="{ 'animating': isRecordAnimating }"
             aria-label="Record"
+            @click="handleRecordClick"
         >
           <Mic :size="20" :stroke-width="UI.ICON_STROKE_WIDTH" />
         </button>
@@ -607,9 +609,27 @@ onUnmounted(() => {
     background: var(--ds-color-surface-subtle);
     border-radius: var(--ds-radius-lg);
     cursor: pointer;
+    position: relative;
+    z-index: 2;
 
     // Transitions
     transition: all var(--ds-duration-normal) var(--ds-ease-emphasized);
+
+    // Create wave ripple elements using pseudo-elements
+    &::before,
+    &::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 100%;
+      height: 100%;
+      border-radius: var(--ds-radius-lg);
+      border: 2px solid var(--ds-color-text-secondary);
+      opacity: 0;
+      pointer-events: none;
+    }
 
     &:hover {
       color: var(--ds-color-text-primary);
@@ -620,6 +640,23 @@ onUnmounted(() => {
     &:focus-visible {
       outline: 2px solid var(--ds-color-primary);
       outline-offset: 2px;
+    }
+
+    // Animation on click (same as mobile but no color glow)
+    &.animating {
+      animation: record-thump-desktop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+      &::before {
+        animation: wave-pulse-desktop 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      }
+
+      &::after {
+        animation: wave-pulse-desktop 0.6s 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      }
+
+      svg {
+        animation: icon-bounce 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
     }
 
     svg {
@@ -745,6 +782,42 @@ onUnmounted(() => {
   }
   75% {
     transform: scale(0.9) rotate(-5deg);
+  }
+}
+
+// Desktop animations (no color glow)
+@keyframes record-thump-desktop {
+  0% {
+    transform: scale(1) rotate(0deg);
+  }
+  25% {
+    transform: scale(0.85) rotate(-8deg);
+  }
+  50% {
+    transform: scale(1.15) rotate(8deg);
+  }
+  75% {
+    transform: scale(0.95) rotate(-4deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+@keyframes wave-pulse-desktop {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.6;
+    border-width: 2px;
+  }
+  50% {
+    opacity: 0.3;
+    border-width: 1px;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(2.5);
+    opacity: 0;
+    border-width: 0.5px;
   }
 }
 </style>
