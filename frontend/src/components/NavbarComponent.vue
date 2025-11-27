@@ -23,6 +23,15 @@ const { measureAndUpdate } = useNavbarOffsets();
 const searchInputRef = ref(null);
 const searchBarRef = ref(null);
 
+// Record button animation state
+const isRecordAnimating = ref(false);
+const handleRecordClick = () => {
+  isRecordAnimating.value = true;
+  setTimeout(() => {
+    isRecordAnimating.value = false;
+  }, 600); // Match animation duration
+};
+
 // Close notifications when any navbar item is clicked
 const handleNavClick = () => {
   closeNotifications();
@@ -151,8 +160,8 @@ onUnmounted(() => {
     </router-link>
 
     <!-- Record Button (Mobile - center position, larger) -->
-    <button class="bottom-nav-item record-button-mobile" aria-label="Record" @click="handleNavClick">
-      <div class="record-button-circle">
+    <button class="bottom-nav-item record-button-mobile" aria-label="Record" @click="handleRecordClick">
+      <div class="record-button-circle" :class="{ 'animating': isRecordAnimating }">
         <Mic :size="28" :stroke-width="2" aria-hidden="true" />
       </div>
       <span class="bottom-nav-label">Record</span>
@@ -628,6 +637,7 @@ onUnmounted(() => {
   background: none;
   border: none;
   cursor: pointer;
+  position: relative;
 
   .record-button-circle {
     width: 56px;
@@ -642,19 +652,99 @@ onUnmounted(() => {
                 0 2px 4px rgba(0, 0, 0, 0.1);
     transition: all var(--ds-duration-normal) var(--ds-ease-emphasized);
     margin-bottom: var(--ds-spacing-xs);
-  }
+    position: relative;
+    z-index: 2;
 
-  &:active {
-    .record-button-circle {
-      transform: scale(0.92);
-      box-shadow: 0 2px 8px rgba(249, 165, 72, 0.3),
-                  0 1px 2px rgba(0, 0, 0, 0.1);
+    // Create wave ripple elements using pseudo-elements
+    &::before,
+    &::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 100%;
+      height: 100%;
+      border-radius: var(--ds-radius-full);
+      border: 3px solid var(--ds-color-primary);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    // Over-the-top animation on click
+    &.animating {
+      animation: record-thump 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+      &::before {
+        animation: wave-pulse 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      }
+
+      &::after {
+        animation: wave-pulse 0.6s 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      }
+
+      svg {
+        animation: icon-bounce 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
     }
   }
 
   .bottom-nav-label {
     color: var(--ds-color-text-primary);
     font-weight: var(--ds-font-weight-semibold);
+  }
+}
+
+// Keyframe animations for over-the-top record button effect
+@keyframes record-thump {
+  0% {
+    transform: scale(1) rotate(0deg);
+  }
+  25% {
+    transform: scale(0.85) rotate(-8deg);
+  }
+  50% {
+    transform: scale(1.15) rotate(8deg);
+    box-shadow: 0 6px 20px rgba(249, 165, 72, 0.6),
+                0 0 30px rgba(249, 165, 72, 0.4);
+  }
+  75% {
+    transform: scale(0.95) rotate(-4deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+@keyframes wave-pulse {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.8;
+    border-width: 3px;
+  }
+  50% {
+    opacity: 0.4;
+    border-width: 2px;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(2.5);
+    opacity: 0;
+    border-width: 1px;
+  }
+}
+
+@keyframes icon-bounce {
+  0%, 100% {
+    transform: scale(1) rotate(0deg);
+  }
+  25% {
+    transform: scale(0.8) rotate(-10deg);
+  }
+  50% {
+    transform: scale(1.2) rotate(10deg);
+  }
+  75% {
+    transform: scale(0.9) rotate(-5deg);
   }
 }
 </style>
