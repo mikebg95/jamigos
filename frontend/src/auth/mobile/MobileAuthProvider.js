@@ -172,10 +172,11 @@ class MobileAuthProvider {
     /**
      * Trigger login flow
      * Opens system browser with Keycloak login page
-     * @param {string} [redirectPath] - Optional path to redirect to after login (unused in mobile)
+     * @param {string} [_redirectPath] - Optional path to redirect to after login (unused in mobile)
      * @returns {Promise<Object>} Tokens object { access_token, refresh_token, id_token, expires_in }
      */
-    async login(redirectPath) {
+    // eslint-disable-next-line no-unused-vars
+    async login(_redirectPath) {
         try {
             // Generate PKCE values
             const verifier = generateCodeVerifier();
@@ -244,10 +245,11 @@ class MobileAuthProvider {
     /**
      * Trigger registration/signup flow
      * Opens Keycloak registration page instead of login page
-     * @param {string} [redirectPath] - Optional path to redirect to after registration
+     * @param {string} [_redirectPath] - Optional path to redirect to after registration
      * @returns {Promise<Object>} Tokens object
      */
-    async register(redirectPath) {
+    // eslint-disable-next-line no-unused-vars
+    async register(_redirectPath) {
         try {
             // Generate PKCE values
             const verifier = generateCodeVerifier();
@@ -315,9 +317,10 @@ class MobileAuthProvider {
 
     /**
      * Trigger logout flow
-     * @param {string} [redirectPath] - Optional path to redirect to after logout
+     * @param {string} [_redirectPath] - Optional path to redirect to after logout
      */
-    async logout(redirectPath) {
+    // eslint-disable-next-line no-unused-vars
+    async logout(_redirectPath) {
         try {
             const logoutUrl = getLogoutEndpoint();
             const idToken = tokenStorage.idToken;
