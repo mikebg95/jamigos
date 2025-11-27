@@ -29,11 +29,22 @@ if (Capacitor.isNativePlatform()) {
 // Initialize deep link handler for mobile (no-op on web)
 initializeDeepLinkHandler();
 
-// DEV-ONLY: Initialize token storage test helpers (mobile only)
-if (import.meta.env.DEV && Capacitor.isNativePlatform()) {
-  import('./auth/mobile/devTokenStorageTest.js').then((module) => {
-    module.initDevTokenStorageTest();
-  });
+// Initialize token storage test helpers (mobile only, when enabled)
+// Enabled when: native platform AND (dev mode OR VITE_ENABLE_MOBILE_TOKEN_TESTS=true)
+const enableMobileTokenTests =
+  Capacitor.isNativePlatform() &&
+  (import.meta.env.DEV || import.meta.env.VITE_ENABLE_MOBILE_TOKEN_TESTS === 'true');
+
+if (enableMobileTokenTests) {
+  console.log('[Main] Loading token storage test helpers (enableMobileTokenTests=true)');
+  import('./auth/mobile/devTokenStorageTest.js')
+    .then((module) => {
+      module.initDevTokenStorageTest();
+      console.log('[Main] Token storage test helpers loaded successfully');
+    })
+    .catch((error) => {
+      console.error('[Main] Failed to load token storage test helpers:', error);
+    });
 }
 import {
   AlertCircle,
@@ -82,6 +93,49 @@ if (SENTRY.ENABLED && SENTRY.DSN) {
 app.use(pinia);
 app.use(router);
 
+// DEBUG HELPERS (Native only)
+if (Capacitor.isNativePlatform()) {
+  // Manual initAuth() debug helper
+  window.debugInitAuth = async function() {
+    console.log('[DebugInitAuth] ===== MANUAL initAuth() START =====');
+    try {
+      const result = await authFacade.initAuth();
+      console.log('[DebugInitAuth] initAuth() resolved with:', result);
+
+      const userStore = useUserStore();
+      console.log('[DebugInitAuth] userStore.isAuthenticated:', userStore.isAuthenticated);
+      console.log('[DebugInitAuth] userStore.roles:', userStore.roles);
+      console.log('[DebugInitAuth] userStore.tokenParsed:', userStore.tokenParsed);
+
+      return {
+        initAuthResult: result,
+        userStoreDump: {
+          isAuthenticated: userStore.isAuthenticated,
+          roles: userStore.roles,
+          tokenParsed: userStore.tokenParsed
+        }
+      };
+    } catch (error) {
+      console.error('[DebugInitAuth] initAuth() threw:', error);
+      throw error;
+    }
+  };
+
+  // UserStore state dump helper
+  window.debugUserStore = function() {
+    const userStore = useUserStore();
+    const dump = {
+      isAuthenticated: userStore.isAuthenticated,
+      roles: userStore.roles,
+      tokenParsed: userStore.tokenParsed
+    };
+    console.log('[DebugUserStore] Current userStore state:', dump);
+    return dump;
+  };
+
+  console.log('[Main] Debug helpers attached: window.debugInitAuth(), window.debugUserStore()');
+}
+
 // Register only the Lucide icons we use (optimizes bundle size)
 const icons = {
   AlertCircle,
@@ -108,15 +162,22 @@ const uiStore = useUiStore();
 uiStore.startLoading();
 
 // Initialize auth via facade (automatically uses correct provider based on platform)
+console.log('[Main] ===== Calling authFacade.initAuth() from main.js =====');
 authFacade
     .initAuth()
     .then(async (authUser) => {
+        console.log('[Main] authFacade.initAuth() resolved with:', authUser);
+
         const userStore = useUserStore();
         userStore.setUser(
             authUser.authenticated,
             authUser.roles,
             authUser.tokenParsed
         );
+
+        console.log('[Main] After userStore.setUser: isAuthenticated =', userStore.isAuthenticated);
+        console.log('[Main] After userStore.setUser: roles =', userStore.roles);
+        console.log('[Main] After userStore.setUser: tokenParsed =', userStore.tokenParsed);
 
         if (userStore.isAuthenticated) {
             try {
@@ -126,14 +187,46 @@ authFacade
             }
         }
 
-        if (router.currentRoute.value.path === "/" && userStore.isAuthenticated) {
-            await router.replace("/dashboard");
+        // Post-initAuth redirect logic (platform-specific)
+        const currentPath = router.currentRoute.value.path;
+        console.log('[Main] Post-initAuth redirect check...');
+        console.log('[Main]   Current path:', currentPath);
+        console.log('[Main]   isAuthenticated:', userStore.isAuthenticated);
+        console.log('[Main]   isNative:', Capacitor.isNativePlatform());
+
+        if (Capacitor.isNativePlatform()) {
+            // NATIVE ONLY: Handle post-initAuth redirects after userStore is hydrated
+            if (userStore.isAuthenticated) {
+                // Authenticated: redirect to /dashboard from / or /mobile-auth
+                if (currentPath === "/" || currentPath === "/mobile-auth") {
+                    console.log('[Main] NATIVE: Authenticated user on', currentPath, '→ redirecting to /dashboard');
+                    await router.replace("/dashboard");
+                } else {
+                    console.log('[Main] NATIVE: Authenticated user on', currentPath, '→ no redirect needed');
+                }
+            } else {
+                // Not authenticated: redirect to /mobile-auth from /
+                if (currentPath === "/") {
+                    console.log('[Main] NATIVE: Unauthenticated user on / → redirecting to /mobile-auth');
+                    await router.replace("/mobile-auth");
+                } else {
+                    console.log('[Main] NATIVE: Unauthenticated user on', currentPath, '→ no redirect needed');
+                }
+            }
+        } else {
+            // WEB ONLY: Existing behavior - authenticated users on / redirect to /dashboard
+            if (currentPath === "/" && userStore.isAuthenticated) {
+                console.log('[Main] WEB: Authenticated user on / → redirecting to /dashboard');
+                await router.replace("/dashboard");
+            } else {
+                console.log('[Main] WEB: No redirect needed');
+            }
         }
 
         app.mount("#app");
     })
     .catch((error) => {
-        console.error('Authentication initialization failed:', error);
+        console.error('[Main] authFacade.initAuth() FAILED:', error);
         // Mount app anyway so user sees something instead of black screen
         alert(`Authentication initialization failed: ${error.message}\n\nThe app will load but you may need to refresh.`);
         app.mount("#app");

@@ -51,26 +51,38 @@ function isNative() {
  * })
  */
 export async function saveTokens(tokens) {
-  if (!isNative()) {
-    // On web, no-op with debug log
-    if (import.meta.env.DEV) {
-      console.debug('[nativeTokenStorage] saveTokens called on web (no-op)')
-    }
+  const native = isNative()
+  console.log('[nativeTokenStorage] saveTokens() called, isNative:', native)
+
+  if (!native) {
+    console.log('[nativeTokenStorage] On web platform - skipping save (no-op)')
     return
   }
 
+  console.log('[nativeTokenStorage] Saving tokens with key:', STORAGE_KEY)
+  console.log('[nativeTokenStorage] Token data:', {
+    hasAccessToken: !!tokens.accessToken,
+    accessTokenPreview: tokens.accessToken ? tokens.accessToken.substring(0, 20) + '...' : 'null',
+    hasRefreshToken: !!tokens.refreshToken,
+    hasIdToken: !!tokens.idToken,
+    expiresAt: tokens.expiresAt,
+    expiresAtDate: tokens.expiresAt ? new Date(tokens.expiresAt).toISOString() : 'null'
+  })
+
   try {
     const serialized = JSON.stringify(tokens)
+    console.log('[nativeTokenStorage] Serialized length:', serialized.length, 'chars')
+
+    console.log('[nativeTokenStorage] Calling Preferences.set...')
     await Preferences.set({
       key: STORAGE_KEY,
       value: serialized
     })
 
-    if (import.meta.env.DEV) {
-      console.debug('[nativeTokenStorage] Tokens saved successfully')
-    }
+    console.log('[nativeTokenStorage] ✅ Preferences.set completed successfully')
+    console.log('[nativeTokenStorage] ✅ Tokens saved to native storage')
   } catch (error) {
-    console.error('[nativeTokenStorage] Failed to save tokens:', error)
+    console.error('[nativeTokenStorage] ❌ Failed to save tokens:', error)
     // Don't throw - gracefully handle storage failures
   }
 }
@@ -87,33 +99,46 @@ export async function saveTokens(tokens) {
  * }
  */
 export async function loadTokens() {
-  if (!isNative()) {
-    // On web, always return null
-    if (import.meta.env.DEV) {
-      console.debug('[nativeTokenStorage] loadTokens called on web (returning null)')
-    }
+  const native = isNative()
+  console.log('[nativeTokenStorage] loadTokens() called, isNative:', native)
+
+  if (!native) {
+    console.log('[nativeTokenStorage] On web platform - returning null (no-op)')
     return null
   }
 
+  console.log('[nativeTokenStorage] Loading tokens with key:', STORAGE_KEY)
+
   try {
+    console.log('[nativeTokenStorage] Calling Preferences.get...')
     const result = await Preferences.get({ key: STORAGE_KEY })
 
+    console.log('[nativeTokenStorage] Preferences.get result:', {
+      hasValue: !!result.value,
+      valueLength: result.value ? result.value.length : 0,
+      valuePreview: result.value ? result.value.substring(0, 50) + '...' : 'null'
+    })
+
     if (!result.value) {
-      if (import.meta.env.DEV) {
-        console.debug('[nativeTokenStorage] No tokens found in storage')
-      }
+      console.log('[nativeTokenStorage] ℹ️ No tokens found in storage (value is null/empty)')
       return null
     }
 
+    console.log('[nativeTokenStorage] Parsing JSON...')
     const tokens = JSON.parse(result.value)
 
-    if (import.meta.env.DEV) {
-      console.debug('[nativeTokenStorage] Tokens loaded successfully')
-    }
+    console.log('[nativeTokenStorage] ✅ Tokens parsed successfully:', {
+      hasAccessToken: !!tokens.accessToken,
+      accessTokenPreview: tokens.accessToken ? tokens.accessToken.substring(0, 20) + '...' : 'null',
+      hasRefreshToken: !!tokens.refreshToken,
+      hasIdToken: !!tokens.idToken,
+      expiresAt: tokens.expiresAt,
+      expiresAtDate: tokens.expiresAt ? new Date(tokens.expiresAt).toISOString() : 'null'
+    })
 
     return tokens
   } catch (error) {
-    console.error('[nativeTokenStorage] Failed to load tokens:', error)
+    console.error('[nativeTokenStorage] ❌ Failed to load tokens:', error)
     return null
   }
 }
@@ -127,22 +152,24 @@ export async function loadTokens() {
  * await clearTokens()
  */
 export async function clearTokens() {
-  if (!isNative()) {
-    // On web, no-op with debug log
-    if (import.meta.env.DEV) {
-      console.debug('[nativeTokenStorage] clearTokens called on web (no-op)')
-    }
+  const native = isNative()
+  console.log('[nativeTokenStorage] clearTokens() called, isNative:', native)
+
+  if (!native) {
+    console.log('[nativeTokenStorage] On web platform - skipping clear (no-op)')
     return
   }
 
+  console.log('[nativeTokenStorage] Clearing tokens with key:', STORAGE_KEY)
+
   try {
+    console.log('[nativeTokenStorage] Calling Preferences.remove...')
     await Preferences.remove({ key: STORAGE_KEY })
 
-    if (import.meta.env.DEV) {
-      console.debug('[nativeTokenStorage] Tokens cleared successfully')
-    }
+    console.log('[nativeTokenStorage] ✅ Preferences.remove completed successfully')
+    console.log('[nativeTokenStorage] ✅ Tokens cleared from native storage')
   } catch (error) {
-    console.error('[nativeTokenStorage] Failed to clear tokens:', error)
+    console.error('[nativeTokenStorage] ❌ Failed to clear tokens:', error)
     // Don't throw - gracefully handle storage failures
   }
 }

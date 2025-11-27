@@ -29,6 +29,7 @@ import {
 import { setAuthCallbackHandler } from '@/utils/deepLinkHandler.js';
 import { getTheme } from '@/utils/theme.js';
 import { openAuth } from '@/plugins/jamigosInAppAuth';
+import { saveTokens, loadTokens, clearTokens as clearNativeTokens } from './nativeTokenStorage.js';
 
 /**
  * Token storage (in-memory for now, will be moved to secure storage in later step)
@@ -74,7 +75,46 @@ class MobileAuthProvider {
      * @returns {Promise<{authenticated: boolean, roles: string[], tokenParsed: Object}>}
      */
     async initAuth() {
-        console.log('[MobileAuth] initAuth() called');
+        console.log('[MobileAuth] ========== initAuth() START ==========');
+        console.log('[MobileAuth] initAuth() called from provider');
+        console.log('[MobileAuth] Checking in-memory tokenStorage state:', {
+            hasAccessToken: !!tokenStorage.accessToken,
+            hasRefreshToken: !!tokenStorage.refreshToken,
+            hasIdToken: !!tokenStorage.idToken,
+            hasExpiresAt: !!tokenStorage.expiresAt
+        });
+
+        // Try to hydrate from native storage if no in-memory tokens
+        if (!tokenStorage.accessToken) {
+            console.log('[MobileAuth] No in-memory tokens found, attempting to load from native storage...');
+            try {
+                const storedTokens = await loadTokens();
+                console.log('[MobileAuth] loadTokens() returned:', {
+                    isNull: storedTokens === null,
+                    hasAccessToken: storedTokens ? !!storedTokens.accessToken : false,
+                    hasRefreshToken: storedTokens ? !!storedTokens.refreshToken : false,
+                    hasIdToken: storedTokens ? !!storedTokens.idToken : false,
+                    expiresAt: storedTokens ? storedTokens.expiresAt : null,
+                    expiresAtDate: storedTokens && storedTokens.expiresAt ? new Date(storedTokens.expiresAt).toISOString() : null
+                });
+
+                if (storedTokens && storedTokens.accessToken) {
+                    console.log('[MobileAuth] ✅ Valid tokens found in storage, hydrating in-memory tokenStorage...');
+                    tokenStorage.accessToken = storedTokens.accessToken;
+                    tokenStorage.refreshToken = storedTokens.refreshToken;
+                    tokenStorage.idToken = storedTokens.idToken;
+                    tokenStorage.expiresAt = storedTokens.expiresAt;
+                    console.log('[MobileAuth] ✅ Hydration complete - tokens copied to in-memory storage');
+                } else {
+                    console.log('[MobileAuth] No valid tokens in native storage (null or missing accessToken)');
+                }
+            } catch (error) {
+                console.error('[MobileAuth] ❌ Failed to load tokens from native storage:', error);
+                // Continue with normal flow - not having stored tokens is not a fatal error
+            }
+        } else {
+            console.log('[MobileAuth] In-memory tokens already present, skipping native storage load');
+        }
 
         // Check if we have stored tokens
         if (tokenStorage.accessToken && tokenStorage.expiresAt) {
@@ -86,6 +126,7 @@ class MobileAuthProvider {
                 const user = this._parseIdToken(tokenStorage.idToken, tokenStorage.accessToken);
                 currentUser = user;
 
+                console.log('[MobileAuth] initAuth(): returning AUTHENTICATED state for user:', user.tokenParsed?.preferred_username);
                 return {
                     authenticated: true,
                     roles: user.roles || [],
@@ -101,6 +142,7 @@ class MobileAuthProvider {
                     const user = this._parseIdToken(tokenStorage.idToken, tokenStorage.accessToken);
                     currentUser = user;
 
+                    console.log('[MobileAuth] initAuth(): returning AUTHENTICATED state for user:', user.tokenParsed?.preferred_username);
                     return {
                         authenticated: true,
                         roles: user.roles || [],
@@ -114,6 +156,7 @@ class MobileAuthProvider {
         }
 
         console.log('[MobileAuth] No valid session found');
+        console.log('[MobileAuth] initAuth(): returning UNAUTHENTICATED state');
         return {
             authenticated: false,
             roles: [],
@@ -234,7 +277,7 @@ class MobileAuthProvider {
             console.log('[MobileAuth] Access token expires in:', tokens.expires_in, 'seconds');
 
             // Step 7: Store tokens and parse user info
-            this._storeTokens(tokens);
+            await this._storeTokens(tokens);
             const user = this._parseIdToken(tokens.id_token, tokens.access_token);
             currentUser = user;
 
@@ -341,7 +384,7 @@ class MobileAuthProvider {
             console.log('[MobileAuth] Access token expires in:', tokens.expires_in, 'seconds');
 
             // Step 7: Store tokens and parse user info
-            this._storeTokens(tokens);
+            await this._storeTokens(tokens);
             const user = this._parseIdToken(tokens.id_token, tokens.access_token);
             currentUser = user;
 
@@ -388,7 +431,7 @@ class MobileAuthProvider {
             console.log('[MobileAuth] Clearing tokens locally...');
 
             // Clear tokens locally FIRST
-            this._clearTokens();
+            await this._clearTokens();
             currentUser = null;
 
             // Call Keycloak logout endpoint in background (don't open browser)
@@ -570,7 +613,7 @@ class MobileAuthProvider {
                 console.error('[MobileAuth] Token refresh failed:', errorText);
 
                 // Clear tokens on refresh failure (user must re-authenticate)
-                this._clearTokens();
+                await this._clearTokens();
                 currentUser = null;
 
                 throw new Error(`Token refresh failed: ${response.status} ${errorText}`);
@@ -580,7 +623,7 @@ class MobileAuthProvider {
             console.log('[MobileAuth] ✅ Tokens refreshed successfully');
 
             // Store new tokens
-            this._storeTokens(tokens);
+            await this._storeTokens(tokens);
 
             // Update current user from new ID token and access token
             const user = this._parseIdToken(tokens.id_token, tokens.access_token);
@@ -661,11 +704,12 @@ class MobileAuthProvider {
     }
 
     /**
-     * Store tokens in memory
+     * Store tokens in memory and persist to native storage
      * @param {Object} tokens - Token response from Keycloak
      * @private
+     * @returns {Promise<void>}
      */
-    _storeTokens(tokens) {
+    async _storeTokens(tokens) {
         const now = Date.now();
         const expiresInMs = (tokens.expires_in || 300) * 1000; // Default 5 min
 
@@ -676,19 +720,45 @@ class MobileAuthProvider {
 
         console.log('[MobileAuth] Tokens stored in memory');
         console.log('[MobileAuth] Expires at:', new Date(tokenStorage.expiresAt).toISOString());
+
+        // Persist to native storage (no-op on web)
+        console.log('[MobileAuth] Persisting tokens to native storage...');
+        try {
+            await saveTokens({
+                accessToken: tokenStorage.accessToken,
+                refreshToken: tokenStorage.refreshToken,
+                idToken: tokenStorage.idToken,
+                expiresAt: tokenStorage.expiresAt
+            });
+            console.log('[MobileAuth] ✅ Token persistence completed');
+        } catch (error) {
+            console.error('[MobileAuth] ❌ Failed to persist tokens to native storage:', error);
+            // Non-critical error - don't throw, storage failure should not break login
+        }
     }
 
     /**
-     * Clear stored tokens
+     * Clear stored tokens from memory and native storage
      * @private
+     * @returns {Promise<void>}
      */
-    _clearTokens() {
+    async _clearTokens() {
         tokenStorage.accessToken = null;
         tokenStorage.refreshToken = null;
         tokenStorage.idToken = null;
         tokenStorage.expiresAt = null;
 
         console.log('[MobileAuth] Tokens cleared from memory');
+
+        // Clear from native storage (no-op on web)
+        console.log('[MobileAuth] Clearing tokens from native storage...');
+        try {
+            await clearNativeTokens();
+            console.log('[MobileAuth] ✅ Token clear completed');
+        } catch (error) {
+            console.error('[MobileAuth] ❌ Failed to clear tokens from native storage:', error);
+            // Non-critical error - don't throw, logout should complete even if storage clear fails
+        }
     }
 
     /**

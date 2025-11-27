@@ -77,20 +77,6 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
     const userStore = useUserStore();
 
-    // MOBILE ONLY: Redirect away from HomeView (marketing landing page)
-    // HomeView is web-only; mobile app should never show it
-    if (isNative && to.path === "/") {
-        if (userStore.isAuthenticated) {
-            // Authenticated mobile users go to main app
-            console.log('[Router] Mobile: Authenticated user accessing /, redirecting to /dashboard');
-            return next("/dashboard");
-        } else {
-            // Logged-out mobile users go to mobile auth entry
-            console.log('[Router] Mobile: Unauthenticated user accessing /, redirecting to /mobile-auth');
-            return next("/mobile-auth");
-        }
-    }
-
     // WEB: If user is logged in, homepage redirects to dashboard (existing behavior)
     if (!isNative && to.path === "/" && userStore.isAuthenticated) {
         return next("/dashboard");
