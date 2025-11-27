@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted } from 'vue';
+import { onMounted, onUnmounted, ref, watch, nextTick } from 'vue';
 import AuthButtons from "@/components/AuthButtonsComponent.vue";
 import SearchButton from "@/components/SearchButton.vue";
 import NotificationsButton from "@/components/NotificationsButton.vue";
@@ -20,10 +20,38 @@ const { isSearchOpen, searchQuery, closeSearch } = useSearch();
 const { isMenuOpen } = useMenu();
 const { measureAndUpdate } = useNavbarOffsets();
 
+// Template refs
+const searchInputRef = ref(null);
+const searchBarRef = ref(null);
+
 // Close notifications when any navbar item is clicked
 const handleNavClick = () => {
   closeNotifications();
 };
+
+// Close search bar when clicking outside
+const handleClickOutside = (event) => {
+  if (searchBarRef.value && !searchBarRef.value.contains(event.target)) {
+    closeSearch();
+  }
+};
+
+// Auto-focus search input when it opens and manage click-outside listener
+watch(isSearchOpen, async (newValue) => {
+  if (newValue) {
+    // Focus the input
+    await nextTick();
+    searchInputRef.value?.focus();
+
+    // Add click-outside listener after a small delay to avoid immediate closure
+    setTimeout(() => {
+      document.addEventListener('click', handleClickOutside);
+    }, 100);
+  } else {
+    // Remove click-outside listener when search closes
+    document.removeEventListener('click', handleClickOutside);
+  }
+});
 
 // Trigger measurement when navbar mounts (after navbars are in DOM)
 onMounted(() => {
@@ -31,6 +59,11 @@ onMounted(() => {
   // Small delay to ensure both navbars are rendered
   setTimeout(() => measureAndUpdate(), 100);
   setTimeout(() => measureAndUpdate(), 300);
+});
+
+// Clean up click outside listener on unmount
+onUnmounted(() => {
+  document.removeEventListener('click', handleClickOutside);
 });
 </script>
 
@@ -66,13 +99,13 @@ onMounted(() => {
 
       <!-- Search Bar - appears when search is active -->
       <Transition name="search-appear">
-        <div v-if="isSearchOpen" class="search-bar">
+        <div v-if="isSearchOpen" ref="searchBarRef" class="search-bar">
           <input
+            ref="searchInputRef"
             v-model="searchQuery"
             type="text"
             placeholder="Search..."
             class="search-input"
-            autofocus
           />
           <button @click="closeSearch" class="search-close-button" aria-label="Close search">
             <X :size="20" :stroke-width="UI.ICON_STROKE_WIDTH" />
@@ -254,7 +287,7 @@ onMounted(() => {
   &:focus {
     outline: none;
     border-color: var(--ds-color-primary);
-    background: var(--ds-color-surface);
+    background: var(--ds-color-surface-subtle);
     box-shadow: 0 0 0 3px rgba(249, 165, 72, 0.1);
   }
 }
