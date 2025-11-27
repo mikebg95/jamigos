@@ -5,7 +5,7 @@ import SearchButton from "@/components/SearchButton.vue";
 import NotificationsButton from "@/components/NotificationsButton.vue";
 import MenuButton from "@/components/MenuButton.vue";
 import MenuPanel from "@/components/MenuPanel.vue";
-import { LayoutGrid, UserCircle, MessageCircle, Compass, X } from 'lucide-vue-next';
+import { LayoutGrid, UserCircle, MessageCircle, Compass, X, Mic } from 'lucide-vue-next';
 import { useUserStore } from "@/store/user.js";
 import { useNotifications } from '@/composables/useNotifications.js';
 import { useSearch } from '@/composables/useSearch.js';
@@ -118,6 +118,14 @@ onUnmounted(() => {
           </div>
         </Transition>
         <NotificationsButton v-if="store.isAuthenticated" class="hide-on-mobile-search" />
+        <!-- Record Button (Desktop only - 769px+) -->
+        <button
+            v-if="store.isAuthenticated"
+            class="record-button record-button-desktop hide-on-mobile-search"
+            aria-label="Record"
+        >
+          <Mic :size="20" :stroke-width="UI.ICON_STROKE_WIDTH" />
+        </button>
         <AuthButtons @nav-click="handleNavClick" class="hide-on-mobile-search" />
         <!-- Hamburger menu button - always rightmost -->
         <div v-if="store.isAuthenticated" class="menu-button-wrapper">
@@ -141,6 +149,14 @@ onUnmounted(() => {
       <Compass :size="UI.ICON_SIZE_MD" :stroke-width="UI.ICON_STROKE_WIDTH" aria-hidden="true" />
       <span class="bottom-nav-label">Explore</span>
     </router-link>
+
+    <!-- Record Button (Mobile - center position, larger) -->
+    <button class="bottom-nav-item record-button-mobile" aria-label="Record" @click="handleNavClick">
+      <div class="record-button-circle">
+        <Mic :size="28" :stroke-width="2" aria-hidden="true" />
+      </div>
+      <span class="bottom-nav-label">Record</span>
+    </button>
 
     <router-link to="/messages" class="bottom-nav-item" aria-label="View messages" @click="handleNavClick">
       <MessageCircle :size="UI.ICON_SIZE_MD" :stroke-width="UI.ICON_STROKE_WIDTH" aria-hidden="true" />
@@ -555,5 +571,90 @@ onUnmounted(() => {
   font-size: var(--ds-font-size-xs);
   font-weight: var(--ds-font-weight-medium);
   transition: all var(--ds-duration-normal) var(--ds-ease-emphasized);
+}
+
+/* Record Button Styles */
+
+// Desktop Record Button (769px+) - matches search/notifications style
+.record-button-desktop {
+  display: none;
+
+  @media (min-width: 769px) {
+    // Reset
+    appearance: none;
+    background: none;
+    border: none;
+    padding: 0;
+
+    // Layout
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+
+    // Visual
+    color: var(--ds-color-text-secondary);
+    background: var(--ds-color-surface-subtle);
+    border-radius: var(--ds-radius-lg);
+    cursor: pointer;
+
+    // Transitions
+    transition: all var(--ds-duration-normal) var(--ds-ease-emphasized);
+
+    &:hover {
+      color: var(--ds-color-text-primary);
+      background: var(--ds-color-surface-hover);
+      transform: scale(1.05);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--ds-color-primary);
+      outline-offset: 2px;
+    }
+
+    svg {
+      transition: transform var(--ds-duration-normal) var(--ds-ease-emphasized);
+    }
+
+    &:hover svg {
+      transform: scale(1.1);
+    }
+  }
+}
+
+// Mobile Record Button (center of bottom nav)
+.record-button-mobile {
+  background: none;
+  border: none;
+  cursor: pointer;
+
+  .record-button-circle {
+    width: 56px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--ds-radius-full);
+    background: linear-gradient(135deg, var(--ds-color-primary), var(--ds-color-secondary));
+    color: var(--ds-color-inverse-text);
+    box-shadow: 0 4px 12px rgba(249, 165, 72, 0.4),
+                0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: all var(--ds-duration-normal) var(--ds-ease-emphasized);
+    margin-bottom: var(--ds-spacing-xs);
+  }
+
+  &:active {
+    .record-button-circle {
+      transform: scale(0.92);
+      box-shadow: 0 2px 8px rgba(249, 165, 72, 0.3),
+                  0 1px 2px rgba(0, 0, 0, 0.1);
+    }
+  }
+
+  .bottom-nav-label {
+    color: var(--ds-color-text-primary);
+    font-weight: var(--ds-font-weight-semibold);
+  }
 }
 </style>
