@@ -28,6 +28,7 @@ if (Capacitor.isNativePlatform()) {
 
 // Initialize deep link handler for mobile (no-op on web)
 initializeDeepLinkHandler();
+
 import {
   AlertCircle,
   X,
@@ -115,19 +116,31 @@ authFacade
             try {
                 await usersService.syncCurrentUser();
             } catch (e) {
-                console.warn('users/sync failed (will fallback to JIT):', e);
+                console.warn('User sync failed (will fallback to JIT):', e);
             }
         }
 
-        if (router.currentRoute.value.path === "/" && userStore.isAuthenticated) {
-            await router.replace("/dashboard");
+        // Post-initAuth redirect logic (platform-specific)
+        const currentPath = router.currentRoute.value.path;
+
+        if (Capacitor.isNativePlatform()) {
+            // NATIVE: Handle post-initAuth redirects after userStore is hydrated
+            if (userStore.isAuthenticated && (currentPath === "/" || currentPath === "/mobile-auth")) {
+                await router.replace("/dashboard");
+            } else if (!userStore.isAuthenticated && currentPath === "/") {
+                await router.replace("/mobile-auth");
+            }
+        } else {
+            // WEB: Authenticated users on / redirect to /dashboard
+            if (currentPath === "/" && userStore.isAuthenticated) {
+                await router.replace("/dashboard");
+            }
         }
 
         app.mount("#app");
     })
     .catch((error) => {
         console.error('Authentication initialization failed:', error);
-        // Mount app anyway so user sees something instead of black screen
         alert(`Authentication initialization failed: ${error.message}\n\nThe app will load but you may need to refresh.`);
         app.mount("#app");
     })
