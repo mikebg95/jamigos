@@ -75,45 +75,20 @@ class MobileAuthProvider {
      * @returns {Promise<{authenticated: boolean, roles: string[], tokenParsed: Object}>}
      */
     async initAuth() {
-        console.log('[MobileAuth] ========== initAuth() START ==========');
-        console.log('[MobileAuth] initAuth() called from provider');
-        console.log('[MobileAuth] Checking in-memory tokenStorage state:', {
-            hasAccessToken: !!tokenStorage.accessToken,
-            hasRefreshToken: !!tokenStorage.refreshToken,
-            hasIdToken: !!tokenStorage.idToken,
-            hasExpiresAt: !!tokenStorage.expiresAt
-        });
-
         // Try to hydrate from native storage if no in-memory tokens
         if (!tokenStorage.accessToken) {
-            console.log('[MobileAuth] No in-memory tokens found, attempting to load from native storage...');
             try {
                 const storedTokens = await loadTokens();
-                console.log('[MobileAuth] loadTokens() returned:', {
-                    isNull: storedTokens === null,
-                    hasAccessToken: storedTokens ? !!storedTokens.accessToken : false,
-                    hasRefreshToken: storedTokens ? !!storedTokens.refreshToken : false,
-                    hasIdToken: storedTokens ? !!storedTokens.idToken : false,
-                    expiresAt: storedTokens ? storedTokens.expiresAt : null,
-                    expiresAtDate: storedTokens && storedTokens.expiresAt ? new Date(storedTokens.expiresAt).toISOString() : null
-                });
 
                 if (storedTokens && storedTokens.accessToken) {
-                    console.log('[MobileAuth] ✅ Valid tokens found in storage, hydrating in-memory tokenStorage...');
                     tokenStorage.accessToken = storedTokens.accessToken;
                     tokenStorage.refreshToken = storedTokens.refreshToken;
                     tokenStorage.idToken = storedTokens.idToken;
                     tokenStorage.expiresAt = storedTokens.expiresAt;
-                    console.log('[MobileAuth] ✅ Hydration complete - tokens copied to in-memory storage');
-                } else {
-                    console.log('[MobileAuth] No valid tokens in native storage (null or missing accessToken)');
                 }
             } catch (error) {
-                console.error('[MobileAuth] ❌ Failed to load tokens from native storage:', error);
-                // Continue with normal flow - not having stored tokens is not a fatal error
+                console.error('Failed to load tokens from native storage:', error);
             }
-        } else {
-            console.log('[MobileAuth] In-memory tokens already present, skipping native storage load');
         }
 
         // Check if we have stored tokens
@@ -122,11 +97,9 @@ class MobileAuthProvider {
 
             // If token is still valid (with 30s buffer)
             if (tokenStorage.expiresAt - 30000 > now) {
-                console.log('[MobileAuth] Found valid stored tokens');
                 const user = this._parseIdToken(tokenStorage.idToken, tokenStorage.accessToken);
                 currentUser = user;
 
-                console.log('[MobileAuth] initAuth(): returning AUTHENTICATED state for user:', user.tokenParsed?.preferred_username);
                 return {
                     authenticated: true,
                     roles: user.roles || [],
@@ -136,27 +109,22 @@ class MobileAuthProvider {
 
             // Token expired but we have refresh token
             if (tokenStorage.refreshToken) {
-                console.log('[MobileAuth] Access token expired, attempting refresh');
                 try {
                     await this.refreshAccessToken();
                     const user = this._parseIdToken(tokenStorage.idToken, tokenStorage.accessToken);
                     currentUser = user;
 
-                    console.log('[MobileAuth] initAuth(): returning AUTHENTICATED state for user:', user.tokenParsed?.preferred_username);
                     return {
                         authenticated: true,
                         roles: user.roles || [],
                         tokenParsed: user.tokenParsed || {},
                     };
                 } catch (err) {
-                    console.error('[MobileAuth] Token refresh failed:', err);
-                    // Fall through to unauthenticated state
+                    console.error('Token refresh failed during init:', err);
                 }
             }
         }
 
-        console.log('[MobileAuth] No valid session found');
-        console.log('[MobileAuth] initAuth(): returning UNAUTHENTICATED state');
         return {
             authenticated: false,
             roles: [],
@@ -208,85 +176,52 @@ class MobileAuthProvider {
      * @returns {Promise<Object>} Tokens object { access_token, refresh_token, id_token, expires_in }
      */
     async login(redirectPath) {
-        console.log('[MobileAuth] ====== LOGIN FLOW STARTED ======');
-        console.log('[MobileAuth] Redirect path (unused):', redirectPath);
-
         try {
-            // Step 1: Generate PKCE values
-            console.log('[MobileAuth] Step 1: Generating PKCE values...');
+            // Generate PKCE values
             const verifier = generateCodeVerifier();
             const challenge = await generateCodeChallenge(verifier);
             const state = this._generateState();
-
-            console.log('[MobileAuth] Verifier generated (first 10 chars):', verifier.substring(0, 10) + '...');
-            console.log('[MobileAuth] Challenge generated (first 10 chars):', challenge.substring(0, 10) + '...');
-            console.log('[MobileAuth] State:', state);
 
             // Store PKCE values for later verification
             pkceStorage.verifier = verifier;
             pkceStorage.state = state;
 
-            // Get current theme (light or dark) for Keycloak login page
+            // Build authorization URL with current theme
             const theme = getTheme();
-            console.log('[MobileAuth] Current theme:', theme);
-
-            // Step 2: Build authorization URL
-            console.log('[MobileAuth] Step 2: Building authorization URL...');
             const authUrl = buildAuthUrl({
                 codeChallenge: challenge,
                 state: state,
-                theme: theme, // Pass theme to Keycloak
+                theme: theme,
             });
 
-            console.log('[MobileAuth] Auth URL:', authUrl);
-
-            // Step 3: Open auth URL (in-app on iOS, system browser on other platforms)
-            console.log('[MobileAuth] Step 3: Opening auth URL...');
+            // Open auth URL (in-app on iOS, system browser on other platforms)
             const platform = Capacitor.getPlatform();
 
             if (platform === 'ios') {
-                // iOS: Use in-app WKWebView modal
-                console.log('[MobileAuth] Platform: iOS - using in-app auth modal');
                 await openAuth(authUrl);
-                console.log('[MobileAuth] In-app auth modal opened successfully');
             } else {
-                // Android/other: Use system browser (existing behavior)
-                console.log('[MobileAuth] Platform:', platform, '- using system browser');
                 await Browser.open({ url: authUrl });
-                console.log('[MobileAuth] System browser opened successfully');
             }
 
-            // Step 4: Wait for auth code from deep link
-            console.log('[MobileAuth] Step 4: Waiting for authorization code...');
+            // Wait for auth code from deep link
             const { code, state: returnedState } = await this.waitForAuthCode();
 
-            console.log('[MobileAuth] ✅ Authorization code received');
-            console.log('[MobileAuth] Code (first 10 chars):', code.substring(0, 10) + '...');
-
-            // Step 5: Verify state (CSRF protection)
+            // Verify state (CSRF protection)
             if (returnedState !== state) {
                 throw new Error('State mismatch - possible CSRF attack');
             }
-            console.log('[MobileAuth] ✅ State verified');
 
-            // Step 6: Exchange code for tokens
-            console.log('[MobileAuth] Step 5: Exchanging code for tokens...');
+            // Exchange code for tokens
             const tokens = await this.exchangeCodeForTokens(code, verifier);
 
-            console.log('[MobileAuth] ✅ Tokens received');
-            console.log('[MobileAuth] Access token expires in:', tokens.expires_in, 'seconds');
-
-            // Step 7: Store tokens and parse user info
+            // Store tokens and parse user info
             await this._storeTokens(tokens);
             const user = this._parseIdToken(tokens.id_token, tokens.access_token);
             currentUser = user;
 
-            console.log('[MobileAuth] ✅ User authenticated:', user.tokenParsed?.preferred_username);
-            console.log('[MobileAuth] ====== LOGIN FLOW COMPLETED ======');
-
             return tokens;
         } catch (error) {
-            console.error('[MobileAuth] ❌ Login failed:', error);
+            console.error('Login failed:', error);
 
             // Clean up PKCE storage on error
             pkceStorage.verifier = null;
@@ -300,10 +235,8 @@ class MobileAuthProvider {
             // Always close browser after redirect
             try {
                 await Browser.close();
-                console.log('[MobileAuth] Browser closed');
             } catch {
                 // Browser may already be closed by redirect
-                console.log('[MobileAuth] Browser close skipped (may already be closed)');
             }
         }
     }
@@ -315,85 +248,52 @@ class MobileAuthProvider {
      * @returns {Promise<Object>} Tokens object
      */
     async register(redirectPath) {
-        console.log('[MobileAuth] ====== REGISTRATION FLOW STARTED ======');
-        console.log('[MobileAuth] Redirect path (unused):', redirectPath);
-
         try {
-            // Step 1: Generate PKCE values
-            console.log('[MobileAuth] Step 1: Generating PKCE values...');
+            // Generate PKCE values
             const verifier = generateCodeVerifier();
             const challenge = await generateCodeChallenge(verifier);
             const state = this._generateState();
-
-            console.log('[MobileAuth] Verifier generated (first 10 chars):', verifier.substring(0, 10) + '...');
-            console.log('[MobileAuth] Challenge generated (first 10 chars):', challenge.substring(0, 10) + '...');
-            console.log('[MobileAuth] State:', state);
 
             // Store PKCE values for later verification
             pkceStorage.verifier = verifier;
             pkceStorage.state = state;
 
-            // Get current theme (light or dark) for Keycloak registration page
+            // Build registration URL with current theme
             const theme = getTheme();
-            console.log('[MobileAuth] Current theme:', theme);
-
-            // Step 2: Build registration URL (uses /registrations endpoint)
-            console.log('[MobileAuth] Step 2: Building registration URL...');
             const authUrl = buildRegisterUrl({
                 codeChallenge: challenge,
                 state: state,
-                theme: theme, // Pass theme to Keycloak
+                theme: theme,
             });
 
-            console.log('[MobileAuth] Registration URL:', authUrl);
-
-            // Step 3: Open auth URL (in-app on iOS, system browser on other platforms)
-            console.log('[MobileAuth] Step 3: Opening registration URL...');
+            // Open auth URL (in-app on iOS, system browser on other platforms)
             const platform = Capacitor.getPlatform();
 
             if (platform === 'ios') {
-                // iOS: Use in-app WKWebView modal
-                console.log('[MobileAuth] Platform: iOS - using in-app auth modal');
                 await openAuth(authUrl);
-                console.log('[MobileAuth] In-app auth modal opened successfully');
             } else {
-                // Android/other: Use system browser (existing behavior)
-                console.log('[MobileAuth] Platform:', platform, '- using system browser');
                 await Browser.open({ url: authUrl });
-                console.log('[MobileAuth] System browser opened successfully');
             }
 
-            // Step 4: Wait for auth code from deep link
-            console.log('[MobileAuth] Step 4: Waiting for authorization code...');
+            // Wait for auth code from deep link
             const { code, state: returnedState } = await this.waitForAuthCode();
 
-            console.log('[MobileAuth] ✅ Authorization code received');
-            console.log('[MobileAuth] Code (first 10 chars):', code.substring(0, 10) + '...');
-
-            // Step 5: Verify state (CSRF protection)
+            // Verify state (CSRF protection)
             if (returnedState !== state) {
                 throw new Error('State mismatch - possible CSRF attack');
             }
-            console.log('[MobileAuth] ✅ State verified');
 
-            // Step 6: Exchange code for tokens
-            console.log('[MobileAuth] Step 5: Exchanging code for tokens...');
+            // Exchange code for tokens
             const tokens = await this.exchangeCodeForTokens(code, verifier);
 
-            console.log('[MobileAuth] ✅ Tokens received');
-            console.log('[MobileAuth] Access token expires in:', tokens.expires_in, 'seconds');
-
-            // Step 7: Store tokens and parse user info
+            // Store tokens and parse user info
             await this._storeTokens(tokens);
             const user = this._parseIdToken(tokens.id_token, tokens.access_token);
             currentUser = user;
 
-            console.log('[MobileAuth] ✅ User registered and authenticated:', user.tokenParsed?.preferred_username);
-            console.log('[MobileAuth] ====== REGISTRATION FLOW COMPLETED ======');
-
             return tokens;
         } catch (error) {
-            console.error('[MobileAuth] ❌ Registration failed:', error);
+            console.error('Registration failed:', error);
 
             // Clean up PKCE storage on error
             pkceStorage.verifier = null;
@@ -407,10 +307,8 @@ class MobileAuthProvider {
             // Always close browser after redirect
             try {
                 await Browser.close();
-                console.log('[MobileAuth] Browser closed');
             } catch {
                 // Browser may already be closed by redirect
-                console.log('[MobileAuth] Browser close skipped (may already be closed)');
             }
         }
     }
@@ -420,15 +318,9 @@ class MobileAuthProvider {
      * @param {string} [redirectPath] - Optional path to redirect to after logout
      */
     async logout(redirectPath) {
-        console.log('[MobileAuth] ====== LOGOUT FLOW STARTED ======');
-        console.log('[MobileAuth] Redirect path (unused):', redirectPath);
-
         try {
-            // Build logout URL
             const logoutUrl = getLogoutEndpoint();
             const idToken = tokenStorage.idToken;
-
-            console.log('[MobileAuth] Clearing tokens locally...');
 
             // Clear tokens locally FIRST
             await this._clearTokens();
@@ -436,34 +328,23 @@ class MobileAuthProvider {
 
             // Call Keycloak logout endpoint in background (don't open browser)
             if (idToken) {
-                console.log('[MobileAuth] Calling Keycloak logout endpoint in background...');
                 try {
-                    // Call logout endpoint via HTTP (background, no UI)
                     const logoutUrlWithHint = `${logoutUrl}?id_token_hint=${idToken}`;
 
-                    const response = await fetch(logoutUrlWithHint, {
-                        method: 'GET', // Keycloak logout endpoint accepts GET
+                    await fetch(logoutUrlWithHint, {
+                        method: 'GET',
                         headers: {
                             'Accept': 'application/json',
                         },
-                        // Don't follow redirects - we just want to notify Keycloak
                         redirect: 'manual'
                     });
-
-                    console.log('[MobileAuth] Keycloak logout endpoint called, status:', response.status);
-                    // Note: Response might be 302/303 redirect, but we don't care - tokens are cleared
                 } catch (fetchError) {
                     // Non-critical: If logout endpoint fails, we still cleared local tokens
-                    console.warn('[MobileAuth] ⚠️ Keycloak logout endpoint failed (non-critical):', fetchError);
+                    console.warn('Keycloak logout endpoint failed (non-critical):', fetchError);
                 }
-            } else {
-                console.log('[MobileAuth] No id_token available, skipping Keycloak logout call');
             }
-
-            console.log('[MobileAuth] ✅ Logout completed');
-            console.log('[MobileAuth] ====== LOGOUT FLOW COMPLETED ======');
         } catch (error) {
-            console.error('[MobileAuth] ❌ Logout failed:', error);
+            console.error('Logout failed:', error);
             throw error;
         }
     }
@@ -487,8 +368,6 @@ class MobileAuthProvider {
      * @throws {Error} If callback contains error, timeout occurs, or browser is cancelled
      */
     waitForAuthCode() {
-        console.log('[MobileAuth] waitForAuthCode() - setting up promise...');
-
         return new Promise((resolve, reject) => {
             // Store resolve/reject for later use in callback handler
             this._authCodePromise = { resolve, reject };
@@ -505,8 +384,6 @@ class MobileAuthProvider {
 
             // Listen for browser cancellation
             const browserFinishedListener = Browser.addListener('browserFinished', () => {
-                console.log('[MobileAuth] Browser closed/cancelled by user');
-
                 // Only reject if we're still waiting for auth code
                 if (this._authCodePromise) {
                     clearTimeout(this._authCodePromise.timeout);
@@ -521,8 +398,6 @@ class MobileAuthProvider {
 
             // Store listener reference so we can clean it up
             this._browserListener = browserFinishedListener;
-
-            console.log('[MobileAuth] Promise registered, waiting for deep link or browser closure...');
         });
     }
 
@@ -534,21 +409,14 @@ class MobileAuthProvider {
      * @throws {Error} If token exchange fails
      */
     async exchangeCodeForTokens(code, codeVerifier) {
-        console.log('[MobileAuth] exchangeCodeForTokens() called');
-        console.log('[MobileAuth] Code (first 10 chars):', code.substring(0, 10) + '...');
-        console.log('[MobileAuth] Verifier (first 10 chars):', codeVerifier.substring(0, 10) + '...');
-
         try {
-            // Build request parameters
             const params = buildTokenExchangeParams({
                 code: code,
                 codeVerifier: codeVerifier,
             });
 
             const tokenEndpoint = getTokenEndpoint();
-            console.log('[MobileAuth] Posting to token endpoint:', tokenEndpoint);
 
-            // Make token request
             const response = await fetch(tokenEndpoint, {
                 method: 'POST',
                 headers: {
@@ -557,23 +425,14 @@ class MobileAuthProvider {
                 body: params.toString(),
             });
 
-            console.log('[MobileAuth] Token endpoint response status:', response.status);
-
             if (!response.ok) {
                 const errorText = await response.text();
-                console.error('[MobileAuth] Token exchange failed:', errorText);
                 throw new Error(`Token exchange failed: ${response.status} ${errorText}`);
             }
 
-            const tokens = await response.json();
-            console.log('[MobileAuth] ✅ Tokens received successfully');
-            console.log('[MobileAuth] Token type:', tokens.token_type);
-            console.log('[MobileAuth] Expires in:', tokens.expires_in);
-            console.log('[MobileAuth] Has refresh token:', !!tokens.refresh_token);
-
-            return tokens;
+            return await response.json();
         } catch (error) {
-            console.error('[MobileAuth] ❌ exchangeCodeForTokens failed:', error);
+            console.error('Token exchange failed:', error);
             throw error;
         }
     }
@@ -584,20 +443,14 @@ class MobileAuthProvider {
      * @throws {Error} If refresh fails
      */
     async refreshAccessToken() {
-        console.log('[MobileAuth] refreshAccessToken() called');
-
         if (!tokenStorage.refreshToken) {
             throw new Error('No refresh token available');
         }
 
         try {
-            // Build refresh request parameters
             const params = buildTokenRefreshParams(tokenStorage.refreshToken);
             const tokenEndpoint = getTokenEndpoint();
 
-            console.log('[MobileAuth] Posting refresh request to:', tokenEndpoint);
-
-            // Make refresh request
             const response = await fetch(tokenEndpoint, {
                 method: 'POST',
                 headers: {
@@ -606,11 +459,8 @@ class MobileAuthProvider {
                 body: params.toString(),
             });
 
-            console.log('[MobileAuth] Refresh response status:', response.status);
-
             if (!response.ok) {
                 const errorText = await response.text();
-                console.error('[MobileAuth] Token refresh failed:', errorText);
 
                 // Clear tokens on refresh failure (user must re-authenticate)
                 await this._clearTokens();
@@ -620,7 +470,6 @@ class MobileAuthProvider {
             }
 
             const tokens = await response.json();
-            console.log('[MobileAuth] ✅ Tokens refreshed successfully');
 
             // Store new tokens
             await this._storeTokens(tokens);
@@ -631,7 +480,7 @@ class MobileAuthProvider {
 
             return tokens;
         } catch (error) {
-            console.error('[MobileAuth] ❌ refreshAccessToken failed:', error);
+            console.error('Token refresh failed:', error);
             throw error;
         }
     }
@@ -647,11 +496,7 @@ class MobileAuthProvider {
      * @private
      */
     _handleDeepLinkCallback(result) {
-        console.log('[MobileAuth] _handleDeepLinkCallback() called');
-        console.log('[MobileAuth] Callback result:', result);
-
         if (!this._authCodePromise) {
-            console.warn('[MobileAuth] No pending auth promise - callback ignored');
             return;
         }
 
@@ -665,11 +510,8 @@ class MobileAuthProvider {
 
         // Check for errors
         if (result.error) {
-            console.error('[MobileAuth] Auth callback error:', result.error);
-
             // Treat 'cancelled' error as user cancellation (same as browserFinished)
             if (result.error === 'cancelled') {
-                console.log('[MobileAuth] User cancelled authentication (tapped ✕)');
                 const cancelError = new Error('Authentication cancelled');
                 cancelError.code = 'AUTH_CANCELLED';
                 this._authCodePromise.reject(cancelError);
@@ -686,13 +528,10 @@ class MobileAuthProvider {
 
         // Check for code
         if (!result.code) {
-            console.error('[MobileAuth] No code in callback result');
             this._authCodePromise.reject(new Error('No authorization code in callback'));
             this._authCodePromise = null;
             return;
         }
-
-        console.log('[MobileAuth] ✅ Authorization code received, resolving promise');
 
         // Resolve promise with code and state
         this._authCodePromise.resolve({
@@ -718,11 +557,7 @@ class MobileAuthProvider {
         tokenStorage.idToken = tokens.id_token;
         tokenStorage.expiresAt = now + expiresInMs;
 
-        console.log('[MobileAuth] Tokens stored in memory');
-        console.log('[MobileAuth] Expires at:', new Date(tokenStorage.expiresAt).toISOString());
-
         // Persist to native storage (no-op on web)
-        console.log('[MobileAuth] Persisting tokens to native storage...');
         try {
             await saveTokens({
                 accessToken: tokenStorage.accessToken,
@@ -730,9 +565,8 @@ class MobileAuthProvider {
                 idToken: tokenStorage.idToken,
                 expiresAt: tokenStorage.expiresAt
             });
-            console.log('[MobileAuth] ✅ Token persistence completed');
         } catch (error) {
-            console.error('[MobileAuth] ❌ Failed to persist tokens to native storage:', error);
+            console.error('Failed to persist tokens to native storage:', error);
             // Non-critical error - don't throw, storage failure should not break login
         }
     }
@@ -748,15 +582,11 @@ class MobileAuthProvider {
         tokenStorage.idToken = null;
         tokenStorage.expiresAt = null;
 
-        console.log('[MobileAuth] Tokens cleared from memory');
-
         // Clear from native storage (no-op on web)
-        console.log('[MobileAuth] Clearing tokens from native storage...');
         try {
             await clearNativeTokens();
-            console.log('[MobileAuth] ✅ Token clear completed');
         } catch (error) {
-            console.error('[MobileAuth] ❌ Failed to clear tokens from native storage:', error);
+            console.error('Failed to clear tokens from native storage:', error);
             // Non-critical error - don't throw, logout should complete even if storage clear fails
         }
     }
@@ -836,34 +666,9 @@ class MobileAuthProvider {
             // Decode access token for roles (if available)
             const decodedAccess = accessToken ? this._decodeJwt(accessToken) : null;
 
-            // DEBUG: Log full token structure to diagnose role issues
-            console.log('[MobileAuth DEBUG] ========== TOKEN DEBUG ==========');
-            console.log('[MobileAuth DEBUG] User:', decodedId.preferred_username);
-            console.log('[MobileAuth DEBUG] ID token decoded:', decodedId);
-            console.log('[MobileAuth DEBUG] Access token decoded:', decodedAccess);
-
             // Extract roles from access token (preferred) or fallback to ID token
             // Keycloak typically puts roles in the ACCESS token, not the ID token
-            let roles = [];
-            if (decodedAccess) {
-                console.log('[MobileAuth DEBUG] Extracting roles from ACCESS token...');
-                console.log('[MobileAuth DEBUG] Access token realm_access:', decodedAccess.realm_access);
-                console.log('[MobileAuth DEBUG] Access token resource_access:', decodedAccess.resource_access);
-                roles = this._extractRoles(decodedAccess);
-                console.log('[MobileAuth DEBUG] Roles from ACCESS token:', roles);
-            } else {
-                console.log('[MobileAuth DEBUG] No access token, trying ID token for roles...');
-                console.log('[MobileAuth DEBUG] ID token realm_access:', decodedId.realm_access);
-                console.log('[MobileAuth DEBUG] ID token resource_access:', decodedId.resource_access);
-                roles = this._extractRoles(decodedId);
-                console.log('[MobileAuth DEBUG] Roles from ID token:', roles);
-            }
-
-            console.log('[MobileAuth DEBUG] Final roles:', roles);
-            console.log('[MobileAuth DEBUG] ========== END TOKEN DEBUG ==========');
-
-            console.log('[MobileAuth] Parsed ID token for user:', decodedId.preferred_username);
-            console.log('[MobileAuth] Roles:', roles);
+            const roles = decodedAccess ? this._extractRoles(decodedAccess) : this._extractRoles(decodedId);
 
             return {
                 authenticated: true,
@@ -871,7 +676,7 @@ class MobileAuthProvider {
                 tokenParsed: decodedId,
             };
         } catch (error) {
-            console.error('[MobileAuth] Failed to parse ID token:', error);
+            console.error('Failed to parse ID token:', error);
             return {
                 authenticated: false,
                 roles: [],
@@ -904,7 +709,6 @@ class MobileAuthProvider {
      */
     _cleanupBrowserListener() {
         if (this._browserListener) {
-            console.log('[MobileAuth] Removing browser event listener');
             this._browserListener.remove();
             this._browserListener = null;
         }
