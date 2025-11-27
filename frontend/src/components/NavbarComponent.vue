@@ -253,10 +253,14 @@ onUnmounted(() => {
   }
 
   @media (max-width: 480px) {
+    font-size: var(--ds-font-size-xl);
+  }
+
+  @media (max-width: 365px) {
     display: none;
   }
 
-  // Hide text when search is active only on very small screens
+  // Hide text when search is active on small screens
   .navbar-container.search-active & {
     @media (max-width: 480px) {
       display: none;
