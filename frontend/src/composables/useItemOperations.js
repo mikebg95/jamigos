@@ -10,6 +10,7 @@ import { useToastStore } from '@/store/toast.js';
 export function useItemOperations(getAllItems = false) {
   const items = ref([]);
   const loading = ref(false);
+  const error = ref(null);
   const toast = useToastStore();
 
   /**
@@ -31,6 +32,7 @@ export function useItemOperations(getAllItems = false) {
     const requestId = ++currentLoadRequest;
 
     loading.value = true;
+    error.value = null;
 
     try {
       const result = loadAll
@@ -40,11 +42,13 @@ export function useItemOperations(getAllItems = false) {
       // Only update if this is still the latest request
       if (requestId === currentLoadRequest) {
         items.value = result;
+        error.value = null;
       }
     } catch (e) {
       // Only show error if this is still the latest request
       if (requestId === currentLoadRequest) {
-        toast.error(getErrorMessage(e));
+        error.value = getErrorMessage(e);
+        toast.error(error.value);
         if (import.meta.env.DEV) {
           console.error('Load items error:', e);
         }
@@ -111,6 +115,7 @@ export function useItemOperations(getAllItems = false) {
   return {
     items,
     loading,
+    error,
     loadItems,
     deleteItem,
   };
