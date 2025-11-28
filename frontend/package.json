@@ -12,7 +12,8 @@
     "preview": "vite preview",
     "lint": "eslint src --ext .js,.ts,.vue",
     "test": "vitest run --coverage",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "build:mobile": "vite build --mode mobile"
   },
   "dependencies": {
     "@capacitor/app": "^7.1.0",
