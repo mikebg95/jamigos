@@ -19,6 +19,7 @@ public class CorsConfig {
         config.setAllowCredentials(true);
 
         config.setAllowedOrigins(Arrays.asList(
+                "capacitor://localhost",
                 "https://jamigos.app",
                 "https://www.jamigos.app",
                 "https://todo-frontend-8y4v.onrender.com",
