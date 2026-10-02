@@ -1,458 +1,109 @@
 # Jamigos
 
-A full-stack todo application with enterprise-grade authentication and authorization. Built with Vue.js frontend, Spring Boot backend, and Keycloak for OAuth2/OIDC authentication.
+A full-stack practice project for **security, persistence, testing and DevOps**: a Spring Boot backend secured with OAuth2/OIDC via Keycloak, a Vue.js frontend, two databases, and a GitHub Actions pipeline that builds, tests and deploys every part as a Docker container.
 
-## Features
+The application itself is deliberately minimal — users sign in, get a dashboard based on their role and manage items that belong to them. The point of the project is the engineering around it, not the feature set. It is not a finished product.
 
-- **Secure Authentication**: OAuth2/OIDC via Keycloak with JWT tokens
-- **User Isolation**: Todo items are user-scoped with ownership verification
-- **Role-Based Access**: Admin role for viewing all items across users
-- **Audit Logging**: Automatic audit trail for CREATE/DELETE operations
-- **Dual Database**: PostgreSQL for users, MongoDB for todo items
-- **API Documentation**: Interactive Swagger UI with OAuth2 integration
-- **Monitoring**: Spring Boot Actuator endpoints with health checks
-- **Comprehensive Testing**: Unit, integration, and repository slice tests with Testcontainers
-- **Containerized**: Full Docker setup with database admin tools
+---
 
-## Tech Stack
+## Highlights
 
-### Frontend
-- **Vue 3** - Progressive JavaScript framework
-- **Pinia** - State management
-- **Vue Router** - Client-side routing
-- **Keycloak JS** - Authentication client
-- **Vite** - Build tool and dev server
-- **Vitest** - Unit testing framework
-- **Lucide Vue** - Icon library
+**Security**
+- OAuth2/OIDC login via **Keycloak**: authorization code flow with PKCE in the frontend, the backend as an **OAuth2 Resource Server** validating Keycloak-issued JWTs.
+- **Multiple `SecurityFilterChain`s** with different rules: public Swagger UI, Actuator behind basic auth (health endpoint public), and the API behind JWT authentication.
+- Role mapping from the JWT's `realm_access.roles` to Spring authorities; **method security** with `@PostFilter` (users only see their own items) and `@PreAuthorize` (admin-only operations).
+- **Ownership checks with AOP**: a custom `@RequireOwner` annotation and aspect verify that a user can only delete their own items.
+- A **user-sync filter** that creates or updates the local user record from the JWT on each authenticated request.
+- Custom Keycloak login theme.
 
-### Backend
-- **Spring Boot 3.5.4** - Application framework
-- **Java 25** - Programming language
-- **Spring Security** - Authentication and authorization
-- **Spring Data JPA** - PostgreSQL integration for users
-- **Spring Data MongoDB** - MongoDB integration for items
-- **Spring AOP** - Aspect-oriented programming for cross-cutting concerns
-- **Maven** - Build and dependency management
-- **Lombok** - Reduce boilerplate code
-- **SpringDoc OpenAPI** - API documentation
+**Persistence**
+- **Spring Data JPA** with PostgreSQL for users, **Spring Data MongoDB** for items and the audit log.
+- **Audit trail** written automatically by an AOP aspect on create and delete operations; a second aspect logs execution times.
 
-### Infrastructure
-- **Keycloak 25.0** - Identity and access management
-- **PostgreSQL 16** - Relational database for user data
-- **MongoDB 7** - Document database for todo items
-- **Docker** - Containerization
-- **Testcontainers** - Integration testing with real databases
+**Testing**
+- **Unit tests** for services (Mockito), **slice tests** for the repositories (`@DataJpaTest`, `@DataMongoTest`), **security tests** for the filter chains and method security, and **integration tests** with the full Spring context against real databases via **Testcontainers**.
 
-### Admin Tools
-- **PgAdmin** - PostgreSQL administration (http://localhost:8090)
-- **Mongo Express** - MongoDB administration (http://localhost:8081)
+**CI/CD and deployment**
+- **GitHub Actions**: path-based change detection, so only the changed parts are built; build, lint and test; Docker images pushed to the **GitHub Container Registry** on push.
+- **Deployed on Render** as three services — Vue.js frontend (Nginx), Spring Boot backend and Keycloak — each running its own image.
+- Spring profiles for `local`, `dev`, `test` and `prod`; Docker Compose setups for local development (databases, Keycloak, admin tools) and for running the published images.
+
+**API**
+- OpenAPI documentation with Swagger UI, integrated with Keycloak so endpoints can be tried out with a real token.
+- Spring Boot Actuator for health checks.
 
 ## Architecture
 
-### Security Architecture
-- **Multi-chain SecurityFilterChain**: Separate security configurations for Swagger (public), Actuator (basic auth), and API (JWT)
-- **JWT Authentication**: Keycloak-issued JWTs with role mapping from `realm_access.roles`
-- **User Sync Filter**: Automatically syncs authenticated users from JWT to PostgreSQL
-- **AOP-Based Authorization**: Custom `@RequireOwner` annotation for ownership verification
+```mermaid
+flowchart LR
+    user([User]) --> fe["Vue.js SPA<br/>(Nginx)"]
+    fe -->|"login (OIDC + PKCE)"| kc["Keycloak"]
+    fe -->|"REST + JWT"| api["Spring Boot API<br/>(OAuth2 Resource Server)"]
+    api -->|"validates JWT"| kc
+    api -->|"Spring Data JPA"| pg[("PostgreSQL<br/>users")]
+    api -->|"Spring Data MongoDB"| mongo[("MongoDB<br/>items, audit log")]
+```
 
-### Data Architecture
-- **PostgreSQL**: Stores user accounts synced from Keycloak (JPA entities)
-- **MongoDB**: Stores todo items with `ownerId` linking to Keycloak subject ID
-- **Audit Trail**: MongoDB collection for audit logs with automatic AOP-based logging
+The backend uses a layered structure: controllers, services and repositories, with security components and AOP aspects as cross-cutting concerns.
 
-### Key Design Patterns
-- **Aspect-Oriented Programming**: Cross-cutting concerns (ownership verification, audit logging, performance monitoring)
-- **Method Security**: Spring Security's `@PreAuthorize` and `@PostFilter` for authorization
-- **Repository Pattern**: Spring Data repositories for data access
-- **Service Layer**: Business logic separated from controllers
+## Tech stack
 
-## Prerequisites
+| Layer | Technology |
+|---|---|
+| Backend | Java 25 · Spring Boot 3.5 · Spring Security · Spring Data JPA · Spring Data MongoDB · Spring AOP · Maven |
+| Security | Keycloak · OAuth2/OIDC · JWT |
+| Databases | PostgreSQL · MongoDB |
+| Frontend | Vue 3 · Pinia · Vue Router · Vite · keycloak-js |
+| API docs | springdoc-openapi · Swagger UI |
+| Testing | JUnit 5 · Mockito · Testcontainers |
+| CI/CD and hosting | GitHub Actions · Docker · Docker Compose · GitHub Container Registry · Render |
 
-- **Java 25** - For backend development
-- **Node.js 20.19+ or 22.12+** - For frontend development
-- **Maven 3.9+** - For building backend (or use included `./mvnw`)
-- **Docker & Docker Compose** - For running infrastructure services
-- **Git** - Version control
+## Repository layout
 
-## Quick Start
+| Path | Contents |
+|---|---|
+| [`backend/`](backend) | Spring Boot API |
+| [`frontend/`](frontend) | Vue.js single-page application |
+| [`keycloak-theme/`](keycloak-theme) | Custom Keycloak login themes |
+| [`.github/workflows/`](.github/workflows) | CI/CD pipeline |
+| `docker-compose-local.yml` | Local infrastructure: PostgreSQL, MongoDB, Keycloak, pgAdmin, Mongo Express |
+| `docker-compose-dev.yml` | Runs the published backend and frontend images |
+| `render.yaml` | Render deployment definition |
 
-1. **Clone the repository**
-   ```bash
-   git clone <repository-url>
-   cd jamigos
-   ```
+## Running locally
 
-2. **Start infrastructure services**
-   ```bash
-   docker-compose -f docker-compose-local.yml up -d
-   ```
-
-3. **Configure Keycloak** (First time setup)
-   - Access Keycloak: http://localhost:8180
-   - Login with admin credentials (see `.env.local`)
-   - Create realm: `jamigos-realm`
-   - Create client: `jamigos-client`
-     - Client authentication: OFF (public client)
-     - Valid redirect URIs: `http://localhost:5173/*`, `http://localhost:8082/*`
-     - Web origins: `http://localhost:5173`, `http://localhost:8082`
-   - Create client scope with roles mapper
-   - Create realm role: `ADMIN_ROLE` (optional, for admin features)
-   - Create test users with appropriate roles
-
-4. **Start the backend**
-   ```bash
-   cd backend
-   ./mvnw spring-boot:run -Dspring-boot.run.profiles=local
-   ```
-   Backend will be available at http://localhost:8082
-
-5. **Start the frontend**
-   ```bash
-   cd frontend
-   npm install
-   npm run dev
-   ```
-   Frontend will be available at http://localhost:5173
-
-## Running Locally
-
-### Using Docker Compose
-
-The `docker-compose-local.yml` file starts all required infrastructure:
+Prerequisites: Java 25, Node.js 20+, Docker.
 
 ```bash
-docker-compose -f docker-compose-local.yml up -d
-```
+# 1. Start PostgreSQL, MongoDB and Keycloak
+docker compose -f docker-compose-local.yml up -d
 
-This starts:
-- **MongoDB** (port 27017)
-- **Mongo Express** (port 8081)
-- **Keycloak** (port 8180)
-- **PostgreSQL** (port 5432)
-- **PgAdmin** (port 8090)
-
-### Environment Variables
-
-Copy `.env.local` and adjust if needed:
-
-```bash
-cp .env.local .env
-```
-
-Default credentials:
-- MongoDB: `admin/admin`
-- PostgreSQL: `admin/admin`
-- Keycloak: `admin/admin`
-- PgAdmin: `admin@admin.nl/admin`
-
-### Application Profiles
-
-Backend supports multiple Spring profiles:
-
-- **local**: For local development with Docker services
-- **dev**: For development environment
-- **test**: For running tests (automatically configured)
-
-Activate a profile:
-```bash
-./mvnw spring-boot:run -Dspring-boot.run.profiles=local
-```
-
-Or set in IDE run configuration:
-```
---spring.profiles.active=local
-```
-
-## Project Structure
-
-```
-jamigos/
-├── backend/                  # Spring Boot backend
-│   ├── src/
-│   │   ├── main/
-│   │   │   ├── java/com/example/jamigos/
-│   │   │   │   ├── aop/               # AOP aspects
-│   │   │   │   ├── config/            # Configuration classes
-│   │   │   │   ├── controller/        # REST controllers
-│   │   │   │   ├── dto/               # Data transfer objects
-│   │   │   │   ├── model/             # Domain entities
-│   │   │   │   ├── repository/        # Data access layer
-│   │   │   │   ├── security/          # Security components
-│   │   │   │   └── service/           # Business logic
-│   │   │   └── resources/
-│   │   │       ├── application.yml          # Base config
-│   │   │       ├── application-local.yml    # Local profile
-│   │   │       └── application-test.yml     # Test profile
-│   │   └── test/              # Test classes
-│   ├── pom.xml               # Maven dependencies
-│   ├── Dockerfile            # Backend Docker image
-│   └── CLAUDE.md             # AI assistant guidance
-├── frontend/                 # Vue.js frontend
-│   ├── src/
-│   │   ├── components/       # Vue components
-│   │   ├── router/           # Route definitions
-│   │   ├── stores/           # Pinia stores
-│   │   ├── views/            # Page views
-│   │   └── main.js           # Application entry
-│   ├── package.json          # NPM dependencies
-│   └── Dockerfile            # Frontend Docker image
-├── docker-compose-local.yml  # Local development setup
-└── .env.local                # Environment variables
-```
-
-## Development
-
-### Backend Development
-
-**Build the project:**
-```bash
+# 2. Start the backend (http://localhost:8082)
 cd backend
-./mvnw clean install
-```
-
-**Run the application:**
-```bash
 ./mvnw spring-boot:run -Dspring-boot.run.profiles=local
-```
 
-**Run tests:**
-```bash
-./mvnw test                              # All tests
-./mvnw test -Dtest=ItemControllerTest    # Specific test class
-./mvnw test -Dtest=*ControllerTest       # Pattern matching
-```
-
-**Package for deployment:**
-```bash
-./mvnw clean package -DskipTests
-```
-
-### Frontend Development
-
-**Install dependencies:**
-```bash
+# 3. In a second terminal, from the repository root: start the frontend (http://localhost:5173)
 cd frontend
 npm install
-```
-
-**Development server with hot reload:**
-```bash
 npm run dev
 ```
 
-**Build for production:**
-```bash
-npm run build
-```
+Keycloak needs a realm (`jamigos-realm`) with a public client (`jamigos-client`) that allows `http://localhost:5173/*` as a redirect URI. The backend validates tokens against `http://localhost:8180/realms/jamigos-realm`.
 
-**Run tests:**
-```bash
-npm test              # Run tests once with coverage
-npm run test:watch    # Watch mode
-```
+Run the backend tests (Docker must be running for Testcontainers):
 
-**Lint code:**
-```bash
-npm run lint
-```
-
-### Adding New Features
-
-See `backend/CLAUDE.md` for architectural guidance when adding:
-- New entities with ownership verification
-- New API endpoints
-- New security rules
-- New tests
-
-## API Documentation
-
-### Swagger UI
-
-Interactive API documentation available at:
-- http://localhost:8082/swagger-ui.html
-
-The Swagger UI is integrated with Keycloak OAuth2:
-1. Click "Authorize" button
-2. Complete OAuth2 authorization code flow with PKCE
-3. Test endpoints directly from the UI
-
-### API Endpoints
-
-**Items (requires authentication):**
-- `GET /items` - Get all items for current user
-- `POST /items` - Create new item
-- `DELETE /items/{id}` - Delete item (ownership verified)
-- `GET /items/all` - Get all items (admin only)
-
-**Users (requires authentication):**
-- User endpoints managed through Keycloak
-
-**Actuator (health endpoint public, others require basic auth):**
-- `GET /actuator/health` - Application health status
-- `GET /actuator/info` - Application information
-
-### Authentication
-
-All API endpoints (except Swagger and health) require JWT authentication:
-
-```bash
-# Get token from Keycloak
-curl -X POST http://localhost:8180/realms/jamigos-realm/protocol/openid-connect/token \
-  -d "client_id=jamigos-client" \
-  -d "grant_type=password" \
-  -d "username=<user>" \
-  -d "password=<password>"
-
-# Call API with token
-curl -H "Authorization: Bearer <token>" http://localhost:8082/items
-```
-
-## Configuration
-
-### Backend Configuration
-
-Key configuration properties in `application-local.yml`:
-
-```yaml
-spring:
-  datasource:
-    url: jdbc:postgresql://localhost:5432/jamigos
-  data:
-    mongodb:
-      uri: mongodb://admin:admin@localhost:27017/todosdb
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          issuer-uri: http://localhost:8180/realms/jamigos-realm
-```
-
-### Frontend Configuration
-
-Frontend configuration in `frontend/.env.local`:
-
-```env
-VITE_KEYCLOAK_URL=http://localhost:8180
-VITE_KEYCLOAK_REALM=jamigos-realm
-VITE_KEYCLOAK_CLIENT_ID=jamigos-client
-VITE_API_BASE_URL=http://localhost:8082
-```
-
-## Testing
-
-### Backend Tests
-
-Three types of tests:
-
-1. **Integration Tests**: Extend `AbstractIntegrationTest`
-   - Full Spring context
-   - Real databases via Testcontainers
-   - Example: `ItemControllerTest`
-
-2. **Repository Slice Tests**: `@DataJpaTest` or `@DataMongoTest`
-   - Repository layer only
-   - Embedded databases (H2 for JPA, Flapdoodle for MongoDB)
-   - Example: `UserRepositoryTest`, `ItemRepositoryTest`
-
-3. **Security Tests**: Mock security context
-   - Use `@WithMockUser` or `JwtTestUtils`
-   - Example: `ActuatorSecurityTest`
-
-**Run all tests:**
 ```bash
 cd backend
 ./mvnw test
 ```
 
-### Frontend Tests
+## Authorship
 
-Unit tests with Vitest:
+The backend, the security and authentication setup, the persistence layer, the backend tests and the CI/CD pipeline were written by me.
 
-```bash
-cd frontend
-npm test              # Run once with coverage
-npm run test:watch    # Interactive watch mode
-```
+The following parts were generated with AI assistance, as an experiment, and are not part of what this project demonstrates:
 
-## Deployment
-
-### Docker Build
-
-**Backend:**
-```bash
-cd backend
-docker build -t jamigos-backend .
-```
-
-**Frontend:**
-```bash
-cd frontend
-docker build -t jamigos-frontend .
-```
-
-### Environment-Specific Deployment
-
-The application uses Spring profiles for different environments:
-
-- **local**: Local development
-- **dev**: Development environment
-- **prod**: Production environment
-
-Set profile via environment variable:
-```bash
-export SPRING_PROFILES_ACTIVE=prod
-```
-
-## Troubleshooting
-
-### Backend won't start
-
-1. **Check Java version**: Requires Java 25
-   ```bash
-   java -version
-   ```
-
-2. **Check database connectivity**: Ensure Docker services are running
-   ```bash
-   docker-compose -f docker-compose-local.yml ps
-   ```
-
-3. **Check Keycloak configuration**: Verify issuer URI is reachable
-   ```bash
-   curl http://localhost:8180/realms/jamigos-realm/.well-known/openid-configuration
-   ```
-
-### Frontend authentication fails
-
-1. **Verify Keycloak client configuration**:
-   - Check redirect URIs include `http://localhost:5173/*`
-   - Verify web origins include `http://localhost:5173`
-   - Ensure client authentication is OFF (public client)
-
-2. **Check browser console** for CORS errors
-
-3. **Verify environment variables** in frontend `.env.local`
-
-### Tests failing
-
-1. **Integration tests**: Ensure Docker is running (Testcontainers needs Docker)
-2. **Port conflicts**: Make sure ports 5432, 27017, 8180 are not in use
-3. **Clean build**: `./mvnw clean install`
-
-### Database connection issues
-
-1. **PostgreSQL**: Check with PgAdmin at http://localhost:8090
-2. **MongoDB**: Check with Mongo Express at http://localhost:8081
-3. **Reset volumes** if data is corrupted:
-   ```bash
-   docker-compose -f docker-compose-local.yml down -v
-   docker-compose -f docker-compose-local.yml up -d
-   ```
-
-## License
-
-[Specify your license here]
-
-## Contributing
-
-[Add contribution guidelines if applicable]
+- the **mobile build** (Capacitor iOS/Android wrapper and its login flow),
+- the **mobile Keycloak theme**,
+- the **frontend unit tests** (Vitest),
+- the later **UI restyling** of the web frontend (design system and theming).
