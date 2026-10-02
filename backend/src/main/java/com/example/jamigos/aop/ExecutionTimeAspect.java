@@ -13,7 +13,7 @@ public class ExecutionTimeAspect {
 
     private static final Logger log = LoggerFactory.getLogger(ExecutionTimeAspect.class);
 
-    @Around("@within(com.example.jamigos.aop.LogExecutionTime) || @annotation(com.example.todoapp.aop.LogExecutionTime)")
+    @Around("@within(com.example.jamigos.aop.LogExecutionTime) || @annotation(com.example.jamigos.aop.LogExecutionTime)")
     public Object logExecutionTime(ProceedingJoinPoint joinPoint) throws Throwable {
         long start = System.nanoTime();
         Object result = joinPoint.proceed(); // run the method
