@@ -1,14 +1,14 @@
 import { apiFetch } from './http';
 
-const apiPath = '/api/items';
+const ITEMS_API_PATH = '/api/items';
 
 export default {
     getItems() {
-        return apiFetch(apiPath);
+        return apiFetch(ITEMS_API_PATH);
     },
 
     addItem(text) {
-        return apiFetch(apiPath, {
+        return apiFetch(ITEMS_API_PATH, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ text }),
@@ -16,12 +16,12 @@ export default {
     },
 
     deleteItem(id) {
-        return apiFetch(`${apiPath}/${encodeURIComponent(id)}`, {
+        return apiFetch(`${ITEMS_API_PATH}/${encodeURIComponent(id)}`, {
             method: 'DELETE',
         });
     },
 
     getAllItems() {
-        return apiFetch(`${apiPath}/all`);
+        return apiFetch(`${ITEMS_API_PATH}/all`);
     }
 };
