@@ -6,7 +6,12 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: https://keycloak.jamigos.app/realms/jamigos-realm
+          issuer-uri: ${KEYCLOAK_ISSUER_URI}
+jamigos:
+  cors:
+    # Comma-separated deployed frontend origins, e.g. https://app.example.com
+    allowed-origins: ${JAMIGOS_CORS_ALLOWED_ORIGINS:}
+
 actuator:
   username: ${ACTUATOR_USERNAME}
   password: ${ACTUATOR_PASSWORD}
@@ -16,4 +21,4 @@ springdoc:
     oauth:
       client-id: "jamigos-client"
       use-pkce-with-authorization-code-grant: true
-    oauth2-redirect-url: "https://jamigos-backend.onrender.com/swagger-ui/oauth2-redirect.html"
+    oauth2-redirect-url: "${BACKEND_PUBLIC_URL}/swagger-ui/oauth2-redirect.html"

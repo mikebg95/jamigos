@@ -9,18 +9,24 @@
 
 import { MOBILE_REDIRECT_URI } from '../config.js';
 
+// import.meta.env is injected by Vite; fall back to an empty object when this module
+// runs under plain Node (see test-pkce.js).
+const env = import.meta.env ?? {};
+
 /**
- * Keycloak configuration for mobile authentication
+ * Keycloak configuration for mobile authentication.
+ * Values come from the VITE_KEYCLOAK_* build variables (see .env.mobile), with local
+ * development defaults.
  */
 export const KEYCLOAK_MOBILE_CONFIG = {
     /** Base URL of Keycloak server */
-    keycloakBaseUrl: 'https://keycloak.jamigos.app',
+    keycloakBaseUrl: env.VITE_KEYCLOAK_URL || 'http://localhost:8180',
 
     /** Keycloak realm name */
-    realm: 'jamigos-realm',
+    realm: env.VITE_KEYCLOAK_REALM || 'jamigos-realm',
 
     /** Mobile OAuth2 client ID (must be configured as public client in Keycloak) */
-    clientId: 'jamigos-mobile-client',
+    clientId: env.VITE_KEYCLOAK_CLIENT_ID || 'jamigos-mobile-client',
 
     /** Mobile redirect URI (custom URL scheme for deep linking) */
     redirectUri: MOBILE_REDIRECT_URI,
@@ -41,7 +47,7 @@ export const KEYCLOAK_MOBILE_CONFIG = {
  *
  * @example
  * const authEndpoint = getAuthEndpoint();
- * // => "https://keycloak.jamigos.app/realms/jamigos-realm/protocol/openid-connect/auth"
+ * // => "https://keycloak.example.com/realms/jamigos-realm/protocol/openid-connect/auth"
  */
 export function getAuthEndpoint() {
     const { keycloakBaseUrl, realm } = KEYCLOAK_MOBILE_CONFIG;
@@ -57,7 +63,7 @@ export function getAuthEndpoint() {
  *
  * @example
  * const tokenEndpoint = getTokenEndpoint();
- * // => "https://keycloak.jamigos.app/realms/jamigos-realm/protocol/openid-connect/token"
+ * // => "https://keycloak.example.com/realms/jamigos-realm/protocol/openid-connect/token"
  */
 export function getTokenEndpoint() {
     const { keycloakBaseUrl, realm } = KEYCLOAK_MOBILE_CONFIG;
@@ -73,7 +79,7 @@ export function getTokenEndpoint() {
  *
  * @example
  * const registerEndpoint = getRegisterEndpoint();
- * // => "https://keycloak.jamigos.app/realms/jamigos-realm/protocol/openid-connect/registrations"
+ * // => "https://keycloak.example.com/realms/jamigos-realm/protocol/openid-connect/registrations"
  */
 export function getRegisterEndpoint() {
     const { keycloakBaseUrl, realm } = KEYCLOAK_MOBILE_CONFIG;
@@ -87,7 +93,7 @@ export function getRegisterEndpoint() {
  *
  * @example
  * const logoutEndpoint = getLogoutEndpoint();
- * // => "https://keycloak.jamigos.app/realms/jamigos-realm/protocol/openid-connect/logout"
+ * // => "https://keycloak.example.com/realms/jamigos-realm/protocol/openid-connect/logout"
  */
 export function getLogoutEndpoint() {
     const { keycloakBaseUrl, realm } = KEYCLOAK_MOBILE_CONFIG;
@@ -127,7 +133,7 @@ export function getLogoutEndpoint() {
  * });
  *
  * console.log(authUrl);
- * // => "https://keycloak.jamigos.app/realms/jamigos-realm/protocol/openid-connect/auth?
+ * // => "https://keycloak.example.com/realms/jamigos-realm/protocol/openid-connect/auth?
  * //     client_id=jamigos-mobile-client&
  * //     redirect_uri=com.jamigos.app://auth/callback&
  * //     response_type=code&
@@ -180,7 +186,7 @@ export function buildAuthUrl({ codeChallenge, state, theme }) {
  *   state: state,
  *   theme: 'light'
  * });
- * // => "https://keycloak.jamigos.app/realms/jamigos-realm/protocol/openid-connect/registrations?...&theme=light"
+ * // => "https://keycloak.example.com/realms/jamigos-realm/protocol/openid-connect/registrations?...&theme=light"
  */
 export function buildRegisterUrl({ codeChallenge, state, theme }) {
     const { clientId, redirectUri, scope, codeChallengeMethod } = KEYCLOAK_MOBILE_CONFIG;

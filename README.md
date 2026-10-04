@@ -25,7 +25,7 @@ The application itself is deliberately minimal — users sign in, get a dashboar
 
 **CI/CD and deployment**
 - **GitHub Actions**: path-based change detection, so only the changed parts are built; build, lint and test; Docker images pushed to the **GitHub Container Registry** on push.
-- **Deployed on Render** as three services — Vue.js frontend (Nginx), Spring Boot backend and Keycloak — each running its own image.
+- **Deployment to Render** as three services — Vue.js frontend (Nginx), Spring Boot backend and Keycloak — each running its own image, defined in `render.yaml`. The hosted instance has since been taken down; the deployment setup is kept as part of the project.
 - Spring profiles for `local`, `dev`, `test` and `prod`; Docker Compose setups for local development (databases, Keycloak, admin tools) and for running the published images.
 
 **API**

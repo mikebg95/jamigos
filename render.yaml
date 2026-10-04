@@ -15,7 +15,7 @@ services:
       - key: KEYCLOAK_ADMIN_PASSWORD
         sync: false
       - key: KC_HOSTNAME
-        value: keycloak.jamigos.app
+        sync: false # public Keycloak hostname, set in the Render dashboard
       - key: KC_HOSTNAME_STRICT
         value: "false"
       - key: KC_HTTP_ENABLED
@@ -39,6 +39,11 @@ services:
     envVars:
       - { key: SPRING_PROFILES_ACTIVE, value: dev }
       - { key: SPRING_DATA_MONGODB_URI, sync: false }
+      - { key: KEYCLOAK_ISSUER_URI, sync: false }          # https://<keycloak-host>/realms/jamigos-realm
+      - { key: BACKEND_PUBLIC_URL, sync: false }           # used for the Swagger UI OAuth2 redirect
+      - { key: JAMIGOS_CORS_ALLOWED_ORIGINS, sync: false } # the frontend's public origin
+      - { key: ACTUATOR_USERNAME, sync: false }
+      - { key: ACTUATOR_PASSWORD, sync: false }            # plain or {bcrypt}-encoded
     # If you use Actuator, you can add:
     # healthCheckPath: /actuator/health
 
@@ -53,7 +58,7 @@ services:
     plan: free
     region: frankfurt
     envVars:
-      # Use the backend's PUBLIC URL (works regardless of private DNS)
+      # The backend's public URL (works regardless of private DNS)
       - key: BACKEND_URL
-        value: https://todo-backend-w132.onrender.com/
+        sync: false
     healthCheckPath: /
