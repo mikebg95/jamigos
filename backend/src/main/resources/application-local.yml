@@ -35,7 +35,7 @@ logging:
   level:
     org.springframework.security: DEBUG
     org.springframework.security.oauth2: DEBUG
-    com.example.jamigos.aop: INFO
+    dev.michaelgoldman.jamigos.aop: INFO
 
 management:
   endpoints:

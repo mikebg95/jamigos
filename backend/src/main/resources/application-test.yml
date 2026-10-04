@@ -7,7 +7,7 @@ logging:
     root: WARN
     org.springframework.security: WARN
     org.springframework.security.oauth2: WARN
-    com.example.jamigos: INFO
+    dev.michaelgoldman.jamigos: INFO
 
 management:
   endpoints:
