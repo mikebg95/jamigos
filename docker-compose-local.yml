@@ -41,7 +41,7 @@ services:
     container_name: local-postgres
     ports: ["5432:5432"]
     environment:
-      POSTGRES_DB: todoapp
+      POSTGRES_DB: jamigos
       POSTGRES_USER: ${POSTGRES_USERNAME:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
     volumes:

@@ -21,7 +21,7 @@ public class OpenApiConfig {
         String tokenUrl = base + "/protocol/openid-connect/token";
 
         return new OpenAPI()
-                .info(new Info().title("Todo API").version("v1"))
+                .info(new Info().title("Jamigos API").version("v1"))
                 .components(new Components().addSecuritySchemes("keycloak",
                         new SecurityScheme()
                                 .type(SecurityScheme.Type.OAUTH2)

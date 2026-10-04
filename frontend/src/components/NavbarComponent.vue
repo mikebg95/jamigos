@@ -108,8 +108,8 @@ onUnmounted(() => {
         <router-link to="/info" class="nav-link" aria-label="View information" @click="handleNavClick">
           Info
         </router-link>
-        <router-link to="/todo" class="nav-link" aria-label="Manage your tasks" @click="handleNavClick">
-          To-do
+        <router-link to="/items" class="nav-link" aria-label="Manage your items" @click="handleNavClick">
+          Items
         </router-link>
       </nav>
 

@@ -4,7 +4,7 @@ spring:
 
   data:
     mongodb:
-      uri: mongodb://admin:admin@localhost:27017/todosdb?authSource=admin
+      uri: mongodb://admin:admin@localhost:27017/jamigos?authSource=admin
 
   datasource:
     url: jdbc:postgresql://localhost:5432/jamigos

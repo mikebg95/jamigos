@@ -1,6 +1,6 @@
 /**
  * Composable for managing item operations with loading, error handling, and race condition prevention
- * Extracted from TodoView and InformationView to eliminate code duplication
+ * Extracted from ItemsView and InformationView to eliminate code duplication
  */
 
 import { ref } from 'vue';

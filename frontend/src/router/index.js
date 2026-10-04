@@ -5,7 +5,7 @@ import Information from '../views/InformationView.vue'
 import Dashboard from '../views/DashboardView.vue'
 import Forbidden from '../views/ForbiddenView.vue'
 import PageNotFound from '../views/PageNotFoundView.vue'
-import Todo from "@/views/TodoView.vue";
+import Items from "@/views/ItemsView.vue";
 import Profile from "@/views/ProfileView.vue"
 import Messages from "@/views/MessagesView.vue"
 import Explore from "@/views/ExploreView.vue"
@@ -53,8 +53,8 @@ const routes = [
         meta: { requiresAuth: true }
     },
     {
-        path: '/todo',
-        component: Todo,
+        path: '/items',
+        component: Items,
         meta: { requiresAuth: true }
     },
     {

@@ -45,9 +45,9 @@ onMounted(() => {
     <Transition name="menu-slide">
       <div v-if="isOpen" class="menu-panel">
         <nav class="menu-nav" role="navigation" aria-label="Additional navigation">
-          <router-link to="/todo" class="menu-item" @click="handleNavClick">
+          <router-link to="/items" class="menu-item" @click="handleNavClick">
             <CheckSquare :size="UI.ICON_SIZE_SM" :stroke-width="UI.ICON_STROKE_WIDTH" aria-hidden="true" />
-            <span>Tasks</span>
+            <span>Items</span>
           </router-link>
 
           <router-link to="/info" class="menu-item" @click="handleNavClick">

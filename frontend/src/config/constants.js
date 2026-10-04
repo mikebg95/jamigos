@@ -21,7 +21,7 @@ export const TIMING = {
 // ===== Validation Constants =====
 export const VALIDATION = {
   // Maximum task description length
-  MAX_TASK_LENGTH: 500,
+  MAX_ITEM_LENGTH: 500,
 
   // Minimum task description length
   MIN_TASK_LENGTH: 1,
