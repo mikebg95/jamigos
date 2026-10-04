@@ -15,6 +15,8 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
@@ -73,17 +75,27 @@ public class SecurityConfig {
         return http.build();
     }
 
-    // Basic user for actuator – only created when properties exist
+    /**
+     * Basic-auth user for actuator, only created when the properties exist.
+     * {@code actuator.password} may be given pre-encoded (e.g. {@code {bcrypt}$2a$...}); a plain
+     * value is bcrypt-encoded at startup so the raw secret is never held in memory as-is.
+     */
     @Bean
     @ConditionalOnProperty(prefix = "actuator", name = {"username", "password"})
     public UserDetailsService actuatorUser(
             @Value("${actuator.username}") String username,
             @Value("${actuator.password}") String password
     ) {
+        PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
+        String encodedPassword = isEncoded(password) ? password : encoder.encode(password);
         var user = User.withUsername(username)
-                .password("{noop}" + password)
+                .password(encodedPassword)
                 .roles("ACTUATOR")
                 .build();
         return new InMemoryUserDetailsManager(user);
+    }
+
+    private static boolean isEncoded(String password) {
+        return password.startsWith("{bcrypt}") || password.startsWith("{argon2") || password.startsWith("{pbkdf2");
     }
 }

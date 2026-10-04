@@ -18,8 +18,8 @@ spring:
           issuer-uri: http://localhost:8180/realms/jamigos-realm
 
 actuator:
-  username: admin
-  password: admin
+  username: ${ACTUATOR_USERNAME:admin}
+  password: ${ACTUATOR_PASSWORD:admin}
 
 springdoc:
   swagger-ui:
